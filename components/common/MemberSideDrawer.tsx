@@ -1,7 +1,13 @@
 "use client";
 
-import { ChevronRight, DoorClosed, UserPlus, X } from "lucide-react";
+import { ChevronRight, DoorClosed, Ellipsis, UserPlus, X } from "lucide-react";
 import { Button } from "../ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 import {
   Drawer,
   DrawerClose,
@@ -38,6 +44,17 @@ const MemberSideDrawer: React.FC<MemberSideDrawerProps> = ({
       ? mockCollectionMembersResponse
       : mockPlanMembersResponse,
   );
+  const [isManaging, setIsManaging] = useState(false);
+
+  const handleKickMember = (memberId: string) => {
+    // TODO: 멤버 내보내기 API 호출
+    console.log("내보내기:", memberId);
+  };
+
+  const handleAssignOwner = (memberId: string) => {
+    // TODO: 보관함 소유자 지정 API 호출
+    console.log("소유자 지정:", memberId);
+  };
 
   return (
     <Drawer direction="right">
@@ -63,9 +80,12 @@ const MemberSideDrawer: React.FC<MemberSideDrawerProps> = ({
           <div className="w-full rounded-2xl bg-[#f0f0f0]">
             <div className="flex px-4 py-3 justify-between">
               <p className="typography-action-base-bold">여행 멤버</p>
-              <p className="typography-action-sm-reg font-[#757575]">
+              <button
+                className="typography-action-sm-reg text-[#757575]"
+                onClick={() => setIsManaging(true)}
+              >
                 관리하기
-              </p>
+              </button>
             </div>
             <div className="px-3 flex flex-col gap-3">
               {/* 멤버 나열 박스 */}
@@ -84,24 +104,67 @@ const MemberSideDrawer: React.FC<MemberSideDrawerProps> = ({
                           alt={member.nickname ?? ""}
                           className="rounded-full"
                         />
-                        <p className="typography-action-sm-reg">
+                        <p className="typography-action-sm-reg flex-1">
                           {member.nickname}
                         </p>
+                        {isManaging && (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <button>
+                                <Ellipsis size={18} className="text-[#757575]" />
+                              </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleKickMember(
+                                    "collection_member_id" in member
+                                      ? member.collection_member_id
+                                      : member.plan_member_id,
+                                  )
+                                }
+                              >
+                                내보내기
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleAssignOwner(
+                                    "collection_member_id" in member
+                                      ? member.collection_member_id
+                                      : member.plan_member_id,
+                                  )
+                                }
+                              >
+                                보관함 소유자로 지정
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        )}
                       </>
                     )}
                   </div>
                 ))}
               </div>
-              <div className="flex flex-col">
-                <Divider />
+              {isManaging ? (
                 <Button
-                  icon={<UserPlus size={18} className="opacity-40" />}
-                  variant="ghost"
-                  className="rounded-2xl typography-action-sm-reg flex flex-row gap-1"
+                  variant="outline"
+                  className="w-full bg-[#f0f0f0] mb-3 border-neutral-400"
+                  onClick={() => setIsManaging(false)}
                 >
-                  새로운 멤버 초대하기
+                  <p className="typography-action-sm-reg">멤버 관리 끝내기</p>
                 </Button>
-              </div>
+              ) : (
+                <div className="flex flex-col gap-1">
+                  <Divider />
+                  <Button
+                    icon={<UserPlus size={18} className="opacity-40" />}
+                    variant="ghost"
+                    className="rounded-2xl typography-action-sm-reg flex flex-row mb-2"
+                  >
+                    새로운 멤버 초대하기
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
           {/* 여행 시작 박스 */}
