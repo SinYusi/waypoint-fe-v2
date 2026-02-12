@@ -30,12 +30,6 @@ export const mockCollectionMembersResponse: CollectionMembersResponse = {
       picture: "https://i.pravatar.cc/150?u=cm-003",
       role: "MEMBER",
     },
-    {
-      collection_member_id: "cm-004",
-      nickname: undefined,
-      picture: undefined,
-      role: undefined,
-    },
   ],
 };
 
@@ -65,12 +59,6 @@ export const mockPlanMembersResponse: PlanMembersResponse = {
       nickname: "최유진",
       picture: "https://i.pravatar.cc/150?u=pm-003",
       role: "MEMBER",
-    },
-    {
-      plan_member_id: "pm-004",
-      nickname: undefined,
-      picture: undefined,
-      role: undefined,
     },
   ],
 };
