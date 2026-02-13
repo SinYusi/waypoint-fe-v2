@@ -1,6 +1,6 @@
 "use client";
 
-import { DoorClosed, X } from "lucide-react";
+import { DoorClosed, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -16,26 +16,33 @@ import BookMarkIcon from "@/components/common/BookmarkIcon";
 import { useMemberManagement } from "./hooks/useMemberManagement";
 import MemberListSection from "./components/MemberListSection";
 import TravelPlanSection from "./components/TravelPlanSection";
+import HeaderBtn, { HeaderBtnBgVariant } from "@/components/layout/HeaderBtn";
 
 interface MemberSideDrawerProps {
   title: string;
   placeCount?: number;
   variant: "COLLECTION" | "PLAN";
+  rightBtnBgVariant: HeaderBtnBgVariant;
 }
 
 const MemberSideDrawer = ({
   title,
   placeCount,
   variant,
+  rightBtnBgVariant,
 }: MemberSideDrawerProps) => {
-  const { members, isManaging, setIsManaging, handleKickMember, handleAssignOwner } =
-    useMemberManagement({ variant });
+  const {
+    members,
+    isManaging,
+    setIsManaging,
+    handleKickMember,
+    handleAssignOwner,
+  } = useMemberManagement({ variant });
 
   return (
     <Drawer direction="right">
       <DrawerTrigger asChild>
-        {/* TODO: HeaderButton 구현 시 교체 */}
-        <Button>사이드바 열기</Button>
+        <HeaderBtn bgVariant={rightBtnBgVariant} icon={Menu} label="메뉴" />
       </DrawerTrigger>
       <DrawerContent>
         <DrawerClose className="absolute top-3 right-3">
