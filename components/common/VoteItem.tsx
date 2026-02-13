@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import PickPass from './PickPass';
 
 interface VoteItemProps {
@@ -11,19 +12,39 @@ interface VoteItemProps {
 
 export default function VoteItem({ 
   type, 
-  isActive = false,
+  isActive: initialActive = false,
   onToggle,
   onClick 
 }: VoteItemProps) {
+  const [isActive, setIsActive] = useState(initialActive);
+
+  const handleContainerClick = () => {
+    const newActive = !isActive;
+    setIsActive(newActive);
+    onToggle?.(newActive);
+    onClick?.();
+  };
+
   return (
     <div
-      onClick={onClick}
-      className="inline-flex h-9 w-21.25 min-w-21.25 items-center justify-center gap-1 rounded-xl px-3 py-2 transition-colors hover:bg-[#E0F2FE]"
+      onClick={handleContainerClick}
+      className="inline-flex h-9 w-21.25 min-w-21.25 cursor-pointer items-center justify-center gap-1 rounded-xl px-3 py-2 transition-colors hover:bg-[#E0F2FE]"
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleContainerClick();
+        }
+      }}
     >
       <PickPass 
         type={type} 
-        defaultActive={isActive}
-        onToggle={onToggle}
+        active={isActive}
+        onToggle={(newActive) => {
+          setIsActive(newActive);
+          onToggle?.(newActive);
+        }}
       />
     </div>
   );

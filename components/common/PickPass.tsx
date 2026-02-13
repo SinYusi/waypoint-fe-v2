@@ -7,20 +7,33 @@ import { Button } from '@/components/ui/button';
 interface PickPassProps {
   type: 'pick' | 'pass';
   defaultActive?: boolean;
+  active?: boolean; // controlled mode
   onToggle?: (isActive: boolean) => void;
 }
 
 export default function PickPass({ 
   type,
-  defaultActive = false, 
+  defaultActive = false,
+  active,
   onToggle 
 }: PickPassProps) {
-  const [isActive, setIsActive] = useState(defaultActive);
+  const [internalActive, setInternalActive] = useState(defaultActive);
+  
+  // controlled vs uncontrolled
+  const isControlled = active !== undefined;
+  const isActive = isControlled ? active : internalActive;
 
   const handleClick = () => {
     const newState = !isActive;
-    setIsActive(newState);
+    if (!isControlled) {
+      setInternalActive(newState);
+    }
     onToggle?.(newState);
+  };
+
+  const handleButtonClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // 부모로 이벤트 전파 방지
+    handleClick();
   };
 
   const isPick = type === 'pick';
@@ -32,8 +45,8 @@ export default function PickPass({
 
   return (
     <Button
-      onClick={handleClick}
-      className={`h-5 ${width} gap-1 bg-transparent p-0 hover:bg-transparent`}
+      onClick={handleButtonClick}
+      className={`h-5 ${width} cursor-pointer gap-1 bg-transparent p-0 hover:bg-transparent`}
       type="button"
       aria-label={ariaLabel}
       variant="ghost"
