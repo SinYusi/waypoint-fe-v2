@@ -111,7 +111,10 @@ const MemberSideDrawer: React.FC<MemberSideDrawerProps> = ({
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <button>
-                                <Ellipsis size={18} className="text-[#757575]" />
+                                <Ellipsis
+                                  size={18}
+                                  className="text-[#757575]"
+                                />
                               </button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
@@ -168,6 +171,7 @@ const MemberSideDrawer: React.FC<MemberSideDrawerProps> = ({
             </div>
           </div>
           {/* 여행 시작 박스 */}
+          {/* TODO: 연결된 플랜이 있는지 확인하고 다르게 렌더링하기 */}
           <div className="p-3 rounded-2xl bg-[#f0f0f0] flex flex-col gap-3">
             <p className="typography-action-base-bold">
               이제 여행갈 준비가 되셨나요?
