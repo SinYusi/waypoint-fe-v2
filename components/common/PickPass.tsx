@@ -2,6 +2,7 @@
 
 import { Heart, SquareX } from 'lucide-react';
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 
 interface PickPassProps {
   type: 'pick' | 'pass';
@@ -27,13 +28,15 @@ export default function PickPass({
   const ariaLabel = isPick 
     ? (isActive ? '좋아요 취소' : '좋아요')
     : (isActive ? '다음에요 취소' : '다음에요');
+  const width = isPick ? 'w-15.25 min-w-15.25' : 'w-18.25 min-w-18.25'; // pick: 61px, pass: 73px
 
   return (
-    <button
+    <Button
       onClick={handleClick}
-      className="inline-flex items-center gap-1 h-5"
+      className={`h-5 ${width} gap-1 bg-transparent p-0 hover:bg-transparent`}
       type="button"
       aria-label={ariaLabel}
+      variant="ghost"
     >
       {isPick ? (
         <Heart
@@ -62,6 +65,6 @@ export default function PickPass({
       >
         {label}
       </span>
-    </button>
+    </Button>
   );
 }
