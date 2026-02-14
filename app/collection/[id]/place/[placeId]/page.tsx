@@ -79,15 +79,15 @@ const PlaceDetailPage = () => {
     );
   };
 
-  const handleVoteToggle = (type: "PICK" | "PASS") => {
+  const handleVoteToggle = (type: "PICK" | "PASS", nextActive: boolean) => {
     if (!collectionId || !collectionPlaceId || updatePlacePreferenceMutation.isPending) return;
 
     if (type === "PICK") {
-      setIsPickActive(true);
-      setIsPassActive(false);
+      setIsPickActive(nextActive);
+      if (nextActive) setIsPassActive(false);
     } else {
-      setIsPassActive(true);
-      setIsPickActive(false);
+      setIsPassActive(nextActive);
+      if (nextActive) setIsPickActive(false);
     }
 
     updatePlacePreferenceMutation.mutate({ type });
@@ -154,14 +154,14 @@ const PlaceDetailPage = () => {
                   type="pick"
                   count={pickCount}
                   isActive={isPickActive}
-                  onToggle={() => handleVoteToggle("PICK")}
+                  onToggle={(nextActive) => handleVoteToggle("PICK", nextActive)}
                   onCountClick={() => handleVoteCountClick("PICK")}
                 />
                 <VoteBtn
                   type="pass"
                   count={passCount}
                   isActive={isPassActive}
-                  onToggle={() => handleVoteToggle("PASS")}
+                  onToggle={(nextActive) => handleVoteToggle("PASS", nextActive)}
                   onCountClick={() => handleVoteCountClick("PASS")}
                 />
               </div>
