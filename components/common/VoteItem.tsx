@@ -28,7 +28,7 @@ export default function VoteItem({
   return (
     <div
       onClick={handleContainerClick}
-      className="inline-flex h-9 w-21.25 min-w-21.25 cursor-pointer items-center justify-center gap-1 rounded-xl px-3 py-2 transition-colors hover:bg-[#E0F2FE]"
+      className="inline-flex h-9 min-w-0 shrink flex-[85] cursor-pointer items-center justify-center gap-1 rounded-xl px-3 py-2 transition-colors hover:bg-[#E0F2FE]"
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {

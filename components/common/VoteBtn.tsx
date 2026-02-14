@@ -28,7 +28,7 @@ export default function VoteBtn({
 
   return (
     <div
-      className={`inline-flex h-11 w-40.25 items-center gap-1 rounded-2xl px-1 backdrop-blur-md ${
+      className={`inline-flex h-11 w-full min-w-0 shrink items-center gap-1 rounded-2xl px-1 backdrop-blur-md ${
         isActive ? 'border-2 border-[#757575]' : 'border border-[#E2E2E2]'
       }`}
     >
