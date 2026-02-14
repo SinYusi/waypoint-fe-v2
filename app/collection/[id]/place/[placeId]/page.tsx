@@ -3,11 +3,14 @@
 import Header from "@/components/layout/Header";
 import HeaderBtn from "@/components/layout/HeaderBtn";
 import NavigationBar from "@/components/layout/NavigationBar";
+import VoteBtn from "@/components/common/VoteBtn";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { MapPin, SquareArrowOutUpRight } from "lucide-react";
 
 const PlaceDetailPage = () => {
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen min-w-0 overflow-x-hidden">
       {/* 이미지 영역 */}
       <div className="fixed top-0 left-0 right-0 w-full aspect-5/3 bg-gray-200 z-0">
         <div className="absolute top-0 left-0 right-0 z-10">
@@ -17,8 +20,8 @@ const PlaceDetailPage = () => {
 
       {/* 콘텐츠 영역 */}
       <div className="relative pt-[calc(60%-17px)]">
-        <div className="flex flex-col gap-16 pt-7 px-5 rounded-t-2xl bg-background">
-          <div className="flex flex-col w-full">
+        <div className="flex flex-col gap-16 pt-7 px-5 rounded-t-2xl bg-background min-w-0">
+          <div className="flex flex-col w-full min-w-0">
             <h2 className="flex justify-between items-center w-full h-8 py-0.5 px-1">
               <span className="font-sans font-semibold text-lg leading-4 text-[#101828]">
                 헤이리 예술 마을
@@ -45,6 +48,16 @@ const PlaceDetailPage = () => {
                   />
                 </div>
                 <hr className="border-slate-200" />
+              </div>
+              {/* 투표 버튼 영역 */}
+              <div className="flex gap-3 w-full pb-3.5">
+                <VoteBtn type="pick" count={0} />
+                <VoteBtn type="pass" count={0} />
+              </div>
+              {/* 메모 영역 */}
+              <div className="flex flex-col gap-2 w-full">
+                <Label onEdit={() => {}}>메모</Label>
+                <Textarea placeholder="텍스트를 입력해주세요." />
               </div>
             </div>
           </div>
