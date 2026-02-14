@@ -29,7 +29,7 @@ export default function VoteCount({ count, onClick }: VoteCountProps) {
           stroke: isHovered ? '#757575' : 'rgba(1, 1, 46, 0.13)',
         }}
       />
-      <span className="text-[#1C2024]">
+      <span className="text-[#757575]">
         {count}
       </span>
     </Button>
