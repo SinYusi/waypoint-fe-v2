@@ -1,17 +1,52 @@
 "use client";
 
+import CollectionCard from "@/components/card/CollectionCard";
 import Header from "@/components/layout/Header";
 import NavigationBar from "@/components/layout/NavigationBar";
 import { Button } from "@/components/ui/button";
+import { useCollections } from "@/lib/hooks/use-collections";
+import { useIntersectionObserver } from "@/lib/hooks/use-intersection-observer";
+import { cn } from "@/lib/utils/utils";
 import CollectionEmptyIllust from "@/public/illust/collection-empty.svg";
+import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useCallback, useMemo } from "react";
 
 const HomePage = () => {
   const router = useRouter();
 
-  const handleCreateCollection = () => {
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    refetch,
+  } = useCollections({ size: 10 });
+
+  const collections = useMemo(() => {
+    return data?.pages.flatMap((p) => p.contents) ?? [];
+  }, [data]);
+
+  const errorMessage =
+    error?.response?.data?.detail ?? "보관함을 불러오지 못했어요.";
+
+  const isEmpty = !isLoading && !isError && collections.length === 0;
+
+  const handleCreate = () => {
     router.push("/home/create");
   };
+
+  const handleFetchNext = useCallback(() => {
+    fetchNextPage();
+  }, [fetchNextPage]);
+
+  const loadMoreRef = useIntersectionObserver({
+    enabled: hasNextPage && !isFetchingNextPage && !isLoading && !isError,
+    onIntersect: handleFetchNext,
+  });
 
   return (
     <div className="flex min-h-screen flex-col bg-[#fafafa]">
@@ -22,24 +57,91 @@ const HomePage = () => {
         className="fixed top-0 z-10 inset-x-0"
       />
 
-      <main className="flex flex-col flex-1 items-center justify-center mt-15 px-5 pt-5 pb-36 gap-12">
-        <div className="flex flex-col gap-5 items-center">
-          <CollectionEmptyIllust />
-          <div className="flex flex-col text-center gap-2">
-            <h2 className="typography-display-xl">
-              우리만의 장소 보관함 만들기
-            </h2>
-            <p className="typography-body-sm-md">
-              함께 꿈꾸는 여행지들을 보관함에 담고,
-              <br />
-              서로 가고 싶은 곳들을 자유롭게 나눠볼까요?
-            </p>
+      <main
+        className={cn(
+          "flex flex-col flex-1 mt-15 px-5 pt-5 pb-36",
+          isEmpty && "items-center justify-center gap-12",
+        )}
+      >
+        {/* 타이틀 */}
+        {!isLoading && !isError && !isEmpty && (
+          <h2 className="typography-display-2xl">
+            여행하고 싶은 곳들을
+            <br />
+            차곡차곡
+          </h2>
+        )}
+
+        {/* 로딩 */}
+        {isLoading && (
+          <div className="flex flex-1 items-center justify-center typography-display-lg-reg text-muted-foreground">
+            보관함을 불러오는 중...
           </div>
-        </div>
-        <Button onClick={handleCreateCollection} className="w-full">
-          새 보관함 만들기
-        </Button>
+        )}
+
+        {/* 에러 */}
+        {isError && (
+          <div className="flex flex-col flex-1 gap-3 items-center justify-center typography-display-lg-reg">
+            <p className="typography-body-base text-destructive">
+              {errorMessage}
+            </p>
+            <Button onClick={() => refetch()}>다시 시도</Button>
+          </div>
+        )}
+
+        {isEmpty ? (
+          <>
+            {/* 컬렉션이 없을 경우 */}
+            <div className="flex flex-col gap-5 items-center">
+              <CollectionEmptyIllust />
+              <div className="flex flex-col text-center gap-2">
+                <h2 className="typography-display-xl">
+                  우리만의 장소 보관함 만들기
+                </h2>
+                <p className="typography-body-sm-md">
+                  함께 꿈꾸는 여행지들을 보관함에 담고,
+                  <br />
+                  서로 가고 싶은 곳들을 자유롭게 나눠볼까요?
+                </p>
+              </div>
+            </div>
+            <Button onClick={handleCreate} className="w-full">
+              새 보관함 만들기
+            </Button>
+          </>
+        ) : (
+          <>
+            {/* 컬렉션 목록 */}
+            {!isLoading && !isError && collections.length > 0 && (
+              <>
+                <div className="flex flex-col gap-8 pt-8 lg:grid lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]">
+                  {collections.map((c) => (
+                    <div key={c.collection_id}>
+                      <CollectionCard
+                        title={c.title ?? ""}
+                        memberCount={c.member_count}
+                        imageSrc={c.thumbnail}
+                        className="max-w-full"
+                        onClick={() => router.push(`/home/${c.collection_id}`)}
+                      />
+                    </div>
+                  ))}
+                </div>
+                <div ref={loadMoreRef} className="h-10" />
+              </>
+            )}
+          </>
+        )}
       </main>
+
+      {/* 하단 고정 버튼 */}
+      {!isLoading && !isError && !isEmpty && (
+        <div className="fixed bottom-14 px-4 pb-9 w-full bg-gradient-bottom-fade">
+          <Button className="w-full" onClick={handleCreate}>
+            <Plus /> 보관함 추가하기
+          </Button>
+        </div>
+      )}
 
       {/* 네비게이션 바 */}
       <NavigationBar className="fixed bottom-0 z-10 inset-x-0" />
