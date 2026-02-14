@@ -37,7 +37,7 @@ const PlaceCard = ({
   return (
     <div
       className={cn(
-        "w-full max-w-[335px] overflow-hidden rounded-3xl border border-[#E2E2E2] bg-white",
+        "w-full max-w-83.75 overflow-hidden rounded-3xl border border-[#E2E2E2] bg-white",
         "shadow-[0px_10px_15px_-3px_#0000001A,0px_4px_6px_-4px_#0000001A]",
         onClick && "cursor-pointer",
         className,
@@ -52,7 +52,7 @@ const PlaceCard = ({
           </span>
           {address && (
             <span className="flex items-center gap-1 typography-body-sm-md text-neutral-600">
-              <MapPin className="size-[18px] shrink-0" />
+              <MapPin className="size-4.5 shrink-0" />
               {address}
             </span>
           )}
@@ -84,12 +84,12 @@ const PlaceCard = ({
               aria-label="좋아요"
             >
               <Heart
-                className={cn(
-                  "size-5",
-                  isLiked
-                    ? "fill-(--red-500) text-(--red-500)"
-                    : "text-foreground",
-                )}
+                className="size-5 transition-colors"
+                strokeWidth={isLiked ? 0 : 2}
+                style={{
+                  stroke: isLiked ? 'none' : 'var(--foreground, #1C2024)',
+                  fill: isLiked ? 'var(--red-500, #EF4444)' : 'none',
+                }}
               />
               <span className="typography-body-sm-reg text-foreground">
                 {likeCount}
@@ -107,12 +107,12 @@ const PlaceCard = ({
               aria-label="거절"
             >
               <SquareX
-                className={cn(
-                  "size-5",
-                  isRejected
-                    ? "fill-(--purple-500) text-white stroke-2"
-                    : "text-foreground",
-                )}
+                className="size-5 transition-colors"
+                strokeWidth={2}
+                style={{
+                  stroke: isRejected ? '#FFFFFF' : 'var(--foreground, #1C2024)',
+                  fill: isRejected ? 'var(--purple-500, #A855F7)' : 'none',
+                }}
               />
               <span className="typography-body-sm-reg text-foreground">
                 {rejectCount}
