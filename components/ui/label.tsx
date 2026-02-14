@@ -43,7 +43,7 @@ function Label({
           size="S"
           onClick={onSave}
         >
-          <Check className="size-[18px]" />
+          <Check className="size-4.5" />
         </Button>
       )}
 
@@ -54,7 +54,7 @@ function Label({
           size="S"
           onClick={onEdit}
         >
-          <Pencil className="size-[18px]" />
+          <Pencil className="size-4.5" />
         </Button>
       )}
     </div>
