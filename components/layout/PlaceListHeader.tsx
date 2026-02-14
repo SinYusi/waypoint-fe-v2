@@ -1,15 +1,10 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { ChevronDown, Menu, Search, X } from "lucide-react";
+import { Menu, Search, X } from "lucide-react";
 import { InputForm } from "../ui/input-form";
 import HeaderBtn from "./HeaderBtn";
+import Dropdown, { DropdownDivider, DropdownItem } from "../common/DropDown";
 
 type Member = { id: string; name: string };
 type SortBy = "LATEST" | "OLDEST";
@@ -72,77 +67,43 @@ const PlaceListHeader = ({
                 : "opacity-100 translate-x-0 pointer-events-auto",
             )}
           >
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="w-[148px] h-11 px-3 py-2 typography-body-sm-md flex items-center justify-between bg-popover rounded-[12px] border-[1px] border-border">
-                  {getSortLabel()}
-                  <ChevronDown
-                    size={16}
-                    className="ml-2 shrink-0 text-foreground"
-                  />
-                </button>
-              </DropdownMenuTrigger>
-
-              <DropdownMenuContent
-                align="start"
-                className="w-[148px] rounded-[12px] mt-1 [&_[data-slot='dropdown-menu-item']]:rounded-[6px]"
+            <Dropdown label={getSortLabel()}>
+              <DropdownItem
+                onClick={() => onChange({ sort: "LATEST", addedBy: undefined })}
+                isActive={!addedBy && sort === "LATEST"}
               >
-                {/* 정렬 */}
-                <DropdownMenuItem
-                  onClick={() =>
-                    onChange({ sort: "LATEST", addedBy: undefined })
-                  }
-                  className={cn(
-                    !addedBy &&
-                      sort === "LATEST" &&
-                      "bg-accent text-accent-foreground typography-body-sm-sb",
-                  )}
-                >
-                  최신 순
-                </DropdownMenuItem>
+                최신 순
+              </DropdownItem>
+              <DropdownItem
+                onClick={() => onChange({ sort: "OLDEST", addedBy: undefined })}
+                isActive={!addedBy && sort === "OLDEST"}
+              >
+                오래된 순
+              </DropdownItem>
 
-                <DropdownMenuItem
-                  onClick={() =>
-                    onChange({ sort: "OLDEST", addedBy: undefined })
-                  }
-                  className={cn(
-                    !addedBy &&
-                      sort === "OLDEST" &&
-                      "bg-accent text-accent-foreground typography-body-sm-sb",
-                  )}
-                >
-                  오래된 순
-                </DropdownMenuItem>
+              <DropdownDivider />
 
-                <div className="h-[1px] bg-[#e2e2e2] mx-2 my-1" />
+              {/* 멤버별 장소 */}
+              {members.map((member) => {
+                const isActive = addedBy === member.id;
 
-                {/* 멤버별 장소 */}
-                {members.map((member) => {
-                  const isActive = addedBy === member.id;
-
-                  return (
-                    <DropdownMenuItem
-                      key={member.id}
-                      onClick={() =>
-                        onChange({
-                          sort: "LATEST",
-                          addedBy: member.id,
-                        })
-                      }
-                      className={cn(
-                        "flex items-center gap-0",
-                        isActive && "bg-accent text-accent-foreground",
-                      )}
-                    >
-                      <span className="min-w-0 truncate typography-body-sm-sb">
-                        {member.name}
-                      </span>
-                      <p className="shrink-0">의 장소</p>
-                    </DropdownMenuItem>
-                  );
-                })}
-              </DropdownMenuContent>
-            </DropdownMenu>
+                return (
+                  <DropdownItem
+                    key={member.id}
+                    onClick={() =>
+                      onChange({ sort: "LATEST", addedBy: member.id })
+                    }
+                    isActive={isActive}
+                    className="flex items-center gap-0"
+                  >
+                    <span className="min-w-0 truncate typography-body-sm-sb">
+                      {member.name}
+                    </span>
+                    <p className="shrink-0">의 장소</p>
+                  </DropdownItem>
+                );
+              })}
+            </Dropdown>
           </div>
 
           {/* 검색 바 */}
