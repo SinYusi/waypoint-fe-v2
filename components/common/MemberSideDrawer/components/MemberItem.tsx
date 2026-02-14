@@ -1,6 +1,11 @@
+import { useState } from "react";
 import Image from "next/image";
+import { Ellipsis } from "lucide-react";
 import { CollectionMember, PlanMember } from "@/types/member";
-import MemberActionMenu from "./MemberActionMenu";
+import {
+  SelectDropdown,
+  SelectDropdownItem,
+} from "@/components/ui/select-dropdown";
 
 interface MemberItemProps {
   member: CollectionMember | PlanMember;
@@ -21,10 +26,32 @@ const MemberItem = ({
   onKick,
   onAssignOwner,
 }: MemberItemProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   if (!member.picture) return null;
 
+  const memberId = getMemberId(member);
+  const actionItems: SelectDropdownItem[] = [
+    {
+      id: "kick",
+      label: "내보내기",
+      onSelect: () => {
+        onKick(memberId);
+        setIsOpen(false);
+      },
+    },
+    {
+      id: "assign-owner",
+      label: "보관함 소유자로 지정",
+      onSelect: () => {
+        onAssignOwner(memberId);
+        setIsOpen(false);
+      },
+    },
+  ];
+
   return (
-    <div className="p-2 flex flex-row gap-2 items-center">
+    <div className="relative p-2 flex flex-row gap-2 items-center">
       <Image
         width={28}
         height={28}
@@ -35,11 +62,17 @@ const MemberItem = ({
       <p className="typography-action-sm-reg flex-1">{member.nickname}</p>
       {isManaging && (
         // TODO: 모바일 & PC의 기준이 나온다면 하단 drawer 컴포넌트 구현
-        <MemberActionMenu
-          memberId={getMemberId(member)}
-          onKick={onKick}
-          onAssignOwner={onAssignOwner}
-        />
+        <>
+          <button onClick={() => setIsOpen((prev) => !prev)}>
+            <Ellipsis size={18} className="text-[#757575]" />
+          </button>
+          {isOpen && (
+            <SelectDropdown
+              items={actionItems}
+              className="absolute right-0 top-full z-10"
+            />
+          )}
+        </>
       )}
     </div>
   );
