@@ -31,13 +31,9 @@ const MemberSideDrawer = ({
   variant,
   rightBtnBgVariant,
 }: MemberSideDrawerProps) => {
-  const {
-    members,
-    isManaging,
-    setIsManaging,
-    handleKickMember,
-    handleAssignOwner,
-  } = useMemberManagement({ variant });
+  const { members, handleKickMember, handleAssignOwner } = useMemberManagement(
+    { variant },
+  );
 
   return (
     <Drawer direction="right">
@@ -60,9 +56,6 @@ const MemberSideDrawer = ({
         <main className="flex flex-col gap-3 mx-5 mt-10">
           <MemberListSection
             members={members.members}
-            isManaging={isManaging}
-            onStartManaging={() => setIsManaging(true)}
-            onEndManaging={() => setIsManaging(false)}
             onKick={handleKickMember}
             onAssignOwner={handleAssignOwner}
           />
