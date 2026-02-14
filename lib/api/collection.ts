@@ -10,8 +10,10 @@
  */
 
 import {
+  CollectionListResponse,
   CollectionResponse,
   CreateCollectionRequest,
+  GetCollectionsParams,
 } from "@/types/collection";
 import { apiClient } from "./client";
 
@@ -23,5 +25,18 @@ import { apiClient } from "./client";
  */
 export const createCollection = async (body: CreateCollectionRequest) => {
   const res = await apiClient.post<CollectionResponse>("/collections", body);
+  return res.data;
+};
+
+/**
+ * 컬렉션 목록 조회 API
+ *
+ * @param params - 페이지네이션 파라미터 (page, size)
+ * @returns 컬렉션 목록 및 페이지 정보
+ */
+export const getCollections = async (params?: GetCollectionsParams) => {
+  const res = await apiClient.get<CollectionListResponse>("/collections", {
+    params,
+  });
   return res.data;
 };
