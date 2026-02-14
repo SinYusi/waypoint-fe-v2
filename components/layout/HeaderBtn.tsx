@@ -26,6 +26,7 @@ const HeaderBtn = ({
       onClick={onClick}
       className={cn(
         "rounded-full size-11 p-2.5",
+        onClick ? "cursor-pointer" : "cursor-not-allowed",
         bgVariant === "solid" && "bg-[#FAFAFA]",
         bgVariant === "glass" && "bg-[#FAFAFA]/60 backdrop-blur-sm",
         bgVariant === "ghost" && "bg-transparent backdrop-blur-xl",
