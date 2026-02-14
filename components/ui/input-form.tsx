@@ -14,11 +14,11 @@ function InputForm({ className, error, ...props }: InputFormProps) {
       data-error={error || undefined}
       aria-invalid={error || undefined}
       className={cn(
-        "flex items-center gap-2 h-[44px] w-full rounded-xl bg-muted px-3 py-2",
+        "flex items-center gap-2 h-11 w-full rounded-xl bg-muted px-3 py-2",
         "outline-none border border-transparent",
         "transition-all",
-        "has-[:focus]:border-sky-500 has-[:focus]:ring-2 has-[:focus]:ring-sky-500/25",
-        "has-[:disabled]:cursor-not-allowed has-[:disabled]:bg-border has-[:disabled]:opacity-100",
+        "has-focus:border-sky-500 has-focus:ring-2 has-focus:ring-sky-500/25",
+        "has-disabled:cursor-not-allowed has-disabled:bg-border has-disabled:opacity-100",
         "aria-invalid:border-destructive aria-invalid:ring-0",
         className
       )}
