@@ -42,6 +42,7 @@ function Label({
           variant="ghost"
           size="S"
           onClick={onSave}
+          className="cursor-pointer"
         >
           <Check className="size-4.5" />
         </Button>
@@ -53,6 +54,7 @@ function Label({
           variant="ghost"
           size="S"
           onClick={onEdit}
+          className="cursor-pointer"
         >
           <Pencil className="size-4.5" />
         </Button>
