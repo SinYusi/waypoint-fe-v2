@@ -75,7 +75,7 @@ function BottomSheet({
 
         <div className="px-6 pt-6 pb-2">
           {showTitle && (
-            <h2 className="mb-2 h-7 w-34 typography-title-lg-sb text-black">
+            <h2 className="mb-2 h-7 w-fit whitespace-nowrap typography-title-lg-sb text-black">
               {title}
             </h2>
           )}
