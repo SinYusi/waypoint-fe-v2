@@ -57,6 +57,11 @@ const PlaceDetailPage = () => {
   const longitude = placeDetail?.longitude ?? 126.978;
   const coverImageUrl = placeDetail?.photoUrls?.[0];
 
+  const openInNewTab = (url?: string) => {
+    if (!url) return;
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
   const handleEditMemo = () => {
     setIsEditingMemo(true);
   };
@@ -133,11 +138,7 @@ const PlaceDetailPage = () => {
                     bgVariant="ghost"
                     icon={SquareArrowOutUpRight}
                     label="외부 링크"
-                    onClick={() => {
-                      if (externalUrl) {
-                        window.open(externalUrl, "_blank", "noopener,noreferrer");
-                      }
-                    }}
+                    onClick={externalUrl ? () => openInNewTab(externalUrl) : undefined}
                   />
                 </div>
                 <hr className="border-border" />
@@ -206,11 +207,10 @@ const PlaceDetailPage = () => {
                     </div>
                     <button
                       type="button"
-                      onClick={() => {
-                        if (sourceUrl) {
-                          window.open(sourceUrl, "_blank", "noopener,noreferrer");
-                        }
-                      }}
+                      onClick={() => openInNewTab(sourceUrl)}
+                      disabled={!sourceUrl}
+                      className={sourceUrl ? "cursor-pointer" : "cursor-not-allowed"}
+                      aria-label="소셜 원문 링크 열기"
                     >
                       <SquareArrowOutUpRight className="size-4.5 text-muted-foreground" />
                     </button>
