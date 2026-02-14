@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { UserPlus } from "lucide-react";
 import { CollectionMember, PlanMember } from "@/types/member";
 import { Button } from "@/components/ui/button";
@@ -6,21 +7,16 @@ import MemberItem from "./MemberItem";
 
 interface MemberListSectionProps {
   members: (CollectionMember | PlanMember)[];
-  isManaging: boolean;
-  onStartManaging: () => void;
-  onEndManaging: () => void;
   onKick: (memberId: string) => void;
   onAssignOwner: (memberId: string) => void;
 }
 
 const MemberListSection = ({
   members,
-  isManaging,
-  onStartManaging,
-  onEndManaging,
   onKick,
   onAssignOwner,
 }: MemberListSectionProps) => {
+  const [isManaging, setIsManaging] = useState(false);
   return (
     <div className="w-full rounded-2xl bg-[#f0f0f0]">
       <div className="flex px-4 py-3 justify-between">
@@ -28,7 +24,7 @@ const MemberListSection = ({
         {!isManaging && (
           <button
             className="typography-action-sm-reg text-[#757575]"
-            onClick={onStartManaging}
+            onClick={() => setIsManaging(true)}
           >
             관리하기
           </button>
@@ -50,7 +46,7 @@ const MemberListSection = ({
           <Button
             variant="outline"
             className="w-full bg-[#f0f0f0] mb-3 border-neutral-400"
-            onClick={onEndManaging}
+            onClick={() => setIsManaging(false)}
           >
             <p className="typography-action-sm-reg">멤버 관리 끝내기</p>
           </Button>

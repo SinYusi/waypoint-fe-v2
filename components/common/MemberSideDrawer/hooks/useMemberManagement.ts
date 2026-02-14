@@ -15,8 +15,6 @@ export const useMemberManagement = ({ variant }: UseMemberManagementProps) => {
       ? mockCollectionMembersResponse
       : mockPlanMembersResponse,
   );
-  const [isManaging, setIsManaging] = useState(false);
-
   const handleKickMember = (memberId: string) => {
     // TODO: 멤버 내보내기 API 호출
     console.log("내보내기:", memberId);
@@ -29,8 +27,6 @@ export const useMemberManagement = ({ variant }: UseMemberManagementProps) => {
 
   return {
     members,
-    isManaging,
-    setIsManaging,
     handleKickMember,
     handleAssignOwner,
   };
