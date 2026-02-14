@@ -7,7 +7,9 @@ import NavigationBar from "@/components/layout/NavigationBar";
 import VoteBtn from "@/components/common/VoteBtn";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { MapPin, SquareArrowOutUpRight } from "lucide-react";
+import GoogleMap from "@/components/common/GoogleMap";
+import { MapPin, SquareArrowOutUpRight, Sparkles } from "lucide-react";
+import YoutubeIcon from "@/public/icons/youtube.svg";
 
 const PlaceDetailPage = () => {
   const [isEditingMemo, setIsEditingMemo] = useState(false);
@@ -82,6 +84,45 @@ const PlaceDetailPage = () => {
                   onChange={(e) => setMemo(e.target.value)}
                   disabled={!isEditingMemo}
                 />
+              </div>
+              {/* 지도 영역 */}
+              <div className="w-full h-[228px] rounded-xl overflow-hidden">
+                <GoogleMap
+                  center={{ lat: 37.5665, lng: 126.978 }}
+                  zoom={15}
+                  markerPosition={{ lat: 37.5665, lng: 126.978 }}
+                  className="w-full h-full"
+                />
+              </div>
+              {/* AI 요약 영역 */}
+              <div className="flex flex-col gap-3 w-full py-2">
+                <div className="flex items-center gap-1 w-full h-6">
+                  <Sparkles className="size-6 text-black" />
+                  <span className="font-sans font-bold text-base leading-3 text-black">
+                    AI 요약
+                  </span>
+                </div>
+                <div className="flex flex-col w-full p-4 rounded-xl bg-[#F0F0F0]">
+                  <p className="font-sans font-normal text-sm leading-5 text-[#1C2024]">
+                    이 컨텐츠는 유튜버 상인이 파주 맛집을 투어 한 내용입니다.
+                    유튜버 상인은 헤이리 예술 마을을 뛰놀며 즐겁게
+                    놀았습니다.
+                  </p>
+                  <hr className="my-4 border-[#D4D4D4]" />
+                  <div className="flex items-center justify-between pb-1">
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center justify-center size-4 shrink-0">
+                        <YoutubeIcon />
+                      </div>
+                      <span className="font-sans font-normal text-xs leading-4 text-[#757575]">
+                        상인 튜브 - 파주 팡팡 맛집 투어
+                      </span>
+                    </div>
+                    <button>
+                      <SquareArrowOutUpRight className="size-[18px] text-[#757575]" />
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
