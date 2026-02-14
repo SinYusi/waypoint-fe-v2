@@ -1,39 +1,22 @@
 'use client';
 
 import { Heart, SquareX } from 'lucide-react';
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 interface PickPassProps {
   type: 'pick' | 'pass';
-  defaultActive?: boolean;
-  active?: boolean; // controlled mode
+  isActive: boolean;
   onToggle?: (isActive: boolean) => void;
 }
 
 export default function PickPass({ 
   type,
-  defaultActive = false,
-  active,
+  isActive,
   onToggle 
 }: PickPassProps) {
-  const [internalActive, setInternalActive] = useState(defaultActive);
-  
-  // controlled vs uncontrolled
-  const isControlled = active !== undefined;
-  const isActive = isControlled ? active : internalActive;
-
   const handleClick = () => {
     const newState = !isActive;
-    if (!isControlled) {
-      setInternalActive(newState);
-    }
     onToggle?.(newState);
-  };
-
-  const handleButtonClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // 부모로 이벤트 전파 방지
-    handleClick();
   };
 
   const isPick = type === 'pick';
@@ -45,7 +28,7 @@ export default function PickPass({
 
   return (
     <Button
-      onClick={handleButtonClick}
+      onClick={handleClick}
       className={`h-5 ${width} cursor-pointer gap-1 bg-transparent p-0 hover:bg-transparent`}
       type="button"
       aria-label={ariaLabel}
