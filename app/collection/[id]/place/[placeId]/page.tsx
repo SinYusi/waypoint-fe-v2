@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Header from "@/components/layout/Header";
 import HeaderBtn from "@/components/layout/HeaderBtn";
 import NavigationBar from "@/components/layout/NavigationBar";
@@ -9,6 +10,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { MapPin, SquareArrowOutUpRight } from "lucide-react";
 
 const PlaceDetailPage = () => {
+  const [isEditingMemo, setIsEditingMemo] = useState(false);
+  const [memo, setMemo] = useState("");
+
+  const handleEditMemo = () => {
+    setIsEditingMemo(true);
+  };
+
+  const handleSaveMemo = () => {
+    setIsEditingMemo(false);
+    // TODO: 서버에 메모 저장
+  };
+
   return (
     <div className="relative min-h-screen min-w-0 overflow-x-hidden">
       {/* 이미지 영역 */}
@@ -56,8 +69,19 @@ const PlaceDetailPage = () => {
               </div>
               {/* 메모 영역 */}
               <div className="flex flex-col gap-2 w-full">
-                <Label onEdit={() => {}}>메모</Label>
-                <Textarea placeholder="텍스트를 입력해주세요." />
+                <Label
+                  isEditing={isEditingMemo}
+                  onEdit={handleEditMemo}
+                  onSave={handleSaveMemo}
+                >
+                  메모
+                </Label>
+                <Textarea
+                  placeholder="텍스트를 입력해주세요."
+                  value={memo}
+                  onChange={(e) => setMemo(e.target.value)}
+                  disabled={!isEditingMemo}
+                />
               </div>
             </div>
           </div>
