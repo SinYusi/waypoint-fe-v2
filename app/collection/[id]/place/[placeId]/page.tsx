@@ -93,6 +93,11 @@ const PlaceDetailPage = () => {
     updatePlacePreferenceMutation.mutate({ type });
   };
 
+  const handleVoteCountClick = (type: "PICK" | "PASS") => {
+    // TODO: PICK/PASS 참여자 Bottom Sheet 연결 예정
+    console.log(`${type} 참여자 목록 열기`);
+  };
+
   return (
     <div className="relative min-h-screen min-w-0 overflow-x-hidden pb-[calc(72px+env(safe-area-inset-bottom)+16px)]">
       {/* 이미지 영역 */}
@@ -150,12 +155,14 @@ const PlaceDetailPage = () => {
                   count={pickCount}
                   isActive={isPickActive}
                   onToggle={() => handleVoteToggle("PICK")}
+                  onCountClick={() => handleVoteCountClick("PICK")}
                 />
                 <VoteBtn
                   type="pass"
                   count={passCount}
                   isActive={isPassActive}
                   onToggle={() => handleVoteToggle("PASS")}
+                  onCountClick={() => handleVoteCountClick("PASS")}
                 />
               </div>
               {/* 메모 영역 */}
