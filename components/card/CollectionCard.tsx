@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils/utils";
 
 interface CollectionCardProps {
   title: string;
-  description?: string;
+  memberCount?: number;
   imageSrc?: string;
   onClick?: () => void;
   onMenuClick?: () => void;
@@ -16,7 +16,7 @@ interface CollectionCardProps {
 
 const CollectionCard = ({
   title,
-  description,
+  memberCount,
   imageSrc,
   onClick,
   onMenuClick,
@@ -49,10 +49,10 @@ const CollectionCard = ({
             <span className="typography-display-lg-bold text-foreground">
               {title}
             </span>
-            {description && (
+            {memberCount && (
               <span className="flex items-center gap-1 typography-body-sm-reg text-muted-foreground">
                 <UsersRound className="size-4" />
-                {description}명 참여 중
+                {memberCount}명 참여 중
               </span>
             )}
           </div>
