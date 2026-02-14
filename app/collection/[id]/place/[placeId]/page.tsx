@@ -62,6 +62,7 @@ const PlaceDetailPage = () => {
   const coverImageUrl = placeDetail?.photoUrls?.[0];
   const pickedMembers = placeDetail?.pickedMembers ?? [];
   const passedMembers = placeDetail?.passedMembers ?? [];
+  const originalMemo = placeDetail?.memo ?? "";
 
   const openInNewTab = (url?: string) => {
     if (!url) return;
@@ -69,11 +70,16 @@ const PlaceDetailPage = () => {
   };
 
   const handleEditMemo = () => {
+    setMemo(originalMemo);
     setIsEditingMemo(true);
   };
 
   const handleSaveMemo = () => {
     if (!collectionId || !collectionPlaceId) return;
+    if (memo === originalMemo) {
+      setIsEditingMemo(false);
+      return;
+    }
 
     updatePlaceMemoMutation.mutate(
       { memo },
