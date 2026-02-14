@@ -1,13 +1,19 @@
-import * as React from "react"
-import { Search } from "lucide-react"
+import * as React from "react";
+import { Search } from "lucide-react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 type InputFormProps = React.ComponentProps<"input"> & {
-  error?: boolean
-}
+  error?: boolean;
+  hideIcon?: boolean;
+};
 
-function InputForm({ className, error, ...props }: InputFormProps) {
+function InputForm({
+  className,
+  error,
+  hideIcon = false,
+  ...props
+}: InputFormProps) {
   return (
     <div
       data-slot="input-form"
@@ -20,7 +26,7 @@ function InputForm({ className, error, ...props }: InputFormProps) {
         "has-[:focus]:border-sky-500 has-[:focus]:ring-2 has-[:focus]:ring-sky-500/25",
         "has-[:disabled]:cursor-not-allowed has-[:disabled]:bg-border has-[:disabled]:opacity-100",
         "aria-invalid:border-destructive aria-invalid:ring-0",
-        className
+        className,
       )}
     >
       <input
@@ -28,14 +34,16 @@ function InputForm({ className, error, ...props }: InputFormProps) {
           "w-full bg-transparent outline-none",
           "typography-body-sm-reg text-foreground",
           "placeholder:text-muted-foreground",
-          "disabled:cursor-not-allowed"
+          "disabled:cursor-not-allowed",
         )}
         {...props}
       />
-      <Search className="size-5 shrink-0 text-muted-foreground" />
+      {!hideIcon && (
+        <Search className="size-5 shrink-0 text-muted-foreground" />
+      )}
     </div>
-  )
+  );
 }
 
-export { InputForm }
-export type { InputFormProps }
+export { InputForm };
+export type { InputFormProps };
