@@ -74,15 +74,15 @@ const PlaceDetailPage = () => {
     );
   };
 
-  const handleVoteToggle = (type: "PICK" | "PASS", nextActive: boolean) => {
+  const handleVoteToggle = (type: "PICK" | "PASS") => {
     if (!collectionId || !collectionPlaceId || updatePlacePreferenceMutation.isPending) return;
 
     if (type === "PICK") {
-      setIsPickActive(nextActive);
-      if (nextActive) setIsPassActive(false);
+      setIsPickActive(true);
+      setIsPassActive(false);
     } else {
-      setIsPassActive(nextActive);
-      if (nextActive) setIsPickActive(false);
+      setIsPassActive(true);
+      setIsPickActive(false);
     }
 
     updatePlacePreferenceMutation.mutate({ type });
@@ -148,13 +148,13 @@ const PlaceDetailPage = () => {
                   type="pick"
                   count={pickCount}
                   isActive={isPickActive}
-                  onToggle={(nextActive) => handleVoteToggle("PICK", nextActive)}
+                  onToggle={() => handleVoteToggle("PICK")}
                 />
                 <VoteBtn
                   type="pass"
                   count={passCount}
                   isActive={isPassActive}
-                  onToggle={(nextActive) => handleVoteToggle("PASS", nextActive)}
+                  onToggle={() => handleVoteToggle("PASS")}
                 />
               </div>
               {/* 메모 영역 */}
