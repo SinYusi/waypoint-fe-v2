@@ -27,6 +27,7 @@ type BottomSheetProps = {
   onOpenChange: (open: boolean) => void
   items: BottomSheetItem[]
   title?: React.ReactNode
+  showTitle?: boolean
   cancelLabel?: React.ReactNode
   onCancel?: () => void
   className?: string
@@ -42,6 +43,7 @@ function BottomSheet({
   onOpenChange,
   items,
   title = "작업 메뉴",
+  showTitle = false,
   cancelLabel = "취소",
   onCancel,
   className,
@@ -69,6 +71,11 @@ function BottomSheet({
         <DrawerTitle className="sr-only">{title}</DrawerTitle>
 
         <div className="px-6 pt-6 pb-2">
+          {showTitle && (
+            <h2 className="mb-2 h-7 w-[136px] typography-title-lg-sb text-black">
+              {title}
+            </h2>
+          )}
           <div className="flex flex-col gap-[10px] pb-3.5">
             {items.map((item) => {
               const descriptionLines = normalizeDescription(item.description)
