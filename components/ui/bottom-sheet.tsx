@@ -29,6 +29,7 @@ type BottomSheetProps = {
   items: BottomSheetItem[]
   title?: React.ReactNode
   showTitle?: boolean
+  itemVariant?: "default" | "member"
   cancelLabel?: React.ReactNode
   showCloseIcon?: boolean
   onCancel?: () => void
@@ -46,6 +47,7 @@ function BottomSheet({
   items,
   title = "작업 메뉴",
   showTitle = false,
+  itemVariant = "default",
   cancelLabel = "취소",
   showCloseIcon = false,
   onCancel,
@@ -100,15 +102,27 @@ function BottomSheet({
                     ) : undefined
                   }
                   className={cn(
-                    "w-full justify-start gap-2 rounded-full px-1 pr-8 text-foreground",
-                    "hover:bg-accent",
-                    hasDescription
-                      ? "h-auto min-h-11 py-2 typography-label-base-reg"
-                      : "h-11 typography-label-base-sb"
+                    "w-full justify-start gap-2 text-foreground",
+                    itemVariant === "member"
+                      ? "h-11 rounded-sm px-2 typography-label-base-reg hover:bg-accent"
+                      : "rounded-full px-1 pr-8 hover:bg-accent",
+                    itemVariant === "default" &&
+                      (hasDescription
+                        ? "h-auto min-h-11 py-2 typography-label-base-reg"
+                        : "h-11 typography-label-base-sb")
                   )}
                 >
-                  <span className="min-w-0 text-left">
-                    <span className="block truncate">{item.label}</span>
+                  <span className={cn("min-w-0 text-left", itemVariant === "member" && "w-fit")}>
+                    <span
+                      className={cn(
+                        "block",
+                        itemVariant === "member"
+                          ? "w-fit typography-label-base-reg text-[#09090B]"
+                          : "truncate"
+                      )}
+                    >
+                      {item.label}
+                    </span>
                   </span>
                 </Button>
               )
