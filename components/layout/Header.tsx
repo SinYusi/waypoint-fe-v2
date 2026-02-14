@@ -3,8 +3,7 @@
 import { cn } from "@/lib/utils/utils";
 import { useRouter } from "next/navigation";
 import HeaderBtn, { HeaderBtnBgVariant } from "./HeaderBtn";
-import { ArrowLeft, Bell, Menu, X } from "lucide-react";
-import { Drawer, DrawerTrigger } from "../ui/drawer";
+import { ArrowLeft, Bell, X } from "lucide-react";
 import MemberSideDrawer from "../common/MemberSideDrawer";
 
 interface HeaderProps {
