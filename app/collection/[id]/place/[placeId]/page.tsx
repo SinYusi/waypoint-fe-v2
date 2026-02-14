@@ -21,6 +21,7 @@ import {
 } from "@/lib/hooks/use-place-detail";
 
 type VoteMemberSheetType = "PICK" | "PASS";
+const MEMO_MAX_LENGTH = 300;
 
 const PlaceDetailPage = () => {
   const params = useParams<{ id: string | string[]; placeId: string | string[] }>();
@@ -76,13 +77,14 @@ const PlaceDetailPage = () => {
 
   const handleSaveMemo = () => {
     if (!collectionId || !collectionPlaceId) return;
-    if (memo === originalMemo) {
+    const nextMemo = memo.slice(0, MEMO_MAX_LENGTH);
+    if (nextMemo === originalMemo) {
       setIsEditingMemo(false);
       return;
     }
 
     updatePlaceMemoMutation.mutate(
-      { memo },
+      { memo: nextMemo },
       {
         onSuccess: () => {
           setIsEditingMemo(false);
@@ -214,7 +216,8 @@ const PlaceDetailPage = () => {
                 <Textarea
                   placeholder="텍스트를 입력해주세요."
                   value={isEditingMemo ? memo : (placeDetail?.memo ?? "")}
-                  onChange={(e) => setMemo(e.target.value)}
+                  onChange={(e) => setMemo(e.target.value.slice(0, MEMO_MAX_LENGTH))}
+                  maxLength={MEMO_MAX_LENGTH}
                   disabled={!isEditingMemo || updatePlaceMemoMutation.isPending}
                 />
               </div>
