@@ -17,3 +17,23 @@ export type CollectionResponse = {
   member_count: number;
   place_count: number;
 };
+
+/**
+ * 컬렉션 목록 조회 요청 쿼리 파라미터
+ * GET /collections
+ */
+export type GetCollectionsParams = {
+  page?: number;
+  size?: number;
+};
+
+/**
+ * 컬렉션 목록 조회 성공 응답 DTO
+ * 200
+ */
+export type CollectionListResponse = {
+  contents: CollectionResponse[];
+  has_next: boolean;
+  page: number;
+  size: number;
+};
