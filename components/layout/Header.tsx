@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import { useRouter } from "next/navigation";
 import HeaderBtn, { HeaderBtnBgVariant } from "./HeaderBtn";
 import { ArrowLeft, Bell, Menu, X } from "lucide-react";

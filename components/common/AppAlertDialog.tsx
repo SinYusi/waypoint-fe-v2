@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertDialog as AlertDialogPrimitive } from "radix-ui";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import {
   AlertDialog,
   AlertDialogContent,

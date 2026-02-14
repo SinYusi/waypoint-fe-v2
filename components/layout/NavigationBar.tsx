@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import { useRouter, usePathname } from "next/navigation";
 import CollectionIcon from "@/public/icons/collection.svg";
 import ProjectIcon from "@/public/icons/project.svg";

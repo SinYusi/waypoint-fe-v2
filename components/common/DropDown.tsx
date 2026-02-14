@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 type Align = "start" | "center" | "end";
 

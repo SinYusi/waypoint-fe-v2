@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Search } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 type InputFormProps = React.ComponentProps<"input"> & {
   error?: boolean;

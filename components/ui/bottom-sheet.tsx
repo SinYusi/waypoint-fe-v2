@@ -1,27 +1,27 @@
-"use client"
+"use client";
 
 import * as React from "react"
 import { X } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Drawer,
   DrawerClose,
   DrawerContent,
   DrawerTitle,
-} from "@/components/ui/drawer"
-import { cn } from "@/lib/utils"
+} from "@/components/ui/drawer";
+import { cn } from "@/lib/utils/utils";
 
-type Description = React.ReactNode | React.ReactNode[]
+type Description = React.ReactNode | React.ReactNode[];
 
 export type BottomSheetItem = {
-  id: string
-  label: React.ReactNode
-  description?: Description
-  icon?: React.ReactNode
-  disabled?: boolean
-  onSelect?: () => void
-}
+  id: string;
+  label: React.ReactNode;
+  description?: Description;
+  icon?: React.ReactNode;
+  disabled?: boolean;
+  onSelect?: () => void;
+};
 
 type BottomSheetProps = {
   open: boolean
@@ -37,8 +37,8 @@ type BottomSheetProps = {
 }
 
 function normalizeDescription(description?: Description) {
-  if (!description) return []
-  return Array.isArray(description) ? description : [description]
+  if (!description) return [];
+  return Array.isArray(description) ? description : [description];
 }
 
 function BottomSheet({
@@ -54,14 +54,14 @@ function BottomSheet({
   className,
 }: BottomSheetProps) {
   const handleCancel = () => {
-    onCancel?.()
-    onOpenChange(false)
-  }
+    onCancel?.();
+    onOpenChange(false);
+  };
 
   const handleSelect = (onSelect?: () => void) => {
-    onSelect?.()
-    onOpenChange(false)
-  }
+    onSelect?.();
+    onOpenChange(false);
+  };
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
@@ -70,7 +70,7 @@ function BottomSheet({
         className={cn(
           "mx-auto w-full rounded-t-3xl border-none bg-background p-0",
           "shadow-[0_-2px_10px_0_#0000001A]",
-          className
+          className,
         )}
       >
         <DrawerTitle className="sr-only">{title}</DrawerTitle>
@@ -83,8 +83,8 @@ function BottomSheet({
           )}
           <div className="flex flex-col gap-2.5 pb-3.5">
             {items.map((item) => {
-              const descriptionLines = normalizeDescription(item.description)
-              const hasDescription = descriptionLines.length > 0
+              const descriptionLines = normalizeDescription(item.description);
+              const hasDescription = descriptionLines.length > 0;
 
               return (
                 <Button
@@ -125,7 +125,7 @@ function BottomSheet({
                     </span>
                   </span>
                 </Button>
-              )
+              );
             })}
           </div>
         </div>
@@ -154,8 +154,8 @@ function BottomSheet({
         </div>
       </DrawerContent>
     </Drawer>
-  )
+  );
 }
 
-export { BottomSheet }
-export type { BottomSheetProps }
+export { BottomSheet };
+export type { BottomSheetProps };

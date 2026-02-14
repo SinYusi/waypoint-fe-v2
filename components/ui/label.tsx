@@ -1,8 +1,8 @@
 import * as React from "react"
 import { Pencil, Check } from "lucide-react"
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils/utils";
+import { Button } from "@/components/ui/button";
 
 type LabelProps = React.ComponentProps<"label"> & {
   required?: boolean
@@ -21,12 +21,7 @@ function Label({
   ...props
 }: LabelProps) {
   return (
-    <div
-      className={cn(
-        "flex items-center justify-between",
-        className
-      )}
-    >
+    <div className={cn("flex items-center justify-between", className)}>
       <label
         data-slot="label"
         className="inline-flex items-center gap-2 typography-label-base-bold text-foreground"
@@ -60,8 +55,8 @@ function Label({
         </Button>
       )}
     </div>
-  )
+  );
 }
 
-export { Label }
-export type { LabelProps }
+export { Label };
+export type { LabelProps };
