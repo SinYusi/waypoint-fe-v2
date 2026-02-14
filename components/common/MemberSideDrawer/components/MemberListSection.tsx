@@ -25,12 +25,14 @@ const MemberListSection = ({
     <div className="w-full rounded-2xl bg-[#f0f0f0]">
       <div className="flex px-4 py-3 justify-between">
         <p className="typography-action-base-bold">여행 멤버</p>
-        <button
-          className="typography-action-sm-reg text-[#757575]"
-          onClick={onStartManaging}
-        >
-          관리하기
-        </button>
+        {!isManaging && (
+          <button
+            className="typography-action-sm-reg text-[#757575]"
+            onClick={onStartManaging}
+          >
+            관리하기
+          </button>
+        )}
       </div>
       <div className="px-3 flex flex-col gap-3">
         <div className="flex flex-col gap-3">
