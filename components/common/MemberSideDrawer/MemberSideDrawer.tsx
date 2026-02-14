@@ -12,7 +12,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import BookMarkIcon from "@/components/common/BookmarkIcon";
+import CollectionIcon from "@/public/icons/collection.svg";
 import { useMemberManagement } from "./hooks/useMemberManagement";
 import MemberListSection from "./components/MemberListSection";
 import TravelPlanSection from "./components/TravelPlanSection";
@@ -50,7 +50,7 @@ const MemberSideDrawer = ({
         </DrawerClose>
         <DrawerHeader className="flex flex-col gap-1 w-full justify-center items-center mt-10">
           <DrawerTitle className="flex flex-row gap-1">
-            <BookMarkIcon strokeWidth={2} size={28} color="#0ea5e9" />
+            <CollectionIcon color="#0ea5e9" />
             <p className="typography-display-xl">{title}</p>
           </DrawerTitle>
           <DrawerDescription className="typography-action-sm-bold font-[#757575]">
