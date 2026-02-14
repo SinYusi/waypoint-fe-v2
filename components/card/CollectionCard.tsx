@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Ellipsis, UsersRound } from "lucide-react";
 import HeaderBtn from "@/components/layout/HeaderBtn";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 interface CollectionCardProps {
   title: string;
@@ -39,12 +39,7 @@ const CollectionCard = ({
         {/* Image Area */}
         <div className="relative aspect-335/152 w-full bg-white">
           {imageSrc && (
-            <Image
-              src={imageSrc}
-              alt={title}
-              fill
-              className="object-cover"
-            />
+            <Image src={imageSrc} alt={title} fill className="object-cover" />
           )}
         </div>
 

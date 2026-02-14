@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import { Menu, Search, X } from "lucide-react";
 import { InputForm } from "../ui/input-form";
 import HeaderBtn from "./HeaderBtn";

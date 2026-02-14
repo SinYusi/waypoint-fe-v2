@@ -1,27 +1,27 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils/utils";
 
-type Description = React.ReactNode | React.ReactNode[]
+type Description = React.ReactNode | React.ReactNode[];
 
 export type SelectDropdownItem = {
-  id: string
-  label: React.ReactNode
-  description?: Description
-  icon?: React.ReactNode
-  disabled?: boolean
-  onSelect?: () => void
-}
+  id: string;
+  label: React.ReactNode;
+  description?: Description;
+  icon?: React.ReactNode;
+  disabled?: boolean;
+  onSelect?: () => void;
+};
 
 type SelectDropdownProps = React.ComponentProps<"div"> & {
-  items: SelectDropdownItem[]
-}
+  items: SelectDropdownItem[];
+};
 
 function normalizeDescription(description?: Description) {
-  if (!description) return []
-  return Array.isArray(description) ? description : [description]
+  if (!description) return [];
+  return Array.isArray(description) ? description : [description];
 }
 
 function SelectDropdown({ className, items, ...props }: SelectDropdownProps) {
@@ -31,14 +31,14 @@ function SelectDropdown({ className, items, ...props }: SelectDropdownProps) {
       className={cn(
         "w-[148px] rounded-xl border border-border bg-background p-1",
         "shadow-[0px_2px_4px_-1px_#0000000F,0px_4px_6px_-1px_#0000001A]",
-        className
+        className,
       )}
       {...props}
     >
       <div className="flex flex-col gap-0">
         {items.map((item) => {
-          const descriptionLines = normalizeDescription(item.description)
-          const hasDescription = descriptionLines.length > 0
+          const descriptionLines = normalizeDescription(item.description);
+          const hasDescription = descriptionLines.length > 0;
 
           return (
             <button
@@ -49,7 +49,7 @@ function SelectDropdown({ className, items, ...props }: SelectDropdownProps) {
               className={cn(
                 "flex w-full items-center gap-1.5 rounded-lg bg-background px-2.5 py-1.5 text-left",
                 "hover:bg-accent disabled:pointer-events-none disabled:opacity-50",
-                hasDescription ? "min-h-8" : "h-8"
+                hasDescription ? "min-h-8" : "h-8",
               )}
             >
               {item.icon && (
@@ -64,12 +64,12 @@ function SelectDropdown({ className, items, ...props }: SelectDropdownProps) {
                 </span>
               </span>
             </button>
-          )
+          );
         })}
       </div>
     </div>
-  )
+  );
 }
 
-export { SelectDropdown }
-export type { SelectDropdownProps }
+export { SelectDropdown };
+export type { SelectDropdownProps };
