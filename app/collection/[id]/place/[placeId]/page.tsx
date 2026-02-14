@@ -6,8 +6,10 @@ import Header from "@/components/layout/Header";
 import HeaderBtn from "@/components/layout/HeaderBtn";
 import NavigationBar from "@/components/layout/NavigationBar";
 import VoteBtn from "@/components/common/VoteBtn";
+import ProfileImage from "@/components/common/ProfileImage";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { BottomSheet } from "@/components/ui/bottom-sheet";
 import GoogleMap from "@/components/common/GoogleMap";
 import { MapPin, SquareArrowOutUpRight, Sparkles } from "lucide-react";
 import { useParams } from "next/navigation";
@@ -18,6 +20,8 @@ import {
   useUpdatePlacePreference,
 } from "@/lib/hooks/use-place-detail";
 
+type VoteMemberSheetType = "PICK" | "PASS";
+
 const PlaceDetailPage = () => {
   const params = useParams<{ id: string | string[]; placeId: string | string[] }>();
   const collectionId = Array.isArray(params.id) ? params.id[0] : params.id;
@@ -27,6 +31,8 @@ const PlaceDetailPage = () => {
   const [memo, setMemo] = useState("");
   const [isPickActive, setIsPickActive] = useState(false);
   const [isPassActive, setIsPassActive] = useState(false);
+  const [isVoteMemberSheetOpen, setIsVoteMemberSheetOpen] = useState(false);
+  const [voteMemberSheetType, setVoteMemberSheetType] = useState<VoteMemberSheetType>("PICK");
 
   const { data: placeDetail } = usePlaceDetail({
     collectionId,
@@ -56,6 +62,8 @@ const PlaceDetailPage = () => {
   const latitude = placeDetail?.latitude ?? 37.5665;
   const longitude = placeDetail?.longitude ?? 126.978;
   const coverImageUrl = placeDetail?.photoUrls?.[0];
+  const pickedMembers = placeDetail?.pickedMembers ?? [];
+  const passedMembers = placeDetail?.passedMembers ?? [];
 
   const openInNewTab = (url?: string) => {
     if (!url) return;
@@ -94,9 +102,34 @@ const PlaceDetailPage = () => {
   };
 
   const handleVoteCountClick = (type: "PICK" | "PASS") => {
-    // TODO: PICK/PASS 참여자 Bottom Sheet 연결 예정
-    console.log(`${type} 참여자 목록 열기`);
+    setVoteMemberSheetType(type);
+    setIsVoteMemberSheetOpen(true);
   };
+
+  const voteMembers = voteMemberSheetType === "PICK" ? pickedMembers : passedMembers;
+  const voteMemberSheetTitle =
+    voteMemberSheetType === "PICK" ? "좋아요를 누른 멤버" : "다음에요를 누른 멤버";
+  const voteMemberItems =
+    voteMembers.length > 0
+      ? voteMembers.map((member) => ({
+          id: member.collection_member_id,
+          label: member.nickname ?? "이름 미상",
+          icon: (
+            <ProfileImage
+              size="sm"
+              src={member.picture ?? ""}
+              alt={member.nickname ?? "멤버"}
+            />
+          ),
+          disabled: true,
+        }))
+      : [
+          {
+            id: "empty",
+            label: "아직 참여한 멤버가 없어요",
+            disabled: true,
+          },
+        ];
 
   return (
     <div className="relative min-h-screen min-w-0 overflow-x-hidden pb-[calc(72px+env(safe-area-inset-bottom)+16px)]">
@@ -230,6 +263,16 @@ const PlaceDetailPage = () => {
       </div>
 
       <NavigationBar className="fixed bottom-0 left-0 right-0 z-50" />
+      <BottomSheet
+        open={isVoteMemberSheetOpen}
+        onOpenChange={setIsVoteMemberSheetOpen}
+        title={voteMemberSheetTitle}
+        showTitle
+        itemVariant="member"
+        cancelLabel="닫기"
+        showCloseIcon
+        items={voteMemberItems}
+      />
     </div>
   );
 };
