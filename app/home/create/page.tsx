@@ -2,13 +2,48 @@
 
 import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
+import { FieldDescription } from "@/components/ui/field-description";
 import { InputForm } from "@/components/ui/input-form";
 import { Label } from "@/components/ui/label";
+import { useCreateCollection } from "@/lib/hooks/use-create-collection";
+import { validateCollectionTitle } from "@/lib/utils/validate-collection-title";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const CollectionCreatePage = () => {
-  const onCreateCollection = () => {
-    console.log("생성");
+  const router = useRouter();
+
+  const [title, setTitle] = useState("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
+  const { mutate, isPending } = useCreateCollection({
+    onSuccess: () => {
+      setTitle("");
+      setErrorMessage("");
+      router.push("/home");
+    },
+    onError: (err) => {
+      const message =
+        err.response?.data?.errors?.[0]?.reason ??
+        err.response?.data?.detail ??
+        "보관함 생성에 실패했어요. 잠시 후 다시 시도해 주세요.";
+
+      setErrorMessage(message);
+    },
+  });
+
+  const handleCreate = () => {
+    const v = validateCollectionTitle(title);
+    if (!v.ok) {
+      setErrorMessage(v.message);
+      return;
+    }
+    if (isPending) return;
+
+    setErrorMessage("");
+    mutate({ title: v.value });
   };
+
   return (
     <div className="flex min-h-screen flex-col bg-[#fafafa]">
       {/* 헤더(뒤로가기) */}
@@ -18,9 +53,16 @@ const CollectionCreatePage = () => {
         className="fixed top-0 z-10 inset-x-0"
       />
 
-      <main className="flex flex-col flex-1 justify-between px-5 py-18.75">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleCreate();
+        }}
+        className="flex flex-col flex-1 justify-between px-5 py-18.75"
+      >
         <div className="flex flex-col gap-10 pt-4">
-          <div className="flex flex-col gap-5 text-start">
+          {/* 타이틀 + 설명 */}
+          <div className="flex flex-col gap-5 text-start pt-16">
             <h2 className="typography-display-2xl">
               어떤 여행을 꿈꾸고 계신가요?
             </h2>
@@ -31,16 +73,40 @@ const CollectionCreatePage = () => {
             </p>
           </div>
 
+          {/* 컬렉션 Field */}
           <div className="flex flex-col gap-2">
             <Label>보관함 이름</Label>
-            <InputForm hideIcon />
+            <div className="flex flex-col gap-1.5">
+              <InputForm
+                hideIcon
+                value={title}
+                error={!!errorMessage}
+                placeholder="예) 우리만의 제주도 맛집 투어"
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  if (errorMessage) setErrorMessage("");
+                }}
+                onBlur={() => {
+                  const v = validateCollectionTitle(title);
+                  if (!v.ok) setErrorMessage(v.message);
+                }}
+              />
+              {errorMessage && (
+                <FieldDescription error>{errorMessage}</FieldDescription>
+              )}
+            </div>
           </div>
         </div>
 
-        <Button onClick={onCreateCollection} className="w-full">
+        {/* 컬렉션 생성 버튼 */}
+        <Button
+          type="submit"
+          disabled={isPending || !title.trim()}
+          className="w-full"
+        >
           보관함 만들기
         </Button>
-      </main>
+      </form>
     </div>
   );
 };
