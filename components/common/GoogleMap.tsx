@@ -205,6 +205,7 @@ export default function GoogleMap({
   const mapRef = useRef<GoogleMapInstance | null>(null)
   const markerRef = useRef<GoogleMarkerInstance | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isMapReady, setIsMapReady] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const resolvedApiKey = useMemo(() => apiKey ?? process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "", [apiKey])
@@ -231,6 +232,7 @@ export default function GoogleMap({
           ...mapOptions,
         })
 
+        setIsMapReady(true)
         setIsLoading(false)
       })
       .catch((error: unknown) => {
@@ -248,8 +250,9 @@ export default function GoogleMap({
       markerRef.current?.setMap(null)
       markerRef.current = null
       mapRef.current = null
+      setIsMapReady(false)
     }
-  }, [mapOptions, resolvedApiKey, isMissingApiKey, center, zoom])
+  }, [mapOptions, resolvedApiKey, isMissingApiKey])
 
   useEffect(() => {
     if (!mapRef.current) {
@@ -261,7 +264,7 @@ export default function GoogleMap({
   }, [center, zoom])
 
   useEffect(() => {
-    if (!mapRef.current || !window.google?.maps) {
+    if (!isMapReady || !mapRef.current || !window.google?.maps) {
       return
     }
 
@@ -286,7 +289,7 @@ export default function GoogleMap({
     markerRef.current.setPosition(markerPosition)
     markerRef.current.setTitle(markerTitle || "")
     markerRef.current.setIcon(icon)
-  }, [markerPosition, markerTitle, markerIcon])
+  }, [isMapReady, markerPosition, markerTitle, markerIcon])
 
   return (
     <div className={cn("relative w-full aspect-335/228 overflow-hidden rounded-xl border border-[#E2E2E2]", className)}>
