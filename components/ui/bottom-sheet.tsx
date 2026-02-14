@@ -143,7 +143,7 @@ function BottomSheet({
             >
               {showCloseIcon && (
                 <span className="inline-flex size-6 items-center justify-center">
-                  <X className="size-3 text-[#1C2024]" strokeWidth={2} />
+                  <X className="size-6 text-[#1C2024]" strokeWidth={2} />
                 </span>
               )}
               <span className="typography-label-base-sb text-[#1C2024]">
