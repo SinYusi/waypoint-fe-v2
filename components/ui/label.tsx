@@ -36,7 +36,7 @@ function Label({
         <Button
           type="button"
           variant="ghost"
-          size="icon"
+          size="S"
           onClick={onEdit}
         >
           <Pencil className="size-[18px]" />
