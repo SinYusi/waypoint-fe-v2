@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import HeaderBtn, { HeaderBtnBgVariant } from "./HeaderBtn";
 import { ArrowLeft, Bell, Menu, X } from "lucide-react";
 import { Drawer, DrawerTrigger } from "../ui/drawer";
+import MemberSideDrawer from "../common/MemberSideDrawer";
 
 interface HeaderProps {
   // 헤더 레이아웃 타입
@@ -37,7 +38,6 @@ const Header = ({
   onBack,
   onClose,
   onNotification,
-  menuDrawerContent,
   leftBtnBgVariant = "solid",
   rightBtnBgVariant = "solid",
   className = "",
@@ -109,16 +109,11 @@ const Header = ({
         )}
 
         {showMenuButton && (
-          <Drawer direction="right">
-            <DrawerTrigger asChild>
-              <HeaderBtn
-                bgVariant={rightBtnBgVariant}
-                icon={Menu}
-                label="메뉴"
-              />
-            </DrawerTrigger>
-            {menuDrawerContent}
-          </Drawer>
+          <MemberSideDrawer
+            title="제주도 여행"
+            variant="COLLECTION"
+            rightBtnBgVariant={rightBtnBgVariant}
+          />
         )}
       </div>
     </header>

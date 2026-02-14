@@ -1,0 +1,75 @@
+"use client";
+
+import { DoorClosed, Menu, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import CollectionIcon from "@/public/icons/collection.svg";
+import { useMemberManagement } from "./hooks/useMemberManagement";
+import MemberListSection from "./components/MemberListSection";
+import TravelPlanSection from "./components/TravelPlanSection";
+import HeaderBtn, { HeaderBtnBgVariant } from "@/components/layout/HeaderBtn";
+
+interface MemberSideDrawerProps {
+  title: string;
+  placeCount?: number;
+  variant: "COLLECTION" | "PLAN";
+  rightBtnBgVariant: HeaderBtnBgVariant;
+}
+
+const MemberSideDrawer = ({
+  title,
+  placeCount,
+  variant,
+  rightBtnBgVariant,
+}: MemberSideDrawerProps) => {
+  const { members, handleKickMember, handleAssignOwner } = useMemberManagement(
+    { variant },
+  );
+
+  return (
+    <Drawer direction="right">
+      <DrawerTrigger asChild>
+        <HeaderBtn bgVariant={rightBtnBgVariant} icon={Menu} label="메뉴" />
+      </DrawerTrigger>
+      <DrawerContent>
+        <DrawerClose className="absolute top-3 right-3">
+          <X size={24} />
+        </DrawerClose>
+        <DrawerHeader className="flex flex-col gap-1 w-full justify-center items-center mt-10">
+          <DrawerTitle className="flex flex-row gap-1">
+            <CollectionIcon color="#0ea5e9" />
+            <p className="typography-display-xl">{title}</p>
+          </DrawerTitle>
+          <DrawerDescription className="typography-action-sm-bold font-[#757575]">
+            {placeCount}개의 장소
+          </DrawerDescription>
+        </DrawerHeader>
+        <main className="flex flex-col gap-3 mx-5 mt-10">
+          <MemberListSection
+            members={members.members}
+            onKick={handleKickMember}
+            onAssignOwner={handleAssignOwner}
+          />
+          <TravelPlanSection />
+        </main>
+        <DrawerFooter>
+          <Button variant="ghost">
+            <DoorClosed size={18} className="opacity-40" />
+            <p className="typography-action-sm-reg">이 컬렉션에서 나가기</p>
+          </Button>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
+  );
+};
+
+export default MemberSideDrawer;
