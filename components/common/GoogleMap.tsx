@@ -224,8 +224,8 @@ export default function GoogleMap({
         }
 
         mapRef.current = await createMapInstance(mapContainerRef.current, {
-          center: { lat: 37.5665, lng: 126.978 },
-          zoom: 12,
+          center,
+          zoom,
           disableDefaultUI: true,
           zoomControl: false,
           ...mapOptions,
@@ -247,8 +247,9 @@ export default function GoogleMap({
 
       markerRef.current?.setMap(null)
       markerRef.current = null
+      mapRef.current = null
     }
-  }, [mapOptions, resolvedApiKey, isMissingApiKey])
+  }, [mapOptions, resolvedApiKey, isMissingApiKey, center, zoom])
 
   useEffect(() => {
     if (!mapRef.current) {
