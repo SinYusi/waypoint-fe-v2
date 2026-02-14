@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -29,6 +30,7 @@ type BottomSheetProps = {
   title?: React.ReactNode
   showTitle?: boolean
   cancelLabel?: React.ReactNode
+  showCloseIcon?: boolean
   onCancel?: () => void
   className?: string
 }
@@ -45,6 +47,7 @@ function BottomSheet({
   title = "작업 메뉴",
   showTitle = false,
   cancelLabel = "취소",
+  showCloseIcon = false,
   onCancel,
   className,
 }: BottomSheetProps) {
@@ -63,7 +66,7 @@ function BottomSheet({
       <DrawerContent
         showHandle={false}
         className={cn(
-          "mx-auto w-full max-w-[375px] rounded-t-3xl border-none bg-background p-0",
+          "mx-auto w-full max-w-93.75 rounded-t-3xl border-none bg-background p-0",
           "shadow-[0_-2px_10px_0_#0000001A]",
           className
         )}
@@ -72,11 +75,11 @@ function BottomSheet({
 
         <div className="px-6 pt-6 pb-2">
           {showTitle && (
-            <h2 className="mb-2 h-7 w-[136px] typography-title-lg-sb text-black">
+            <h2 className="mb-2 h-7 w-34 typography-title-lg-sb text-black">
               {title}
             </h2>
           )}
-          <div className="flex flex-col gap-[10px] pb-3.5">
+          <div className="flex flex-col gap-2.5 pb-3.5">
             {items.map((item) => {
               const descriptionLines = normalizeDescription(item.description)
               const hasDescription = descriptionLines.length > 0
@@ -100,8 +103,8 @@ function BottomSheet({
                     "w-full justify-start gap-2 rounded-full px-1 pr-8 text-foreground",
                     "hover:bg-accent",
                     hasDescription
-                      ? "h-auto min-h-[44px] py-2 typography-label-base-reg"
-                      : "h-[44px] typography-label-base-sb"
+                      ? "h-auto min-h-11 py-2 typography-label-base-reg"
+                      : "h-11 typography-label-base-sb"
                   )}
                 >
                   <span className="min-w-0 text-left">
@@ -115,16 +118,23 @@ function BottomSheet({
 
         <div className="mx-5 h-px bg-border" />
 
-        <div className="h-[91px] bg-background px-5 pt-4">
+        <div className="h-22.75 bg-background px-5 pt-4">
           <DrawerClose asChild>
             <Button
               type="button"
               variant="outline"
               size="L"
               onClick={handleCancel}
-              className="h-[44px] w-full rounded-2xl border-border typography-label-base-sb text-foreground hover:bg-transparent"
+              className="h-11 w-full rounded-2xl border-border typography-label-base-sb text-foreground hover:bg-transparent"
             >
-              {cancelLabel}
+              {showCloseIcon && (
+                <span className="inline-flex size-6 items-center justify-center">
+                  <X className="size-3 text-[#1C2024]" strokeWidth={2} />
+                </span>
+              )}
+              <span className="typography-label-base-sb text-[#1C2024]">
+                {cancelLabel}
+              </span>
             </Button>
           </DrawerClose>
         </div>
