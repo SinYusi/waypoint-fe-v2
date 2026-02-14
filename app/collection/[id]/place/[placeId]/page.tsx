@@ -34,7 +34,7 @@ const PlaceDetailPage = () => {
   const [isVoteMemberSheetOpen, setIsVoteMemberSheetOpen] = useState(false);
   const [voteMemberSheetType, setVoteMemberSheetType] = useState<VoteMemberSheetType>("PICK");
 
-  const { data: placeDetail } = usePlaceDetail({
+  const { data: placeDetail, isLoading, isError } = usePlaceDetail({
     collectionId,
     collectionPlaceId,
     enabled: Boolean(collectionId && collectionPlaceId),
@@ -48,19 +48,17 @@ const PlaceDetailPage = () => {
     collectionPlaceId,
   });
 
-  const placeName = placeDetail?.name ?? "헤이리 예술 마을";
-  const category = placeDetail?.category ?? "관광지";
-  const address = placeDetail?.address ?? "서울시 마포구 와우산로";
-  const aiSummary =
-    placeDetail?.aiSummary ??
-    "이 컨텐츠는 유튜버 상인이 파주 맛집을 투어 한 내용입니다. 유튜버 상인은 헤이리 예술 마을을 뛰놀며 즐겁게 놀았습니다.";
-  const sourceTitle = placeDetail?.sourceTitle ?? "상인 튜브 - 파주 팡팡 맛집 투어";
+  const placeName = placeDetail?.name ?? "";
+  const category = placeDetail?.category ?? "";
+  const address = placeDetail?.address ?? "";
+  const aiSummary = placeDetail?.aiSummary ?? "";
+  const sourceTitle = placeDetail?.sourceTitle ?? "";
   const sourceUrl = placeDetail?.sourceUrl;
   const externalUrl = placeDetail?.externalUrl;
   const pickCount = placeDetail?.pickCount ?? 0;
   const passCount = placeDetail?.passCount ?? 0;
-  const latitude = placeDetail?.latitude ?? 37.5665;
-  const longitude = placeDetail?.longitude ?? 126.978;
+  const latitude = placeDetail?.latitude;
+  const longitude = placeDetail?.longitude;
   const coverImageUrl = placeDetail?.photoUrls?.[0];
   const pickedMembers = placeDetail?.pickedMembers ?? [];
   const passedMembers = placeDetail?.passedMembers ?? [];
@@ -216,12 +214,18 @@ const PlaceDetailPage = () => {
               </div>
               {/* 지도 영역 */}
               <div className="w-full h-57 rounded-xl overflow-hidden">
-                <GoogleMap
-                  center={{ lat: latitude, lng: longitude }}
-                  zoom={15}
-                  markerPosition={{ lat: latitude, lng: longitude }}
-                  className="w-full h-full"
-                />
+                {latitude !== undefined && longitude !== undefined ? (
+                  <GoogleMap
+                    center={{ lat: latitude, lng: longitude }}
+                    zoom={15}
+                    markerPosition={{ lat: latitude, lng: longitude }}
+                    className="w-full h-full"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center bg-muted typography-body-sm-reg text-muted-foreground">
+                    지도를 불러오는 중...
+                  </div>
+                )}
               </div>
               {/* AI 요약 영역 */}
               <div className="flex flex-col gap-3 w-full py-2">
@@ -233,7 +237,7 @@ const PlaceDetailPage = () => {
                 </div>
                 <div className="flex flex-col w-full p-4 rounded-xl bg-muted">
                   <p className="typography-body-sm-reg text-foreground">
-                    {aiSummary}
+                    {isLoading ? "불러오는 중..." : aiSummary || "요약 정보가 없습니다."}
                   </p>
                   <hr className="my-4 border-border" />
                   <div className="flex items-center justify-between pb-1">
@@ -242,7 +246,7 @@ const PlaceDetailPage = () => {
                         <YoutubeIcon />
                       </div>
                       <span className="typography-caption-xs-reg text-muted-foreground">
-                        {sourceTitle}
+                        {sourceTitle || "출처 정보가 없습니다."}
                       </span>
                     </div>
                     <button
@@ -258,6 +262,11 @@ const PlaceDetailPage = () => {
                 </div>
               </div>
             </div>
+            {isError && (
+              <p className="px-1 typography-caption-xs-reg text-destructive">
+                장소 정보를 불러오지 못했습니다.
+              </p>
+            )}
           </div>
         </div>
       </div>
