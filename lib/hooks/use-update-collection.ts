@@ -40,6 +40,11 @@ export const useUpdateCollection = (options?: Options) => {
       updateCollection(collectionId, body),
     ...options,
     onSuccess: (data, variables, onMutateResult, context) => {
+      queryClient.setQueryData(
+        ["collection", { collectionId: variables.collectionId }],
+        data,
+      );
+
       queryClient.invalidateQueries({ queryKey: ["collections"] });
 
       options?.onSuccess?.(data, variables, onMutateResult, context);
