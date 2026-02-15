@@ -5,6 +5,7 @@ import ProfileImage from "@/components/common/ProfileImage";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, LogOutIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Header from "@/components/layout/Header";
 import { useMe } from "@/lib/hooks/use-me";
 import { useLogout } from "@/lib/hooks/use-logout";
 
@@ -31,7 +32,8 @@ const Mypage = () => {
   const picture = me?.picture ?? "";
 
   return (
-    <div className="flex flex-col h-screen pt-15">
+    <div className="min-h-screen flex flex-col">
+      <Header showNotificationButton rightBtnBgVariant="ghost" />
       <div className="pl-5 pr-8.5 pb-7 flex flex-row gap-3.5 items-center">
         <ProfileImage
           src={picture}
