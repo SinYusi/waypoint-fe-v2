@@ -1,19 +1,23 @@
 "use client";
 
 import CollectionCard from "@/components/card/CollectionCard";
+import AppAlertDialog from "@/components/common/AppAlertDialog";
 import Header from "@/components/layout/Header";
 import NavigationBar from "@/components/layout/NavigationBar";
 import { Button } from "@/components/ui/button";
 import { useCollections } from "@/lib/hooks/use-collections";
+import { useDeleteCollection } from "@/lib/hooks/use-delete-collection";
 import { useIntersectionObserver } from "@/lib/hooks/use-intersection-observer";
 import { cn } from "@/lib/utils/utils";
 import CollectionEmptyIllust from "@/public/illust/collection-empty.svg";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 const HomePage = () => {
   const router = useRouter();
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
   const {
     data,
@@ -35,9 +39,7 @@ const HomePage = () => {
 
   const isEmpty = !isLoading && !isError && collections.length === 0;
 
-  const handleCreate = () => {
-    router.push("/home/create");
-  };
+  const handleCreate = () => router.push("/home/create");
 
   const handleFetchNext = useCallback(() => {
     fetchNextPage();
@@ -47,6 +49,37 @@ const HomePage = () => {
     enabled: hasNextPage && !isFetchingNextPage && !isLoading && !isError,
     onIntersect: handleFetchNext,
   });
+
+  const openDeleteDialog = (collectionId: string) => {
+    setDeleteTargetId(collectionId);
+    setIsDeleteOpen(true);
+  };
+
+  const closeDeleteDialog = () => {
+    setIsDeleteOpen(false);
+    setDeleteTargetId(null);
+  };
+
+  const {
+    mutate: deleteMutate,
+    isPending: isDeleting,
+    error: deleteError,
+  } = useDeleteCollection({
+    onSuccess: () => {
+      closeDeleteDialog();
+    },
+  });
+
+  const deleteErrorMessage =
+    deleteError?.response?.data?.detail ??
+    deleteError?.message ??
+    "삭제에 실패했어요.";
+
+  const handleConfirmDelete = () => {
+    if (!deleteTargetId || isDeleting) return;
+
+    deleteMutate({ collectionId: deleteTargetId });
+  };
 
   return (
     <div className="flex min-h-screen flex-col bg-[#fafafa]">
@@ -123,6 +156,10 @@ const HomePage = () => {
                         imageSrc={c.thumbnail}
                         className="max-w-full"
                         onClick={() => router.push(`/home/${c.collection_id}`)}
+                        onEdit={() =>
+                          router.push(`/home/${c.collection_id}/edit`)
+                        }
+                        onDelete={() => openDeleteDialog(c.collection_id)}
                       />
                     </div>
                   ))}
@@ -145,6 +182,25 @@ const HomePage = () => {
 
       {/* 네비게이션 바 */}
       <NavigationBar className="fixed bottom-0 z-10 inset-x-0" />
+
+      {/* 삭제 확인 다이얼로그 */}
+      <AppAlertDialog
+        open={isDeleteOpen}
+        onOpenChange={(open) => {
+          setIsDeleteOpen(open);
+          if (!open) setDeleteTargetId(null);
+        }}
+        title="정말 이 보관함을 삭제하시겠어요?"
+        description={
+          deleteError
+            ? `삭제에 실패했어요.\n${deleteErrorMessage}`
+            : "삭제한 보관함은 다시 복구가 불가능합니다.\n그래도 정말 보관함을 삭제하시겠어요?"
+        }
+        cancelLabel="취소"
+        actionLabel="삭제하기"
+        onCancel={closeDeleteDialog}
+        onAction={handleConfirmDelete}
+      />
     </div>
   );
 };
