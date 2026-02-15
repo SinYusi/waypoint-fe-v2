@@ -7,13 +7,13 @@ import HeaderBtn from "@/components/layout/HeaderBtn";
 import NavigationBar from "@/components/layout/NavigationBar";
 import VoteBtn from "@/components/common/VoteBtn";
 import ProfileImage from "@/components/common/ProfileImage";
+import AISummarySection from "@/components/common/AISummarySection";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import GoogleMap from "@/components/common/GoogleMap";
-import { MapPin, SquareArrowOutUpRight, Sparkles } from "lucide-react";
+import { MapPin, Sparkles, SquareArrowOutUpRight } from "lucide-react";
 import { useParams } from "next/navigation";
-import YoutubeIcon from "@/public/icons/youtube.svg";
 import {
   usePlaceDetail,
   useUpdatePlaceMemo,
@@ -236,40 +236,15 @@ const PlaceDetailPage = () => {
                   </div>
                 )}
               </div>
-              {/* AI 요약 영역 */}
-              <div className="flex flex-col gap-3 w-full py-2">
-                <div className="flex items-center gap-1 w-full h-6">
-                  <Sparkles className="size-6 text-foreground" />
-                  <span className="typography-label-base-bold text-foreground">
-                    AI 요약
-                  </span>
-                </div>
-                <div className="flex flex-col w-full p-4 rounded-xl bg-muted">
-                  <p className="typography-body-sm-reg text-foreground">
-                    {isLoading ? "불러오는 중..." : aiSummary || "요약 정보가 없습니다."}
-                  </p>
-                  <hr className="my-4 border-border" />
-                  <div className="flex items-center justify-between pb-1">
-                    <div className="flex items-center gap-2">
-                      <div className="flex items-center justify-center size-4 shrink-0">
-                        <YoutubeIcon />
-                      </div>
-                      <span className="typography-caption-xs-reg text-muted-foreground">
-                        {sourceTitle || "출처 정보가 없습니다."}
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => openInNewTab(sourceUrl)}
-                      disabled={!sourceUrl}
-                      className={sourceUrl ? "cursor-pointer" : "cursor-not-allowed"}
-                      aria-label="소셜 원문 링크 열기"
-                    >
-                      <SquareArrowOutUpRight className="size-4.5 text-muted-foreground" />
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <AISummarySection
+                isLoading={isLoading}
+                headerIcon={<Sparkles className="size-6 text-foreground" />}
+                title="AI 요약"
+                summary={aiSummary}
+                sourceTitle={sourceTitle}
+                sourceUrl={sourceUrl}
+                onOpenLink={openInNewTab}
+              />
             </div>
             {isError && (
               <p className="px-1 typography-caption-xs-reg text-destructive">
