@@ -39,6 +39,14 @@ export type CollectionListResponse = {
 };
 
 /**
+ * 컬렉션 조회 요청 Path 파라미터
+ * GET /collections/{collectionId}
+ */
+export type GetCollectionParams = {
+  collectionId: string;
+};
+
+/**
  * 컬렉션 삭제 요청 Path 파라미터
  * DELETE /collections/{collectionId}
  */
