@@ -1,8 +1,4 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-  <!-- 노란 배경 -->
-  <rect width="24" height="24" rx="5" fill="#FEE500"/>
-  <!-- 갈색 말풍선 -->
-  <path fill="#3C1B1B" d="M12 4.5C7.86 4.5 4.5 7.4 4.5 11c0 2.2 1.22 4.15 3.15 5.38l-.68 2.62 2.82-1.48c.72.14 1.46.22 2.21.22 4.14 0 7.5-2.9 7.5-6.5 0-3.6-3.36-6.5-7.5-6.5z"/>
-  <!-- TALK 텍스트 -->
-  <text x="12" y="11.4" text-anchor="middle" dominant-baseline="middle" fill="#FEE500" font-size="3.6" font-family="Arial, sans-serif" font-weight="bold" letter-spacing="0.2">TALK</text>
+  <circle cx="12" cy="12" r="12" fill="#FEE500"/>
+  <path fill="#3C1B1B" d="M12 5.5C8.13 5.5 5 8.18 5 11.5c0 2.06 1.12 3.87 2.83 4.97l-.58 2.28 2.33-1.22c.76.15 1.56.24 2.42.24 3.87 0 7-2.68 7-6S15.87 5.5 12 5.5z"/>
 </svg>

@@ -45,12 +45,12 @@ const Mypage = () => {
           {/* 디자인 상으로 semibold이나 눈누 사이트의 LINE Seed Sans KR은 600 weight를 지원하지 않음 */}
           <p className="typography-action-sm-reg">{email}</p>
         </div>
-        <div className="size-6 rounded-full bg-[#f0f0f0] flex items-center justify-center shrink-0">
+        <div className="size-6 rounded-full shrink-0 overflow-hidden">
           <Image
             src={SOCIAL_PROVIDER_ICON[provider]}
             alt={provider}
-            width={14}
-            height={14}
+            width={24}
+            height={24}
           />
         </div>
       </div>
