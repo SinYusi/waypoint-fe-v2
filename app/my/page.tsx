@@ -4,7 +4,9 @@ import Image from "next/image";
 import ProfileImage from "@/components/common/ProfileImage";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, LogOutIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useMe } from "@/lib/hooks/use-me";
+import { useLogout } from "@/lib/hooks/use-logout";
 
 type SocialProvider = "GOOGLE" | "KAKAO" | "NAVER";
 
@@ -15,7 +17,13 @@ const SOCIAL_PROVIDER_ICON: Record<SocialProvider, string> = {
 };
 
 const Mypage = () => {
+  const router = useRouter();
   const { data: me, isLoading } = useMe();
+  const { mutate: logoutMutate, isPending: isLogoutPending } = useLogout({
+    onSuccess: () => {
+      router.replace("/login");
+    },
+  });
 
   const provider = me?.provider ?? "GOOGLE";
   const nickname = me?.nickname ?? "";
@@ -62,7 +70,9 @@ const Mypage = () => {
         </div>
         <Button
           variant="ghost"
+          disabled={isLogoutPending}
           icon={<LogOutIcon size={18} className="opacity-40" />}
+          onClick={() => logoutMutate()}
         >
           <p className="typography-action-sm-reg text-neutral-500">로그아웃</p>
         </Button>

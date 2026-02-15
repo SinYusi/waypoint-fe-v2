@@ -19,3 +19,7 @@ export async function devLogin(payload: DevLoginRequest) {
   const { data } = await apiClient.post<DevLoginResponse>("/dev/auth/login", payload)
   return data
 }
+
+export async function logout() {
+  await apiClient.post("/auth/logout")
+}
