@@ -12,8 +12,12 @@ import {
 } from "@/components/ui/alert-dialog";
 
 interface AppAlertDialogProps {
-  /** 다이얼로그를 여는 트리거 요소 */
-  trigger: React.ReactNode;
+  /** controlled open (선택) */
+  open?: boolean;
+  /** controlled open change (선택) */
+  onOpenChange?: (open: boolean) => void;
+  /** 다이얼로그를 여는 트리거 요소 (선택) */
+  trigger?: React.ReactNode;
   /** 제목 */
   title: string;
   /** 부제목 (선택) */
@@ -31,6 +35,8 @@ interface AppAlertDialogProps {
 }
 
 const AppAlertDialog = ({
+  open,
+  onOpenChange,
   trigger,
   title,
   description,
@@ -41,8 +47,8 @@ const AppAlertDialog = ({
   onAction,
 }: AppAlertDialogProps) => {
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      {trigger && <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>}
       <AlertDialogContent className="px-0 pb-0 gap-0">
         {/* 헤더 */}
         <AlertDialogHeader className="px-6 pt-2 pb-4 place-items-start text-left">
