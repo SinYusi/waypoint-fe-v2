@@ -60,7 +60,7 @@ const Mypage = () => {
             <p className="typography-action-sm-bold text-[#a3a3a3]">
               나의 계정
             </p>
-            <MypageBtn>회원 정보 수정</MypageBtn>
+            <MypageBtn href="/my/edit">회원 정보 수정</MypageBtn>
           </div>
           <div className="flex flex-col gap-1">
             <p className="typography-action-sm-bold text-[#a3a3a3]">도움말</p>
@@ -81,11 +81,20 @@ const Mypage = () => {
   );
 };
 
-const MypageBtn = ({ children }: { children: React.ReactNode }) => {
+const MypageBtn = ({
+  children,
+  href,
+}: {
+  children: React.ReactNode;
+  href?: string;
+}) => {
+  const router = useRouter();
+
   return (
     <Button
       variant="ghost"
       className="flex flex-row justify-between w-full p-0 pr-5"
+      onClick={href ? () => router.push(href) : undefined}
     >
       <div className="typography-body-base">{children}</div>
       <ChevronRight
