@@ -52,3 +52,25 @@ export type DeleteCollectionParams = {
  * (응답 바디 없음)
  */
 export type DeleteCollectionResponse = void;
+
+/**
+ * 컬렉션 수정 요청 Path 파라미터
+ * PUT /collections/{collectionId}
+ */
+export type UpdateCollectionParams = {
+  collectionId: string;
+};
+
+/**
+ * 컬렉션 수정 요청
+ * PUT /collections/{collectionId}
+ */
+export type UpdateCollectionRequest = {
+  title: string;
+};
+
+/**
+ * 컬렉션 수정 성공 응답
+ * 200
+ */
+export type UpdateCollectionResponse = CollectionResponse;
