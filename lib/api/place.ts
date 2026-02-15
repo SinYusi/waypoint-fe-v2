@@ -107,14 +107,13 @@ export type PickPassResponse = {
 }
 
 const normalizePlaceDetail = (data: PlaceDetailApiResponse): PlaceDetail => {
-  const rawCategory =
+  const category =
     typeof data.place.category === "string"
-      ? data.place.category
-      : data.place.category?.level3?.name ||
-        data.place.category?.level2?.name ||
+      ? resolveMiddleCategory(data.place.category)
+      : data.place.category?.level2?.name ||
+        data.place.category?.level3?.name ||
         data.place.category?.level1?.name ||
         ""
-  const category = resolveMiddleCategory(rawCategory)
 
   const sourceTitle = data.social_media
     ? `${data.social_media.author_name} - ${data.social_media.title}`
