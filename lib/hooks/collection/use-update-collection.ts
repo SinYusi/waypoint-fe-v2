@@ -11,7 +11,7 @@ import type {
   UpdateCollectionResponse,
   UpdateCollectionParams,
 } from "@/types/collection";
-import { updateCollection } from "../api/collection";
+import { updateCollection } from "../../api/collection";
 import { ProblemDetail } from "@/types/problem-detail";
 
 type Variables = {
