@@ -53,6 +53,7 @@ type PlaceDetailApiResponse = {
       members?: CollectionMemberApiResponse[]
       count: number
     }
+    my_preference?: string | null
   } | null
 }
 
@@ -76,6 +77,7 @@ export type PlaceDetail = {
   passCount: number
   pickedMembers: CollectionMemberApiResponse[]
   passedMembers: CollectionMemberApiResponse[]
+  myPreference: MyPreference
 }
 
 export type UpdatePlaceMemoRequest = {
@@ -91,9 +93,11 @@ type PickPassApiResponse = {
     members: CollectionMemberApiResponse[]
     count: number
   }
+  my_preference?: string | null
 }
 
 export type PlacePreferenceType = "PICK" | "PASS"
+export type MyPreference = PlacePreferenceType | null
 
 export type UpdatePlacePreferenceRequest = {
   type: PlacePreferenceType
@@ -104,6 +108,15 @@ export type PickPassResponse = {
   passCount: number
   pickedMembers: CollectionMemberApiResponse[]
   passedMembers: CollectionMemberApiResponse[]
+  myPreference: MyPreference
+}
+
+const normalizeMyPreference = (value?: string | null): MyPreference => {
+  const trimmedValue = typeof value === "string" ? value.trim() : value
+  if (trimmedValue === "PICK" || trimmedValue === "PASS") {
+    return trimmedValue
+  }
+  return null
 }
 
 const normalizePlaceDetail = (data: PlaceDetailApiResponse): PlaceDetail => {
@@ -139,6 +152,7 @@ const normalizePlaceDetail = (data: PlaceDetailApiResponse): PlaceDetail => {
     passCount: data.pick_pass?.passed.count ?? 0,
     pickedMembers: data.pick_pass?.picked.members ?? [],
     passedMembers: data.pick_pass?.passed.members ?? [],
+    myPreference: normalizeMyPreference(data.pick_pass?.my_preference),
   }
 }
 
@@ -148,6 +162,7 @@ const normalizePickPassResponse = (data: PickPassApiResponse): PickPassResponse 
     passCount: data.passed.count,
     pickedMembers: data.picked.members ?? [],
     passedMembers: data.passed.members ?? [],
+    myPreference: normalizeMyPreference(data.my_preference),
   }
 }
 

@@ -109,6 +109,7 @@ export const useUpdatePlacePreference = (options: UseUpdatePlacePreferenceOption
                   passCount: data.passCount,
                   pickedMembers: data.pickedMembers,
                   passedMembers: data.passedMembers,
+                  myPreference: data.myPreference,
                 }
               : old,
         )

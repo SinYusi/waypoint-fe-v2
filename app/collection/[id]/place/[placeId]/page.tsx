@@ -30,8 +30,6 @@ const PlaceDetailPage = () => {
 
   const [isEditingMemo, setIsEditingMemo] = useState(false);
   const [memo, setMemo] = useState("");
-  const [isPickActive, setIsPickActive] = useState(false);
-  const [isPassActive, setIsPassActive] = useState(false);
   const [isVoteMemberSheetOpen, setIsVoteMemberSheetOpen] = useState(false);
   const [voteMemberSheetType, setVoteMemberSheetType] = useState<VoteMemberSheetType>("PICK");
 
@@ -64,6 +62,9 @@ const PlaceDetailPage = () => {
   const pickedMembers = placeDetail?.pickedMembers ?? [];
   const passedMembers = placeDetail?.passedMembers ?? [];
   const originalMemo = placeDetail?.memo ?? "";
+  const myPreference = placeDetail?.myPreference ?? null;
+  const isPickActive = myPreference === "PICK";
+  const isPassActive = myPreference === "PASS";
 
   const openInNewTab = (url?: string) => {
     if (!url) return;
@@ -93,16 +94,8 @@ const PlaceDetailPage = () => {
     );
   };
 
-  const handleVoteToggle = (type: "PICK" | "PASS", nextActive: boolean) => {
+  const handleVoteToggle = (type: "PICK" | "PASS") => {
     if (!collectionId || !collectionPlaceId || updatePlacePreferenceMutation.isPending) return;
-
-    if (type === "PICK") {
-      setIsPickActive(nextActive);
-      if (nextActive) setIsPassActive(false);
-    } else {
-      setIsPassActive(nextActive);
-      if (nextActive) setIsPickActive(false);
-    }
 
     updatePlacePreferenceMutation.mutate({ type });
   };
@@ -193,14 +186,14 @@ const PlaceDetailPage = () => {
                   type="pick"
                   count={pickCount}
                   isActive={isPickActive}
-                  onToggle={(nextActive) => handleVoteToggle("PICK", nextActive)}
+                  onToggle={() => handleVoteToggle("PICK")}
                   onCountClick={() => handleVoteCountClick("PICK")}
                 />
                 <VoteBtn
                   type="pass"
                   count={passCount}
                   isActive={isPassActive}
-                  onToggle={(nextActive) => handleVoteToggle("PASS", nextActive)}
+                  onToggle={() => handleVoteToggle("PASS")}
                   onCountClick={() => handleVoteCountClick("PASS")}
                 />
               </div>
