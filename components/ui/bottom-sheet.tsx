@@ -68,7 +68,7 @@ function BottomSheet({
       <DrawerContent
         showHandle={false}
         className={cn(
-          "mx-auto w-full max-w-93.75 rounded-t-3xl border-none bg-background p-0",
+          "mx-auto w-full rounded-t-3xl border-none bg-background p-0",
           "shadow-[0_-2px_10px_0_#0000001A]",
           className
         )}
