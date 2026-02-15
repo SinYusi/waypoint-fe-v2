@@ -15,6 +15,9 @@ import {
   CreateCollectionRequest,
   DeleteCollectionParams,
   GetCollectionsParams,
+  UpdateCollectionParams,
+  UpdateCollectionRequest,
+  UpdateCollectionResponse,
 } from "@/types/collection";
 import { apiClient } from "./client";
 
@@ -39,6 +42,24 @@ export const getCollections = async (params?: GetCollectionsParams) => {
   const res = await apiClient.get<CollectionListResponse>("/collections", {
     params,
   });
+  return res.data;
+};
+
+/**
+ * 컬렉션 수정 API
+ *
+ * @param collectionId - 수정할 컬렉션 ID
+ * @param body - 수정 요청 데이터
+ * @returns 수정된 컬렉션 정보
+ */
+export const updateCollection = async (
+  collectionId: UpdateCollectionParams["collectionId"],
+  body: UpdateCollectionRequest,
+) => {
+  const res = await apiClient.put<UpdateCollectionResponse>(
+    `/collections/${collectionId}`,
+    body,
+  );
   return res.data;
 };
 
