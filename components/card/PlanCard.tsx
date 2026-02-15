@@ -11,6 +11,7 @@ const BASE_WIDTH = 335;
 interface PlanCardProps {
   title: string;
   memberCount?: number;
+  dateRange?: string;
   imageSrc?: string;
   onClick?: () => void;
   onMenuClick?: () => void;
@@ -20,6 +21,7 @@ interface PlanCardProps {
 const PlanCard = ({
   title,
   memberCount,
+  dateRange,
   imageSrc,
   onClick,
   onMenuClick,
@@ -63,6 +65,11 @@ const PlanCard = ({
                 fill
                 className="object-cover"
               />
+            )}
+            {dateRange && (
+              <span className="absolute bottom-[calc(6.25%+1.25rem)] left-4 rounded-full bg-[#1C202466] px-2.75 py-0.75 text-center typography-caption-xs-reg text-white backdrop-blur-lg">
+                {dateRange}
+              </span>
             )}
           </div>
 
