@@ -20,7 +20,7 @@ const tabsListVariants = cva(
       },
       style: {
         pill: "",
-        underline: "h-auto rounded-none border-0 bg-transparent p-0",
+        underline: "h-auto gap-0 rounded-none border-0 bg-transparent p-0",
       },
     },
     defaultVariants: {
@@ -32,7 +32,7 @@ const tabsListVariants = cva(
 )
 
 const tabsTriggerVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-xl px-3 py-1.5 typography-action-sm-reg transition-all outline-none focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-xl px-3 py-1.5 typography-action-sm-reg outline-none focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       size: {
@@ -46,7 +46,7 @@ const tabsTriggerVariants = cva(
       style: {
         pill: "data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm",
         underline:
-          "h-auto rounded-none border-b-2 border-transparent px-1 py-2 data-[state=active]:border-primary data-[state=active]:text-foreground",
+          "h-11 w-36 rounded-none border-b-2 border-b-[#01012E22] px-3 py-1.5 text-base leading-6 font-medium text-[#737373] transition-colors duration-200 ease-out hover:text-[#404040] data-[state=active]:border-b-[#0EA5E9] data-[state=active]:font-bold data-[state=active]:text-[#1C2024] data-[state=active]:hover:text-[#1C2024]",
       },
     },
     defaultVariants: {
