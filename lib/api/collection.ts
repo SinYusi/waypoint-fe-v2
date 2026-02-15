@@ -13,6 +13,7 @@ import {
   CollectionListResponse,
   CollectionResponse,
   CreateCollectionRequest,
+  DeleteCollectionParams,
   GetCollectionsParams,
 } from "@/types/collection";
 import { apiClient } from "./client";
@@ -39,4 +40,16 @@ export const getCollections = async (params?: GetCollectionsParams) => {
     params,
   });
   return res.data;
+};
+
+/**
+ * 컬렉션 삭제 API
+ *
+ * @param collectionId - 삭제할 컬렉션 ID
+ * @returns void (204 No Content)
+ */
+export const deleteCollection = async (
+  collectionId: DeleteCollectionParams["collectionId"],
+) => {
+  await apiClient.delete(`/collections/${collectionId}`);
 };
