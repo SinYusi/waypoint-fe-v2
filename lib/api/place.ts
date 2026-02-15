@@ -167,7 +167,7 @@ export const updatePlaceMemo = async (
   collectionPlaceId: string,
   payload: UpdatePlaceMemoRequest,
 ) => {
-  await apiClient.patch<void>(`/collections/${collectionId}/places/${collectionPlaceId}`, payload)
+  await apiClient.patch<void>(`/collections/${collectionId}/places/${collectionPlaceId}/memo`, payload)
 }
 
 export const updatePlacePreference = async (
