@@ -1,40 +1,40 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Drawer,
   DrawerClose,
   DrawerContent,
   DrawerTitle,
-} from "@/components/ui/drawer"
-import { cn } from "@/lib/utils"
+} from "@/components/ui/drawer";
+import { cn } from "@/lib/utils/utils";
 
-type Description = React.ReactNode | React.ReactNode[]
+type Description = React.ReactNode | React.ReactNode[];
 
 export type BottomSheetItem = {
-  id: string
-  label: React.ReactNode
-  description?: Description
-  icon?: React.ReactNode
-  disabled?: boolean
-  onSelect?: () => void
-}
+  id: string;
+  label: React.ReactNode;
+  description?: Description;
+  icon?: React.ReactNode;
+  disabled?: boolean;
+  onSelect?: () => void;
+};
 
 type BottomSheetProps = {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  items: BottomSheetItem[]
-  title?: React.ReactNode
-  cancelLabel?: React.ReactNode
-  onCancel?: () => void
-  className?: string
-}
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  items: BottomSheetItem[];
+  title?: React.ReactNode;
+  cancelLabel?: React.ReactNode;
+  onCancel?: () => void;
+  className?: string;
+};
 
 function normalizeDescription(description?: Description) {
-  if (!description) return []
-  return Array.isArray(description) ? description : [description]
+  if (!description) return [];
+  return Array.isArray(description) ? description : [description];
 }
 
 function BottomSheet({
@@ -47,14 +47,14 @@ function BottomSheet({
   className,
 }: BottomSheetProps) {
   const handleCancel = () => {
-    onCancel?.()
-    onOpenChange(false)
-  }
+    onCancel?.();
+    onOpenChange(false);
+  };
 
   const handleSelect = (onSelect?: () => void) => {
-    onSelect?.()
-    onOpenChange(false)
-  }
+    onSelect?.();
+    onOpenChange(false);
+  };
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
@@ -63,7 +63,7 @@ function BottomSheet({
         className={cn(
           "mx-auto w-full max-w-[375px] rounded-t-3xl border-none bg-background p-0",
           "shadow-[0_-2px_10px_0_#0000001A]",
-          className
+          className,
         )}
       >
         <DrawerTitle className="sr-only">{title}</DrawerTitle>
@@ -71,8 +71,8 @@ function BottomSheet({
         <div className="px-6 pt-6 pb-2">
           <div className="flex flex-col gap-[10px] pb-3.5">
             {items.map((item) => {
-              const descriptionLines = normalizeDescription(item.description)
-              const hasDescription = descriptionLines.length > 0
+              const descriptionLines = normalizeDescription(item.description);
+              const hasDescription = descriptionLines.length > 0;
 
               return (
                 <Button
@@ -94,14 +94,14 @@ function BottomSheet({
                     "hover:bg-accent",
                     hasDescription
                       ? "h-auto min-h-[44px] py-2 typography-label-base-reg"
-                      : "h-[44px] typography-label-base-sb"
+                      : "h-[44px] typography-label-base-sb",
                   )}
                 >
                   <span className="min-w-0 text-left">
                     <span className="block truncate">{item.label}</span>
                   </span>
                 </Button>
-              )
+              );
             })}
           </div>
         </div>
@@ -123,8 +123,8 @@ function BottomSheet({
         </div>
       </DrawerContent>
     </Drawer>
-  )
+  );
 }
 
-export { BottomSheet }
-export type { BottomSheetProps }
+export { BottomSheet };
+export type { BottomSheetProps };
