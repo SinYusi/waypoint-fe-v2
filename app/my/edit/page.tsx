@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import ProfileImage from "@/components/common/ProfileImage";
 import AppAlertDialog from "@/components/common/AppAlertDialog";
 import AppDialog from "@/components/common/AppDialog";
@@ -13,6 +14,7 @@ import { useMe } from "@/lib/hooks/use-me";
 import { useUpdateMe } from "@/lib/hooks/use-update-me";
 import { useUpdatePicture } from "@/lib/hooks/use-update-picture";
 import { useDeletePicture } from "@/lib/hooks/use-delete-profile-picture";
+import { useDeleteMe } from "@/lib/hooks/use-delete-me";
 import {
   CheckIcon,
   DoorClosedIcon,
@@ -29,6 +31,7 @@ const WITHDRAWAL_REASONS = [
 ];
 
 const EditMyInformationPage = () => {
+  const router = useRouter();
   const { data: me } = useMe();
   const { mutate: updateMe, isPending: isUpdating } = useUpdateMe({
     onSuccess: () => setIsEditing(false),
@@ -41,6 +44,9 @@ const EditMyInformationPage = () => {
     useDeletePicture({
       onSuccess: () => setIsProfileImageOpen(false),
     });
+  const { mutate: deleteMe, isPending: isDeletingMe } = useDeleteMe({
+    onSuccess: () => router.replace("/login"),
+  });
 
   const nickname = me?.nickname ?? "";
   const picture = me?.picture ?? "";
@@ -217,7 +223,8 @@ const EditMyInformationPage = () => {
             cancelLabel="취소"
             actionLabel="탈퇴"
             onAction={() => {
-              // TODO: 탈퇴 API 연동
+              const reason = isEtcSelected ? etcText : selectedReason;
+              deleteMe({ reason });
             }}
           />
         </div>

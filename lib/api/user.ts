@@ -23,3 +23,7 @@ export const updatePicture = async (file: File): Promise<void> => {
 export const deletePicture = async (): Promise<void> => {
   await apiClient.delete("/users/me/picture");
 };
+
+export const deleteMe = async (body: { reason: string }): Promise<void> => {
+  await apiClient.delete("/users/me", { data: body });
+};
