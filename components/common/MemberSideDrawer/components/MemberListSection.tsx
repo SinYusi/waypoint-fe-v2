@@ -32,9 +32,9 @@ const MemberListSection = ({
       </div>
       <div className="px-3 flex flex-col gap-3">
         <div className="flex flex-col gap-3">
-          {members.map((member) => (
+          {members.map((member, i) => (
             <MemberItem
-              key={member.nickname}
+              key={member.nickname + `${i}`}
               member={member}
               isManaging={isManaging}
               onKick={onKick}
