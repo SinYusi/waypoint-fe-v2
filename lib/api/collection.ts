@@ -23,6 +23,7 @@ import {
   UpdateCollectionRequest,
   UpdateCollectionResponse,
 } from "@/types/collection";
+import { CollectionMembersResponse } from "@/types/member";
 import { apiClient } from "./client";
 
 /**
@@ -96,6 +97,19 @@ export const getCollectionPlaces = async (
   const res = await apiClient.get<CollectionPlacesResponse>(
     `/collections/${collectionId}/places`,
     { params },
+  );
+  return res.data;
+};
+
+/**
+ * 컬렉션 멤버 조회 API
+ *
+ * @param collectionId - 조회할 컬렉션 ID
+ * @returns 컬렉션 멤버 목록
+ */
+export const getCollectionMembers = async (collectionId: string) => {
+  const res = await apiClient.get<CollectionMembersResponse>(
+    `/collections/${collectionId}/members`,
   );
   return res.data;
 };
