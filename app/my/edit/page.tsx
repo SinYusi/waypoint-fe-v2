@@ -10,6 +10,7 @@ import { InputForm } from "@/components/ui/input-form";
 import { Label } from "@/components/ui/label";
 import { DialogClose } from "@/components/ui/dialog";
 import { useMe } from "@/lib/hooks/use-me";
+import { useUpdateMe } from "@/lib/hooks/use-update-me";
 import {
   CheckIcon,
   DoorClosedIcon,
@@ -27,6 +28,9 @@ const WITHDRAWAL_REASONS = [
 
 const EditMyInformationPage = () => {
   const { data: me } = useMe();
+  const { mutate: updateMe, isPending: isUpdating } = useUpdateMe({
+    onSuccess: () => setIsEditing(false),
+  });
 
   const nickname = me?.nickname ?? "";
   const picture = me?.picture ?? "";
@@ -132,7 +136,14 @@ const EditMyInformationPage = () => {
                 type="button"
                 variant="ghost"
                 size="icon"
-                onClick={() => setIsEditing((prev) => !prev)}
+                disabled={isUpdating}
+                onClick={() => {
+                  if (isEditing) {
+                    updateMe({ nickname: editNickname });
+                  } else {
+                    setIsEditing(true);
+                  }
+                }}
               >
                 {isEditing ? (
                   <CheckIcon className="size-6" />
