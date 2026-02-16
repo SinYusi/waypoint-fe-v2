@@ -1,13 +1,12 @@
 'use client';
 
-import { useState } from 'react';
 import VoteItem from './VoteItem';
 import VoteCount from './VoteCount';
 
 interface VoteBtnProps {
   type: 'pick' | 'pass';
   count: number;
-  isActive?: boolean;
+  isActive: boolean;
   onToggle?: (isActive: boolean) => void;
   onCountClick?: () => void;
 }
@@ -15,27 +14,20 @@ interface VoteBtnProps {
 export default function VoteBtn({ 
   type,
   count,
-  isActive: initialActive = false,
+  isActive,
   onToggle,
   onCountClick
 }: VoteBtnProps) {
-  const [isActive, setIsActive] = useState(initialActive);
-
-  const handleToggle = (newActive: boolean) => {
-    setIsActive(newActive);
-    onToggle?.(newActive);
-  };
-
   return (
     <div
-      className={`inline-flex h-11 w-40.25 items-center gap-1 rounded-2xl px-1 backdrop-blur-md ${
+      className={`inline-flex h-11 w-full min-w-0 shrink items-center gap-1 rounded-2xl px-1 backdrop-blur-md ${
         isActive ? 'border-2 border-[#757575]' : 'border border-[#E2E2E2]'
       }`}
     >
       <VoteItem 
         type={type}
         isActive={isActive}
-        onToggle={handleToggle}
+        onToggle={onToggle}
       />
       
       {/* Divider */}

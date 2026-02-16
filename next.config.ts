@@ -8,6 +8,14 @@ const nextConfig: NextConfig = {
         hostname: "images.unsplash.com",
         hostname: "i.pravatar.cc",
       },
+      {
+        protocol: "https",
+        hostname: "i.pravatar.cc",
+      },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
     ],
   },
   turbopack: {

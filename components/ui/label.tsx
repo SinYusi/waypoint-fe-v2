@@ -1,18 +1,22 @@
-import * as React from "react";
-import { Pencil } from "lucide-react";
+import * as React from "react"
+import { Pencil, Check } from "lucide-react"
 
 import { cn } from "@/lib/utils/utils";
 import { Button } from "@/components/ui/button";
 
 type LabelProps = React.ComponentProps<"label"> & {
-  required?: boolean;
-  onEdit?: () => void;
-};
+  required?: boolean
+  isEditing?: boolean
+  onEdit?: () => void
+  onSave?: () => void
+}
 
 function Label({
   className,
   required,
+  isEditing,
   onEdit,
+  onSave,
   children,
   ...props
 }: LabelProps) {
@@ -27,9 +31,27 @@ function Label({
         {required && <span className="text-sky-500">*</span>}
       </label>
 
-      {onEdit && (
-        <Button type="button" variant="ghost" size="icon" onClick={onEdit}>
-          <Pencil className="size-[18px]" />
+      {isEditing && onSave && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="S"
+          onClick={onSave}
+          className="cursor-pointer"
+        >
+          <Check className="size-4.5" />
+        </Button>
+      )}
+
+      {!isEditing && onEdit && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="S"
+          onClick={onEdit}
+          className="cursor-pointer"
+        >
+          <Pencil className="size-4.5" />
         </Button>
       )}
     </div>
