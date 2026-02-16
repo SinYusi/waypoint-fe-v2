@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { DialogClose } from "@/components/ui/dialog";
 import { useMe } from "@/lib/hooks/use-me";
 import { useUpdateMe } from "@/lib/hooks/use-update-me";
+import { useUpdatePicture } from "@/lib/hooks/use-update-picture";
 import { useDeletePicture } from "@/lib/hooks/use-delete-profile-picture";
 import {
   CheckIcon,
@@ -32,6 +33,10 @@ const EditMyInformationPage = () => {
   const { mutate: updateMe, isPending: isUpdating } = useUpdateMe({
     onSuccess: () => setIsEditing(false),
   });
+  const { mutate: updatePicture, isPending: isUploadingPicture } =
+    useUpdatePicture({
+      onSuccess: () => setIsProfileImageOpen(false),
+    });
   const { mutate: deletePicture, isPending: isDeletingPicture } =
     useDeletePicture({
       onSuccess: () => setIsProfileImageOpen(false),
@@ -90,9 +95,10 @@ const EditMyInformationPage = () => {
           accept="image/*"
           className="hidden"
           onChange={(e) => {
-            // TODO: 이미지 업로드 API 연동
-            console.log(e.target.files?.[0]);
-            setIsProfileImageOpen(false);
+            const file = e.target.files?.[0];
+            if (!file) return;
+            updatePicture({ file });
+            e.target.value = "";
           }}
         />
 
@@ -105,6 +111,7 @@ const EditMyInformationPage = () => {
           <div className="flex flex-col gap-4">
             <Button
               className="bg-sky-500 hover:bg-sky-500/90 typography-action-base-bold"
+              disabled={isUploadingPicture}
               onClick={() => fileInputRef.current?.click()}
               icon={<UploadIcon className="size-6 opacity-40" />}
             >

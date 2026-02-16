@@ -13,6 +13,13 @@ export const updateMe = async (body: { nickname: string }): Promise<UserMeRespon
   return data;
 };
 
+export const updatePicture = async (file: File): Promise<void> => {
+  await apiClient.patch("/users/me/picture", file, {
+    params: { contentType: file.type },
+    headers: { "Content-Type": file.type },
+  });
+};
+
 export const deletePicture = async (): Promise<void> => {
   await apiClient.delete("/users/me/picture");
 };
