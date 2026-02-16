@@ -14,6 +14,7 @@ export const useMe = (options?: Options) => {
   return useQuery<UserMeResponse, AxiosError<ProblemDetail>>({
     queryKey: ["me"],
     queryFn: getMe,
+    staleTime: 1000 * 60 * 5,
     ...options,
   });
 };
