@@ -1,13 +1,17 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import Header from "@/components/layout/Header";
 import { useCollection } from "@/lib/hooks/collection/use-collection";
 import { useCollectionPlaces } from "@/lib/hooks/collection/use-collection-places";
+import { useCollectionMembers } from "@/lib/hooks/collection/use-collection-members";
 import NavigationBar from "@/components/layout/NavigationBar";
 import PlaceEmptyIllust from "@/public/illust/place-empty.svg";
 import { Button } from "@/components/ui/button";
+import PlaceListHeader, {
+  type PlaceListHeaderValue,
+} from "@/components/layout/PlaceListHeader";
 
 const CollectionDetailPage = () => {
   const params = useParams<{ collectionId: string }>();
@@ -18,9 +22,21 @@ const CollectionDetailPage = () => {
 
   const { data: collection } = useCollection(collectionId);
   const { data: placesData } = useCollectionPlaces(collectionId);
+  const { data: membersData } = useCollectionMembers(collectionId);
 
   const title = collection?.title ?? "";
   const places = placesData?.pages.flatMap((page) => page.contents) ?? [];
+  const members = useMemo(() => {
+    if (!membersData) return [];
+    return [membersData.me, ...membersData.members].map((m) => ({
+      id: m.collection_member_id,
+      name: m.nickname ?? "",
+    }));
+  }, [membersData]);
+
+  const [listHeader, setListHeader] = useState<PlaceListHeaderValue>({
+    sort: "LATEST",
+  });
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -48,7 +64,15 @@ const CollectionDetailPage = () => {
             장소 추가하기
           </Button>
         </main>
-      ) : null}
+      ) : (
+        <>
+          <PlaceListHeader
+            members={members}
+            value={listHeader}
+            onChange={(next) => setListHeader((prev) => ({ ...prev, ...next }))}
+          />
+        </>
+      )}
       <NavigationBar className="fixed bottom-0 z-10 inset-x-0" />
     </div>
   );
