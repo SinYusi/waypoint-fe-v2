@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { DialogClose } from "@/components/ui/dialog";
 import { useMe } from "@/lib/hooks/use-me";
 import { useUpdateMe } from "@/lib/hooks/use-update-me";
+import { useDeletePicture } from "@/lib/hooks/use-delete-profile-picture";
 import {
   CheckIcon,
   DoorClosedIcon,
@@ -31,6 +32,10 @@ const EditMyInformationPage = () => {
   const { mutate: updateMe, isPending: isUpdating } = useUpdateMe({
     onSuccess: () => setIsEditing(false),
   });
+  const { mutate: deletePicture, isPending: isDeletingPicture } =
+    useDeletePicture({
+      onSuccess: () => setIsProfileImageOpen(false),
+    });
 
   const nickname = me?.nickname ?? "";
   const picture = me?.picture ?? "";
@@ -109,9 +114,8 @@ const EditMyInformationPage = () => {
               <Button
                 variant="outline"
                 className="typography-action-base-bold"
-                onClick={() => {
-                  // TODO: 기본 사진 변경 API 연동
-                }}
+                disabled={isDeletingPicture}
+                onClick={() => deletePicture()}
               >
                 기본 사진으로 변경
               </Button>

@@ -12,3 +12,7 @@ export const updateMe = async (body: { nickname: string }): Promise<UserMeRespon
   const { data } = await apiClient.put<UserMeResponse>("/users/me", body);
   return data;
 };
+
+export const deletePicture = async (): Promise<void> => {
+  await apiClient.delete("/users/me/picture");
+};
