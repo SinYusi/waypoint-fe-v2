@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Header from "@/components/layout/Header";
 import { useCollection } from "@/lib/hooks/collection/use-collection";
 import { useCollectionPlaces } from "@/lib/hooks/collection/use-collection-places";
@@ -12,8 +12,10 @@ import { Button } from "@/components/ui/button";
 import PlaceListHeader, {
   type PlaceListHeaderValue,
 } from "@/components/layout/PlaceListHeader";
+import PlaceCard from "@/components/card/PlaceCard";
 
 const CollectionDetailPage = () => {
+  const router = useRouter();
   const params = useParams<{ collectionId: string }>();
   const collectionId = useMemo(
     () => params.collectionId,
@@ -23,6 +25,8 @@ const CollectionDetailPage = () => {
   const { data: collection } = useCollection(collectionId);
   const { data: placesData } = useCollectionPlaces(collectionId);
   const { data: membersData } = useCollectionMembers(collectionId);
+
+  console.log(collection);
 
   const title = collection?.title ?? "";
   const places = placesData?.pages.flatMap((page) => page.contents) ?? [];
@@ -70,7 +74,22 @@ const CollectionDetailPage = () => {
             members={members}
             value={listHeader}
             onChange={(next) => setListHeader((prev) => ({ ...prev, ...next }))}
+            title={title}
+            placeCount={collection?.place_count}
           />
+          <main className="flex flex-col gap-4 px-5 pb-24 pt-5">
+            {places.map((item) => (
+              <PlaceCard
+                key={item.collection_place_id}
+                title={item.place.name}
+                address={item.place.address}
+                imageSrc={item.place.photos[0]}
+                likeCount={item.pick_pass.picked.count}
+                rejectCount={item.pick_pass.passed.count}
+                onClick={() => router.push(`/collection/${collectionId}/place/${item.place.place_id}`)}
+              />
+            ))}
+          </main>
         </>
       )}
       <NavigationBar className="fixed bottom-0 z-10 inset-x-0" />
