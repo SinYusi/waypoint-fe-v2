@@ -28,8 +28,6 @@ const MemberItem = ({
 }: MemberItemProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  if (!member.picture) return null;
-
   const memberId = getMemberId(member);
   const actionItems: SelectDropdownItem[] = [
     {
@@ -52,13 +50,17 @@ const MemberItem = ({
 
   return (
     <div className="relative p-2 flex flex-row gap-2 items-center">
-      <Image
-        width={28}
-        height={28}
-        src={member.picture}
-        alt={member.nickname ?? ""}
-        className="rounded-full"
-      />
+      {member.picture ? (
+        <Image
+          width={28}
+          height={28}
+          src={member.picture}
+          alt={member.nickname ?? ""}
+          className="rounded-full shrink-0"
+        />
+      ) : (
+        <div className="w-7 h-7 rounded-full bg-gray-300 shrink-0" />
+      )}
       <p className="typography-action-sm-reg flex-1">{member.nickname}</p>
       {isManaging && (
         // TODO: 모바일 & PC의 기준이 나온다면 하단 drawer 컴포넌트 구현

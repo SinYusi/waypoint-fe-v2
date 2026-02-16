@@ -17,12 +17,14 @@ import { useMemberManagement } from "./hooks/useMemberManagement";
 import MemberListSection from "./components/MemberListSection";
 import TravelPlanSection from "./components/TravelPlanSection";
 import HeaderBtn, { HeaderBtnBgVariant } from "@/components/layout/HeaderBtn";
+import type { CollectionMember, PlanMember } from "@/types/member";
 
 interface MemberSideDrawerProps {
   title: string;
   placeCount?: number;
   variant: "COLLECTION" | "PLAN";
   rightBtnBgVariant: HeaderBtnBgVariant;
+  members?: (CollectionMember | PlanMember)[];
 }
 
 const MemberSideDrawer = ({
@@ -30,10 +32,11 @@ const MemberSideDrawer = ({
   placeCount,
   variant,
   rightBtnBgVariant,
+  members = [],
 }: MemberSideDrawerProps) => {
-  const { members, handleKickMember, handleAssignOwner } = useMemberManagement(
-    { variant },
-  );
+  const { handleKickMember, handleAssignOwner } = useMemberManagement({
+    variant,
+  });
 
   return (
     <Drawer direction="right">
@@ -55,7 +58,7 @@ const MemberSideDrawer = ({
         </DrawerHeader>
         <main className="flex flex-col gap-3 mx-5 mt-10">
           <MemberListSection
-            members={members.members}
+            members={members}
             onKick={handleKickMember}
             onAssignOwner={handleAssignOwner}
           />

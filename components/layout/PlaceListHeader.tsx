@@ -6,6 +6,7 @@ import { InputForm } from "../ui/input-form";
 import HeaderBtn from "./HeaderBtn";
 import Dropdown, { DropdownDivider, DropdownItem } from "../common/DropDown";
 import MemberSideDrawer from "../common/MemberSideDrawer/MemberSideDrawer";
+import type { CollectionMember } from "@/types/member";
 
 type Member = { id: string; name: string };
 type SortBy = "LATEST" | "OLDEST";
@@ -23,6 +24,7 @@ interface PlaceListHeaderProps {
   onChange: (next: Partial<PlaceListHeaderValue>) => void;
   title?: string;
   placeCount?: number;
+  collectionMembers?: CollectionMember[];
   className?: string;
 }
 
@@ -32,6 +34,7 @@ const PlaceListHeader = ({
   onChange,
   title,
   placeCount,
+  collectionMembers,
   className,
 }: PlaceListHeaderProps) => {
   const { isSearchMode, sort, addedBy, place } = value;
@@ -156,6 +159,7 @@ const PlaceListHeader = ({
             placeCount={placeCount}
             variant="COLLECTION"
             rightBtnBgVariant="ghost"
+            members={collectionMembers}
           />
         </div>
       </div>

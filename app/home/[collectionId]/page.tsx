@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Header from "@/components/layout/Header";
 import { useCollection } from "@/lib/hooks/collection/use-collection";
@@ -17,26 +17,20 @@ import PlaceCard from "@/components/card/PlaceCard";
 const CollectionDetailPage = () => {
   const router = useRouter();
   const params = useParams<{ collectionId: string }>();
-  const collectionId = useMemo(
-    () => params.collectionId,
-    [params.collectionId],
-  );
+  const collectionId = params.collectionId;
 
   const { data: collection } = useCollection(collectionId);
   const { data: placesData } = useCollectionPlaces(collectionId);
   const { data: membersData } = useCollectionMembers(collectionId);
 
-  console.log(collection);
-
   const title = collection?.title ?? "";
   const places = placesData?.pages.flatMap((page) => page.contents) ?? [];
-  const members = useMemo(() => {
-    if (!membersData) return [];
-    return [membersData.me, ...membersData.members].map((m) => ({
-      id: m.collection_member_id,
-      name: m.nickname ?? "",
-    }));
-  }, [membersData]);
+  const members = membersData
+    ? [membersData.me, ...membersData.members].map((m) => ({
+        id: m.collection_member_id,
+        name: m.nickname ?? "",
+      }))
+    : [];
 
   const [listHeader, setListHeader] = useState<PlaceListHeaderValue>({
     sort: "LATEST",
@@ -76,6 +70,9 @@ const CollectionDetailPage = () => {
             onChange={(next) => setListHeader((prev) => ({ ...prev, ...next }))}
             title={title}
             placeCount={collection?.place_count}
+            collectionMembers={
+              membersData ? [membersData.me, ...membersData.members] : undefined
+            }
           />
           <main className="flex flex-col gap-4 px-5 pb-24 pt-5">
             {places.map((item) => (
@@ -86,7 +83,11 @@ const CollectionDetailPage = () => {
                 imageSrc={item.place.photos[0]}
                 likeCount={item.pick_pass.picked.count}
                 rejectCount={item.pick_pass.passed.count}
-                onClick={() => router.push(`/collection/${collectionId}/place/${item.place.place_id}`)}
+                onClick={() =>
+                  router.push(
+                    `/collection/${collectionId}/place/${item.place.place_id}`,
+                  )
+                }
               />
             ))}
           </main>
