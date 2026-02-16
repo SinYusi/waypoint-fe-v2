@@ -1,3 +1,4 @@
+import axios from "axios";
 import { apiClient } from "./client";
 import type { UserMeResponse } from "@/types/user";
 
@@ -14,9 +15,15 @@ export const updateMe = async (body: { nickname: string }): Promise<UserMeRespon
 };
 
 export const updatePicture = async (file: File): Promise<void> => {
-  await apiClient.patch("/users/me/picture", file, {
+  const { data } = await apiClient.patch<{ presigned_url: string }>("/users/me/picture", null, {
     params: { contentType: file.type },
-    headers: { "Content-Type": file.type },
+  });
+
+  await axios.put(data.presigned_url, file, {
+    headers: {
+      "Content-Type": file.type,
+      "Cache-Control": "no-cache",
+    },
   });
 };
 
