@@ -9,6 +9,7 @@ import CheckBox from "@/components/common/CheckBox";
 import { Button } from "@/components/ui/button";
 import { InputForm } from "@/components/ui/input-form";
 import { Label } from "@/components/ui/label";
+import { FieldDescription } from "@/components/ui/field-description";
 import { DialogClose } from "@/components/ui/dialog";
 import { useMe } from "@/lib/hooks/use-me";
 import { useUpdateMe } from "@/lib/hooks/use-update-me";
@@ -60,6 +61,8 @@ const EditMyInformationPage = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isEtcSelected = selectedReason === "기타 (직접 입력)";
+
+  const hasNicknameError = /[^\w\uAC00-\uD7A3\u1100-\u11FF\u3130-\u318F]/.test(editNickname);
 
   const toggleReason = (reason: string) => {
     setSelectedReason((prev) => (prev === reason ? "" : reason));
@@ -139,35 +142,43 @@ const EditMyInformationPage = () => {
         <div className="w-full flex-1 rounded-2xl pt-4 flex flex-col justify-between">
           <div className="flex flex-col gap-5">
             <Label className="typography-action-base-bold">나의 이름</Label>
-            <div className="flex items-center gap-2">
-              {isEditing ? (
-                <InputForm
-                  className="flex-1"
-                  value={editNickname}
-                  onChange={(e) => setEditNickname(e.target.value)}
-                />
-              ) : (
-                <p className="flex-1 typography-body-base">{nickname}</p>
-              )}
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                disabled={isUpdating}
-                onClick={() => {
-                  if (isEditing) {
-                    updateMe({ nickname: editNickname });
-                  } else {
-                    setIsEditing(true);
-                  }
-                }}
-              >
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2">
                 {isEditing ? (
-                  <CheckIcon className="size-6" />
+                  <InputForm
+                    className="flex-1"
+                    value={editNickname}
+                    onChange={(e) => setEditNickname(e.target.value)}
+                  />
                 ) : (
-                  <PencilIcon className="size-6" />
+                  <p className="flex-1 typography-body-base">{nickname}</p>
                 )}
-              </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  disabled={isUpdating}
+                  onClick={() => {
+                    if (isEditing) {
+                      if (hasNicknameError) return;
+                      updateMe({ nickname: editNickname });
+                    } else {
+                      setIsEditing(true);
+                    }
+                  }}
+                >
+                  {isEditing ? (
+                    <CheckIcon className="size-6" />
+                  ) : (
+                    <PencilIcon className="size-6" />
+                  )}
+                </Button>
+              </div>
+              {isEditing && hasNicknameError && (
+                <FieldDescription error>
+                  특수문자와 공백은 사용할 수 없습니다.
+                </FieldDescription>
+              )}
             </div>
           </div>
           <AppAlertDialog
