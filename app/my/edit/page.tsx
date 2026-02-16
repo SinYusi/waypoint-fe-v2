@@ -39,7 +39,10 @@ const EditMyInformationPage = () => {
   });
   const { mutate: updatePicture, isPending: isUploadingPicture } =
     useUpdatePicture({
-      onSuccess: () => setIsProfileImageOpen(false),
+      onSuccess: () => {
+        setPictureVersion((v) => v + 1);
+        setIsProfileImageOpen(false);
+      },
     });
   const { mutate: deletePicture, isPending: isDeletingPicture } =
     useDeletePicture({
@@ -50,7 +53,8 @@ const EditMyInformationPage = () => {
   });
 
   const nickname = me?.nickname ?? "";
-  const picture = me?.picture ?? "";
+  const [pictureVersion, setPictureVersion] = useState(0);
+  const picture = me?.picture ? `${me.picture}?v=${pictureVersion}` : "";
 
   const [isEditing, setIsEditing] = useState(false);
   const [editNickname, setEditNickname] = useState("");
