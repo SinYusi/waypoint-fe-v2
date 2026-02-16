@@ -82,3 +82,77 @@ export type UpdateCollectionRequest = {
  * 200
  */
 export type UpdateCollectionResponse = CollectionResponse;
+
+/**
+ * 컬렉션 장소 목록 조회 요청 파라미터
+ * GET /collections/{collectionId}/places
+ */
+export type GetCollectionPlacesParams = {
+  collectionId: string;
+  page?: number;
+  size?: number;
+};
+
+export type PlaceCategoryLevel = {
+  category_id: string;
+  name: string;
+};
+
+export type PlaceCategory = {
+  level1: PlaceCategoryLevel;
+  level2: PlaceCategoryLevel;
+  level3: PlaceCategoryLevel;
+  primary_type: PlaceCategoryLevel | null;
+};
+
+export type PlacePoint = {
+  latitude: number;
+  longitude: number;
+};
+
+export type PlaceResponse = {
+  place_id: string;
+  google_place_id: string;
+  name: string;
+  address: string;
+  category: PlaceCategory;
+  google_maps_uri: string;
+  photos: string[];
+  point: PlacePoint;
+};
+
+export type CollectionMemberResponse = {
+  collection_member_id: string;
+  nickname?: string;
+  picture?: string;
+  role?: "OWNER" | "MEMBER";
+};
+
+export type PickPassGroup = {
+  members: CollectionMemberResponse[];
+  count: number;
+};
+
+export type PickPassResponse = {
+  picked: PickPassGroup;
+  passed: PickPassGroup;
+  my_preference: "PICK" | "PASS" | "NOTHING";
+};
+
+export type CollectionPlaceResponse = {
+  collection_place_id: string;
+  memo: string;
+  place: PlaceResponse;
+  pick_pass: PickPassResponse;
+};
+
+/**
+ * 컬렉션 장소 목록 조회 성공 응답
+ * 200
+ */
+export type CollectionPlacesResponse = {
+  contents: CollectionPlaceResponse[];
+  has_next: boolean;
+  size: number;
+  page: number;
+};
