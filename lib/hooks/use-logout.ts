@@ -16,13 +16,13 @@ export const useLogout = (options?: Options) => {
   return useMutation<void, AxiosError<ProblemDetail>, void>({
     mutationFn: logout,
     ...options,
-    onSuccess: (data, variables, context) => {
+    onSuccess: (data, variables, onMutateResult, context) => {
       if (typeof window !== "undefined") {
         window.localStorage.removeItem("accessToken");
       }
       queryClient.clear();
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, onMutateResult, context);
     },
   });
 };
