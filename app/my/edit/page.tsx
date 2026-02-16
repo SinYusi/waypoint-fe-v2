@@ -62,7 +62,9 @@ const EditMyInformationPage = () => {
 
   const isEtcSelected = selectedReason === "기타 (직접 입력)";
 
-  const hasNicknameError = /[^\w\uAC00-\uD7A3\u1100-\u11FF\u3130-\u318F]/.test(editNickname);
+  const hasNicknameError = /[^\w\uAC00-\uD7A3\u1100-\u11FF\u3130-\u318F]/.test(
+    editNickname,
+  );
 
   const toggleReason = (reason: string) => {
     setSelectedReason((prev) => (prev === reason ? "" : reason));
@@ -146,7 +148,7 @@ const EditMyInformationPage = () => {
               <div className="flex items-center gap-2">
                 {isEditing ? (
                   <InputForm
-                    className="flex-1"
+                    className="flex-1 bg-[#fafafa]"
                     value={editNickname}
                     onChange={(e) => setEditNickname(e.target.value)}
                   />
