@@ -34,6 +34,8 @@ interface AppAlertDialogProps {
   onAction?: () => void;
   /** 확인 버튼 추가 클래스 (기본 스타일에 병합) */
   actionClassName?: string;
+  /** 확인 버튼 비활성화 여부 */
+  actionDisabled?: boolean;
 }
 
 const AppAlertDialog = ({
@@ -48,6 +50,7 @@ const AppAlertDialog = ({
   actionLabel,
   onAction,
   actionClassName,
+  actionDisabled,
 }: AppAlertDialogProps) => {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -79,9 +82,11 @@ const AppAlertDialog = ({
             {cancelLabel}
           </AlertDialogPrimitive.Cancel>
           <AlertDialogPrimitive.Action
+            disabled={actionDisabled}
             onClick={onAction}
             className={cn(
               "flex-1 h-[44px] rounded-2xl bg-[#ef4444] hover:bg-[#ef4444]/90 text-white typography-action-sm-bold",
+              "disabled:bg-[#e5e5e5] disabled:cursor-not-allowed",
               actionClassName,
             )}
           >

@@ -61,6 +61,7 @@ const EditMyInformationPage = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isEtcSelected = selectedReason === "기타 (직접 입력)";
+  const isNextDisabled = !selectedReason || (isEtcSelected && !etcText.trim());
 
   const hasNicknameError = /[^\w\uAC00-\uD7A3\u1100-\u11FF\u3130-\u318F]/.test(
     editNickname,
@@ -200,6 +201,7 @@ const EditMyInformationPage = () => {
             }
             actionLabel="다음"
             actionClassName="bg-[#757575] hover:bg-[#757575]/90"
+            actionDisabled={isNextDisabled}
             onAction={() => setIsConfirmOpen(true)}
           >
             <div className="flex flex-col gap-3">
