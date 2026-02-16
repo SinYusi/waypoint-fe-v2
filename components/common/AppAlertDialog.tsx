@@ -32,6 +32,8 @@ interface AppAlertDialogProps {
   actionLabel: string;
   /** 확인 버튼 클릭 핸들러 */
   onAction?: () => void;
+  /** 확인 버튼 추가 클래스 (기본 스타일에 병합) */
+  actionClassName?: string;
 }
 
 const AppAlertDialog = ({
@@ -45,6 +47,7 @@ const AppAlertDialog = ({
   onCancel,
   actionLabel,
   onAction,
+  actionClassName,
 }: AppAlertDialogProps) => {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -79,6 +82,7 @@ const AppAlertDialog = ({
             onClick={onAction}
             className={cn(
               "flex-1 h-[44px] rounded-2xl bg-[#ef4444] hover:bg-[#ef4444]/90 text-white typography-action-sm-bold",
+              actionClassName,
             )}
           >
             {actionLabel}
