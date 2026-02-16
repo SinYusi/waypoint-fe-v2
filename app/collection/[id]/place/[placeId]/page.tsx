@@ -132,6 +132,11 @@ const PlaceDetailPage = () => {
 
   return (
     <div className="relative min-h-screen min-w-0 overflow-x-hidden pb-[calc(72px+env(safe-area-inset-bottom)+16px)]">
+     <Header
+        showBackButton
+        leftBtnBgVariant="glass"
+        className="fixed top-0 inset-x-0 z-50"
+      />
       {/* 이미지 영역 */}
       <div className="fixed top-0 left-0 right-0 w-full aspect-5/3 bg-muted z-0">
         {coverImageUrl && (
@@ -143,9 +148,6 @@ const PlaceDetailPage = () => {
             priority
           />
         )}
-        <div className="absolute top-0 left-0 right-0 z-10">
-          <Header showBackButton leftBtnBgVariant="glass" />
-        </div>
       </div>
 
       {/* 콘텐츠 영역 */}
