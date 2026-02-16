@@ -12,10 +12,12 @@
 
 import {
   CollectionListResponse,
+  CollectionPlacesResponse,
   CollectionResponse,
   CreateCollectionRequest,
   DeleteCollectionParams,
   GetCollectionParams,
+  GetCollectionPlacesParams,
   GetCollectionsParams,
   UpdateCollectionParams,
   UpdateCollectionRequest,
@@ -76,6 +78,24 @@ export const updateCollection = async (
   const res = await apiClient.put<UpdateCollectionResponse>(
     `/collections/${collectionId}`,
     body,
+  );
+  return res.data;
+};
+
+/**
+ * 컬렉션 장소 목록 조회 API
+ *
+ * @param collectionId - 조회할 컬렉션 ID
+ * @param params - 페이지네이션 파라미터 (page, size)
+ * @returns 컬렉션 장소 목록 및 페이지 정보
+ */
+export const getCollectionPlaces = async (
+  collectionId: GetCollectionPlacesParams["collectionId"],
+  params?: Omit<GetCollectionPlacesParams, "collectionId">,
+) => {
+  const res = await apiClient.get<CollectionPlacesResponse>(
+    `/collections/${collectionId}/places`,
+    { params },
   );
   return res.data;
 };
