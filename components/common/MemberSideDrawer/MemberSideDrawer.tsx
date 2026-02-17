@@ -93,8 +93,8 @@ const MemberSideDrawer = ({
       <AppDialog
         open={ownerDialogOpen}
         onOpenChange={setOwnerDialogOpen}
-        title="보관함을 나갈 수 없어요"
-        description={`소유자는 보관함을 나갈 수 없어요.\n멤버에게 소유자 권한을 넘긴 후 나가주세요.`}
+        title="지금은 관함을 나갈 수 없어요"
+        description={`보관함을 맡아줄 사람이 한 명은 꼭 필요해요.\n관리 역할을 다른 멤버에게 먼저 넘겨주세요.`}
         actionLabel="확인"
         onAction={() => setOwnerDialogOpen(false)}
       />
@@ -102,8 +102,8 @@ const MemberSideDrawer = ({
       <AppAlertDialog
         open={confirmDialogOpen}
         onOpenChange={setConfirmDialogOpen}
-        title="보관함에서 나갈까요?"
-        description={`나가면 이 보관함의 장소 목록을\n더 이상 볼 수 없어요.`}
+        title="정말 이 보관함에서 나가시겠어요?"
+        description={`지금 나가시면 다시 초대 받기 전까지는 이 보관함에 다시 들어오실 수 없어요.\n그래도 정말 나가시겠어요?`}
         cancelLabel="취소"
         actionLabel="나가기"
         onAction={() => {
