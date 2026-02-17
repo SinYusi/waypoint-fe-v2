@@ -10,8 +10,8 @@ import type {
   DeleteCollectionParams,
   DeleteCollectionResponse,
 } from "@/types/collection";
-import { deleteCollection } from "../api/collection";
 import { ProblemDetail } from "@/types/problem-detail";
+import { deleteCollection } from "@/lib/api/collection";
 
 type Options = Omit<
   UseMutationOptions<

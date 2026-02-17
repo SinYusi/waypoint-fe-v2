@@ -10,8 +10,8 @@ import type {
   CollectionResponse,
   CreateCollectionRequest,
 } from "@/types/collection";
-import { createCollection } from "../api/collection";
 import { ProblemDetail } from "@/types/problem-detail";
+import { createCollection } from "@/lib/api/collection";
 
 type Options = Omit<
   UseMutationOptions<
