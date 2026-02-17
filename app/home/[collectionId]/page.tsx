@@ -13,6 +13,7 @@ import PlaceListHeader, {
   type PlaceListHeaderValue,
 } from "@/components/layout/PlaceListHeader";
 import PlaceCard from "@/components/card/PlaceCard";
+import { PlusIcon } from "lucide-react";
 
 const CollectionDetailPage = () => {
   const router = useRouter();
@@ -76,7 +77,7 @@ const CollectionDetailPage = () => {
               membersData ? [membersData.me, ...membersData.members] : undefined
             }
           />
-          <main className="flex flex-col gap-4 px-5 pb-24 pt-5">
+          <main className="flex flex-col gap-4 px-5 pb-40 pt-5">
             {places.map((item) => (
               <PlaceCard
                 key={item.collection_place_id}
@@ -93,6 +94,15 @@ const CollectionDetailPage = () => {
               />
             ))}
           </main>
+          <div className="fixed bottom-[72px] inset-x-0 z-10 px-5 py-3">
+            <Button
+              className="w-full bg-sky-500 typography-action-base-bold"
+              onClick={() => router.push(`/home/${collectionId}/add-place`)}
+              icon={<PlusIcon className="opacity-40" color="#000" />}
+            >
+              장소 추가하기
+            </Button>
+          </div>
         </>
       )}
       <NavigationBar className="fixed bottom-0 z-10 inset-x-0" />
