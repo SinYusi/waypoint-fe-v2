@@ -3,6 +3,14 @@ import { resolveMiddleCategory } from "@/lib/place-category";
 import type { PlaceSearchItem } from "@/types/place";
 export type { PlaceSearchItem } from "@/types/place";
 
+export const searchPlaces = async (
+  query: string,
+): Promise<PlaceSearchItem[]> => {
+  const { data } = await apiClient.get<PlaceSearchItem[]>("/places/search", {
+    params: { query },
+  });
+  return data;
+};
 
 type PlaceCategoryLevelApiResponse = {
   category_id: string;
