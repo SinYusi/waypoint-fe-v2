@@ -77,8 +77,8 @@ const EditMyInformationPage = () => {
   };
 
   useEffect(() => {
-    if (nickname) setEditNickname(nickname);
-  }, [nickname]);
+    if (nickname && !isEditing) setEditNickname(nickname);
+  }, [nickname, isEditing]);
 
   return (
     <div className="min-h-screen flex flex-col">
