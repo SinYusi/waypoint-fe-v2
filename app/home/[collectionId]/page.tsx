@@ -92,7 +92,7 @@ const CollectionDetailPage = () => {
                 rejectCount={item.pick_pass.passed.count}
                 onClick={() =>
                   router.push(
-                    `/collection/${collectionId}/place/${item.place.place_id}`,
+                    `/collection/${collectionId}/place/${item.collection_place_id}`,
                   )
                 }
               />
