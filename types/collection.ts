@@ -84,6 +84,16 @@ export type UpdateCollectionRequest = {
 export type UpdateCollectionResponse = CollectionResponse;
 
 /**
+ * 컬렉션 장소 PICK/PASS 요청 파라미터
+ * POST /collections/{collectionId}/places/{collectionPlaceId}/preference
+ */
+export type PostCollectionPlacePreferenceParams = {
+  collectionId: string;
+  collectionPlaceId: string;
+  type: "PICK" | "PASS";
+};
+
+/**
  * 컬렉션 장소 목록 조회 요청 파라미터
  * GET /collections/{collectionId}/places
  */
