@@ -93,7 +93,7 @@ const MemberSideDrawer = ({
       <AppDialog
         open={ownerDialogOpen}
         onOpenChange={setOwnerDialogOpen}
-        title="지금은 관함을 나갈 수 없어요"
+        title="지금은 보관함을 나갈 수 없어요"
         description={`보관함을 맡아줄 사람이 한 명은 꼭 필요해요.\n관리 역할을 다른 멤버에게 먼저 넘겨주세요.`}
         actionLabel="확인"
         onAction={() => setOwnerDialogOpen(false)}
