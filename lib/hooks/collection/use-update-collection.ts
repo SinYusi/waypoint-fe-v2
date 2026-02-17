@@ -7,32 +7,44 @@ import {
 } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import type {
-  DeleteCollectionParams,
-  DeleteCollectionResponse,
+  UpdateCollectionRequest,
+  UpdateCollectionResponse,
+  UpdateCollectionParams,
 } from "@/types/collection";
-import { deleteCollection } from "../api/collection";
+import { updateCollection } from "../../api/collection";
 import { ProblemDetail } from "@/types/problem-detail";
+
+type Variables = {
+  collectionId: UpdateCollectionParams["collectionId"];
+  body: UpdateCollectionRequest;
+};
 
 type Options = Omit<
   UseMutationOptions<
-    DeleteCollectionResponse,
+    UpdateCollectionResponse,
     AxiosError<ProblemDetail>,
-    DeleteCollectionParams
+    Variables
   >,
   "mutationFn"
 >;
 
-export const useDeleteCollection = (options?: Options) => {
+export const useUpdateCollection = (options?: Options) => {
   const queryClient = useQueryClient();
 
   return useMutation<
-    DeleteCollectionResponse,
+    UpdateCollectionResponse,
     AxiosError<ProblemDetail>,
-    DeleteCollectionParams
+    Variables
   >({
-    mutationFn: ({ collectionId }) => deleteCollection(collectionId),
+    mutationFn: ({ collectionId, body }) =>
+      updateCollection(collectionId, body),
     ...options,
     onSuccess: (data, variables, onMutateResult, context) => {
+      queryClient.setQueryData(
+        ["collection", { collectionId: variables.collectionId }],
+        data,
+      );
+
       queryClient.invalidateQueries({ queryKey: ["collections"] });
 
       options?.onSuccess?.(data, variables, onMutateResult, context);

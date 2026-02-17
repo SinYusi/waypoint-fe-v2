@@ -4,6 +4,7 @@
  *
  * - 생성 (POST | `/collections`)
  * - 목록 조회 (GET | `/collections`)
+ * - 조회 (GET | `/collections/{collectionId}`)
  * - 수정 (PUT | `/collections/{collectionId}`)
  * - 삭제 (DELETE | `/collections/{collectionId}`)
  * - 소유자 변경 (PATCH | `/collections/{collectionId}/owner`)
@@ -14,7 +15,11 @@ import {
   CollectionResponse,
   CreateCollectionRequest,
   DeleteCollectionParams,
+  GetCollectionParams,
   GetCollectionsParams,
+  UpdateCollectionParams,
+  UpdateCollectionRequest,
+  UpdateCollectionResponse,
 } from "@/types/collection";
 import { apiClient } from "./client";
 
@@ -39,6 +44,39 @@ export const getCollections = async (params?: GetCollectionsParams) => {
   const res = await apiClient.get<CollectionListResponse>("/collections", {
     params,
   });
+  return res.data;
+};
+
+/**
+ * 컬렉션 조회 API
+ *
+ * @param collectionId - 조회할 컬렉션 ID
+ * @returns 컬렉션 상세 정보
+ */
+export const getCollection = async (
+  collectionId: GetCollectionParams["collectionId"],
+) => {
+  const res = await apiClient.get<CollectionResponse>(
+    `/collections/${collectionId}`,
+  );
+  return res.data;
+};
+
+/**
+ * 컬렉션 수정 API
+ *
+ * @param collectionId - 수정할 컬렉션 ID
+ * @param body - 수정 요청 데이터
+ * @returns 수정된 컬렉션 정보
+ */
+export const updateCollection = async (
+  collectionId: UpdateCollectionParams["collectionId"],
+  body: UpdateCollectionRequest,
+) => {
+  const res = await apiClient.put<UpdateCollectionResponse>(
+    `/collections/${collectionId}`,
+    body,
+  );
   return res.data;
 };
 

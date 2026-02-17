@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { FieldDescription } from "@/components/ui/field-description";
 import { InputForm } from "@/components/ui/input-form";
 import { Label } from "@/components/ui/label";
-import { useCreateCollection } from "@/lib/hooks/use-create-collection";
+import { useCreateCollection } from "@/lib/hooks/collection/use-create-collection";
 import { validateCollectionTitle } from "@/lib/utils/validate-collection-title";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
