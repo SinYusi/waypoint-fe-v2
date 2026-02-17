@@ -64,7 +64,10 @@ const CollectionDetailPage = () => {
               이번 여행이 더 기다려질 거에요!
             </p>
           </div>
-          <Button className="mt-7 bg-sky-500 typography-action-base-bold w-full">
+          <Button
+            className="mt-7 bg-sky-500 typography-action-base-bold w-full"
+            onClick={() => router.push(`/home/${collectionId}/add-place`)}
+          >
             장소 추가하기
           </Button>
         </main>
