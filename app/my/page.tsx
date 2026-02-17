@@ -31,7 +31,7 @@ const Mypage = () => {
   const picture = me?.picture ?? "";
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex flex-col h-screen pt-15">
       <div className="pl-5 pr-8.5 pb-7 flex flex-row gap-3.5 items-center">
         <ProfileImage
           src={picture}
@@ -54,7 +54,7 @@ const Mypage = () => {
           />
         </div>
       </div>
-      <div className="flex-1 w-full rounded-t-3xl bg-[#f0f0f0] flex flex-col gap-2.5 pt-6 px-5 pb-36 justify-between">
+      <div className="flex-1 w-full rounded-t-3xl bg-[#f0f0f0] flex flex-col gap-2.5 pt-6 px-5 pb-18 justify-between">
         <div className="flex flex-col gap-9">
           <div className="flex flex-col gap-1">
             <p className="typography-action-sm-bold text-[#a3a3a3]">

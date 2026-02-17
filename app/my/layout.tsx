@@ -13,7 +13,7 @@ const MypageLayout = ({ children }: MypageLayoutProps) => {
         rightBtnBgVariant="ghost"
         className="fixed top-0 z-10"
       />
-      <div className="pt-15">{children}</div>
+      <div>{children}</div>
       <NavigationBar className="fixed bottom-0 left-0 right-0 z-50" />
     </div>
   );
