@@ -35,9 +35,9 @@ interface AppDialogProps {
 }
 
 const AppDialog = ({
-  trigger,
   open,
   onOpenChange,
+  trigger,
   title,
   description,
   children,
