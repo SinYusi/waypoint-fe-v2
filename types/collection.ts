@@ -1,3 +1,5 @@
+import { PlaceResponse } from "./collection";
+
 /**
  * 컬렉션 생성 요청
  * POST /collections
@@ -105,33 +107,12 @@ export type GetCollectionPlacesParams = {
   added_by?: string;
 };
 
-export type PlaceCategoryLevel = {
-  category_id: string;
-  name: string;
-};
-
-export type PlaceCategory = {
-  level1: PlaceCategoryLevel;
-  level2: PlaceCategoryLevel;
-  level3: PlaceCategoryLevel;
-  primary_type: PlaceCategoryLevel | null;
-};
-
-export type PlacePoint = {
-  latitude: number;
-  longitude: number;
-};
-
-export type PlaceResponse = {
-  place_id: string;
-  google_place_id: string;
-  name: string;
-  address: string;
-  category: PlaceCategory;
-  google_maps_uri: string;
-  photos: string[];
-  point: PlacePoint;
-};
+export type {
+  PlaceCategoryLevel,
+  PlaceCategory,
+  PlacePoint,
+  PlaceResponse,
+} from "@/types/place";
 
 export type CollectionMemberResponse = {
   collection_member_id: string;
