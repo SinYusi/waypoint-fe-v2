@@ -3,6 +3,7 @@
 import * as React from "react";
 
 import { cn } from "@/lib/utils/utils";
+import { DropdownMenuContent, DropdownMenuItem } from "./dropdown-menu";
 
 type Description = React.ReactNode | React.ReactNode[];
 
@@ -26,7 +27,8 @@ function normalizeDescription(description?: Description) {
 
 function SelectDropdown({ className, items, ...props }: SelectDropdownProps) {
   return (
-    <div
+    <DropdownMenuContent
+      align="end"
       className={cn(
         "w-[148px] rounded-xl border border-border bg-background p-1",
         "shadow-[0px_2px_4px_-1px_#0000000F,0px_4px_6px_-1px_#0000001A]",
@@ -40,11 +42,10 @@ function SelectDropdown({ className, items, ...props }: SelectDropdownProps) {
           const hasDescription = descriptionLines.length > 0;
 
           return (
-            <button
+            <DropdownMenuItem
               key={item.id}
-              type="button"
               disabled={item.disabled}
-              onClick={item.onSelect}
+              onSelect={item.onSelect}
               className={cn(
                 "flex w-full items-center gap-1.5 rounded-lg bg-background px-2.5 py-1.5 text-left",
                 "hover:bg-accent disabled:pointer-events-none disabled:opacity-50",
@@ -62,11 +63,11 @@ function SelectDropdown({ className, items, ...props }: SelectDropdownProps) {
                   {item.label}
                 </span>
               </span>
-            </button>
+            </DropdownMenuItem>
           );
         })}
       </div>
-    </div>
+    </DropdownMenuContent>
   );
 }
 
