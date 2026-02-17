@@ -21,6 +21,7 @@ export type MoreActionItem = {
 
 interface MoreActionMenuProps {
   headerBtnBgVariant?: HeaderBtnBgVariant;
+  headerBtnClassName?: string;
   label: string;
   items: MoreActionItem[];
   /** BottomSheet 옵션(선택) */
@@ -32,6 +33,7 @@ interface MoreActionMenuProps {
 
 const MoreActionMenu = ({
   headerBtnBgVariant = "ghost",
+  headerBtnClassName,
   label,
   items,
   sheetTitle = "작업 메뉴",
@@ -80,6 +82,7 @@ const MoreActionMenu = ({
           icon={Ellipsis}
           bgVariant={headerBtnBgVariant}
           label={label}
+          className={headerBtnClassName}
           onClick={() => setOpen(true)}
         />
 
@@ -103,6 +106,7 @@ const MoreActionMenu = ({
             icon={Ellipsis}
             bgVariant={headerBtnBgVariant}
             label={label}
+            className={headerBtnClassName}
           />
         </span>
       </DropdownMenuTrigger>
