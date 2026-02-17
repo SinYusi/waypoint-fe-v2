@@ -79,6 +79,7 @@ const CollectionDetailPage = () => {
             collectionMembers={
               membersData ? [membersData.me, ...membersData.members] : undefined
             }
+            meRole={membersData?.me.role}
           />
           <main className="flex flex-col gap-4 px-5 pb-40 pt-5">
             {places.map((item) => (
