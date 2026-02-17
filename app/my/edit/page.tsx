@@ -67,9 +67,10 @@ const EditMyInformationPage = () => {
   const isEtcSelected = selectedReason === "기타 (직접 입력)";
   const isNextDisabled = !selectedReason || (isEtcSelected && !etcText.trim());
 
-  const hasNicknameError = /[^\w\uAC00-\uD7A3\u1100-\u11FF\u3130-\u318F]/.test(
-    editNickname,
-  );
+  const isNicknameEmpty = isEditing && editNickname.trim() === "";
+  const hasNicknameError =
+    !isNicknameEmpty &&
+    /[^\w\uAC00-\uD7A3\u1100-\u11FF\u3130-\u318F]/.test(editNickname);
 
   const toggleReason = (reason: string) => {
     setSelectedReason((prev) => (prev === reason ? "" : reason));
@@ -167,7 +168,7 @@ const EditMyInformationPage = () => {
                   disabled={isUpdating}
                   onClick={() => {
                     if (isEditing) {
-                      if (hasNicknameError) return;
+                      if (isNicknameEmpty || hasNicknameError) return;
                       updateMe({ nickname: editNickname });
                     } else {
                       setIsEditing(true);
@@ -181,6 +182,11 @@ const EditMyInformationPage = () => {
                   )}
                 </Button>
               </div>
+              {isNicknameEmpty && (
+                <FieldDescription error>
+                  이름을 입력해 주세요.
+                </FieldDescription>
+              )}
               {isEditing && hasNicknameError && (
                 <FieldDescription error>
                   특수문자와 공백은 사용할 수 없습니다.
