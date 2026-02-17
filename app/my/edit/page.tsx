@@ -81,8 +81,8 @@ const EditMyInformationPage = () => {
   }, [nickname, isEditing]);
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <div className="flex-1 w-full mt-20 rounded-t-3xl bg-[#f0f0f0] flex flex-col items-center gap-2.5 px-5 pb-36">
+    <div className="h-[calc(100vh-60px)] flex flex-col">
+      <div className="flex-1 w-full mt-20 rounded-t-3xl bg-[#f0f0f0] flex flex-col items-center gap-2.5 px-5 pb-18">
         <button
           type="button"
           className="-mt-[43px]"
@@ -183,9 +183,7 @@ const EditMyInformationPage = () => {
                 </Button>
               </div>
               {isNicknameEmpty && (
-                <FieldDescription error>
-                  이름을 입력해 주세요.
-                </FieldDescription>
+                <FieldDescription error>이름을 입력해 주세요.</FieldDescription>
               )}
               {isEditing && hasNicknameError && (
                 <FieldDescription error>
