@@ -19,6 +19,7 @@ import {
   GetCollectionParams,
   GetCollectionPlacesParams,
   GetCollectionsParams,
+  PostCollectionPlacePreferenceParams,
   UpdateCollectionParams,
   UpdateCollectionRequest,
   UpdateCollectionResponse,
@@ -112,6 +113,25 @@ export const getCollectionMembers = async (collectionId: string) => {
     `/collections/${collectionId}/members`,
   );
   return res.data;
+};
+
+/**
+ * 컬렉션 장소 PICK/PASS API
+ *
+ * @param collectionId - 컬렉션 ID
+ * @param collectionPlaceId - 컬렉션 장소 ID
+ * @param type - PICK 또는 PASS
+ */
+export const postCollectionPlacePreference = async ({
+  collectionId,
+  collectionPlaceId,
+  type,
+}: PostCollectionPlacePreferenceParams) => {
+  await apiClient.post(
+    `/collections/${collectionId}/places/${collectionPlaceId}/preference`,
+    null,
+    { params: { type } },
+  );
 };
 
 /**

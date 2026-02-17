@@ -6,6 +6,7 @@ import Header from "@/components/layout/Header";
 import { useCollection } from "@/lib/hooks/collection/use-collection";
 import { useCollectionPlaces } from "@/lib/hooks/collection/use-collection-places";
 import { useCollectionMembers } from "@/lib/hooks/collection/use-collection-members";
+import { useCollectionPlacePreference } from "@/lib/hooks/collection/use-collection-place-preference";
 import NavigationBar from "@/components/layout/NavigationBar";
 import PlaceEmptyIllust from "@/public/illust/place-empty.svg";
 import { Button } from "@/components/ui/button";
@@ -30,6 +31,7 @@ const CollectionDetailPage = () => {
     added_by: listHeader.addedBy,
   });
   const { data: membersData } = useCollectionMembers(collectionId);
+  const { mutate: postPreference } = useCollectionPlacePreference();
 
   const title = collection?.title ?? "";
   const places = placesData?.pages.flatMap((page) => page.contents) ?? [];
@@ -93,6 +95,20 @@ const CollectionDetailPage = () => {
                 imageSrc={item.place.photos[0]}
                 likeCount={item.pick_pass.picked.count}
                 rejectCount={item.pick_pass.passed.count}
+                onLikeClick={() =>
+                  postPreference({
+                    collectionId,
+                    collectionPlaceId: item.collection_place_id,
+                    type: "PICK",
+                  })
+                }
+                onRejectClick={() =>
+                  postPreference({
+                    collectionId,
+                    collectionPlaceId: item.collection_place_id,
+                    type: "PASS",
+                  })
+                }
                 onClick={() =>
                   router.push(
                     `/collection/${collectionId}/place/${item.collection_place_id}`,
