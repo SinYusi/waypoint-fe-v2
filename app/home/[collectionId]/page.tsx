@@ -20,8 +20,15 @@ const CollectionDetailPage = () => {
   const params = useParams<{ collectionId: string }>();
   const collectionId = params.collectionId;
 
+  const [listHeader, setListHeader] = useState<PlaceListHeaderValue>({
+    sort: "LATEST",
+  });
+
   const { data: collection } = useCollection(collectionId);
-  const { data: placesData } = useCollectionPlaces(collectionId);
+  const { data: placesData } = useCollectionPlaces(collectionId, {
+    sort: listHeader.sort,
+    added_by: listHeader.addedBy,
+  });
   const { data: membersData } = useCollectionMembers(collectionId);
 
   const title = collection?.title ?? "";
@@ -32,10 +39,6 @@ const CollectionDetailPage = () => {
         name: m.nickname ?? "",
       }))
     : [];
-
-  const [listHeader, setListHeader] = useState<PlaceListHeaderValue>({
-    sort: "LATEST",
-  });
 
   return (
     <div className="flex flex-col min-h-screen">

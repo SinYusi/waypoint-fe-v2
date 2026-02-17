@@ -91,6 +91,8 @@ export type GetCollectionPlacesParams = {
   collectionId: string;
   page?: number;
   size?: number;
+  sort?: "LATEST" | "OLDEST";
+  added_by?: string;
 };
 
 export type PlaceCategoryLevel = {
