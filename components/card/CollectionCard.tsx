@@ -1,25 +1,27 @@
 "use client";
 
 import Image from "next/image";
-import { Ellipsis, UsersRound } from "lucide-react";
-import HeaderBtn from "@/components/layout/HeaderBtn";
+import { Pencil, Trash2, UsersRound } from "lucide-react";
 import { cn } from "@/lib/utils/utils";
+import MoreActionMenu from "../common/MoreActionMenu";
 
 interface CollectionCardProps {
   title: string;
-  description?: string;
+  memberCount?: number;
   imageSrc?: string;
   onClick?: () => void;
-  onMenuClick?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
   className?: string;
 }
 
 const CollectionCard = ({
   title,
-  description,
+  memberCount,
   imageSrc,
   onClick,
-  onMenuClick,
+  onEdit,
+  onDelete,
   className,
 }: CollectionCardProps) => {
   return (
@@ -49,20 +51,36 @@ const CollectionCard = ({
             <span className="typography-display-lg-bold text-foreground">
               {title}
             </span>
-            {description && (
+            {memberCount && (
               <span className="flex items-center gap-1 typography-body-sm-reg text-muted-foreground">
                 <UsersRound className="size-4" />
-                {description}명 참여 중
+                {memberCount}명 참여 중
               </span>
             )}
           </div>
-          {/* Menu Button */}
-          <div onClick={(event) => event.stopPropagation()}>
-            <HeaderBtn
-              bgVariant="glass"
-              icon={Ellipsis}
-              label="메뉴"
-              onClick={onMenuClick}
+          {/* Menu button */}
+          <div
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <MoreActionMenu
+              label="컬렉션 메뉴"
+              headerBtnBgVariant="glass"
+              sheetTitle="컬렉션 메뉴"
+              items={[
+                {
+                  id: "edit",
+                  label: "수정하기",
+                  icon: <Pencil />,
+                  onSelect: onEdit,
+                },
+                {
+                  id: "delete",
+                  label: "삭제하기",
+                  icon: <Trash2 />,
+                  onSelect: onDelete,
+                },
+              ]}
             />
           </div>
         </div>
