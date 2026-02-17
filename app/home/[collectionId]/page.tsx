@@ -43,6 +43,8 @@ const CollectionDetailPage = () => {
         showBackButton
         title={title}
         showNotificationButton
+        leftBtnBgVariant="ghost"
+        rightBtnBgVariant="ghost"
       />
       {places.length === 0 ? (
         <main className="flex flex-col flex-1 items-center justify-center pb-18 gap-5 mx-5">
