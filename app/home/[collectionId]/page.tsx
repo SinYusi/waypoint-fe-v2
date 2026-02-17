@@ -95,6 +95,7 @@ const CollectionDetailPage = () => {
                 imageSrc={item.place.photos[0]}
                 likeCount={item.pick_pass.picked.count}
                 rejectCount={item.pick_pass.passed.count}
+                myPreference={item.pick_pass.my_preference}
                 onLikeClick={() =>
                   postPreference({
                     collectionId,
