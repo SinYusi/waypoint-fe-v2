@@ -51,9 +51,10 @@ const CollectionDetailPage = () => {
         showNotificationButton
         leftBtnBgVariant="ghost"
         rightBtnBgVariant="ghost"
+        className="fixed top-0 z-10 inset-x-0 bg-white"
       />
       {places.length === 0 ? (
-        <main className="flex flex-col flex-1 items-center justify-center pb-18 gap-5 mx-5">
+        <main className="flex flex-col flex-1 items-center justify-center pb-18 gap-5 mx-5 pt-15">
           <div className="relative flex items-center justify-center w-40 h-40 rounded-full bg-[#f5f5f5]">
             <PlaceEmptyIllust className="absolute w-54 h-48" />
           </div>
@@ -74,7 +75,7 @@ const CollectionDetailPage = () => {
           </Button>
         </main>
       ) : (
-        <>
+        <div className="pt-15">
           <PlaceListHeader
             members={members}
             value={listHeader}
@@ -127,7 +128,7 @@ const CollectionDetailPage = () => {
               장소 추가하기
             </Button>
           </div>
-        </>
+        </div>
       )}
       <NavigationBar className="fixed bottom-0 z-10 inset-x-0" />
     </div>
