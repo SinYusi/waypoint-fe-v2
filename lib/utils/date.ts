@@ -57,3 +57,33 @@ export const formatDateRangeText = (
   const to = format(range.to, pattern, locale ? { locale } : undefined);
   return `${from}${separator}${to}`;
 };
+
+/**
+ * yyyy-MM-dd 형식의 문자열을 yyyy.MM.dd 형식으로 변환
+ */
+export const formatDateToDot = (dateString: string): string => {
+  if (!dateString) return "";
+
+  const date = new Date(dateString);
+
+  if (isNaN(date.getTime())) return "";
+
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const dd = String(date.getDate()).padStart(2, "0");
+
+  return `${yyyy}.${mm}.${dd}`;
+};
+
+/**
+ * start_date, end_date를 받아
+ * yyyy.MM.dd ~ yyyy.MM.dd 형태로 반환
+ */
+export const formatDateRange = (startDate: string, endDate: string): string => {
+  const formattedStart = formatDateToDot(startDate);
+  const formattedEnd = formatDateToDot(endDate);
+
+  if (!formattedStart || !formattedEnd) return "";
+
+  return `${formattedStart} ~ ${formattedEnd}`;
+};
