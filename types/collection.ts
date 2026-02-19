@@ -140,6 +140,20 @@ export type CollectionPlaceResponse = {
 };
 
 /**
+ * 컬렉션 장소 추가 요청
+ * POST /collections/{collectionId}/places
+ */
+export type AddCollectionPlaceRequest = {
+  place_id: string;
+};
+
+/**
+ * 컬렉션 장소 추가 성공 응답
+ * 201
+ */
+export type AddCollectionPlaceResponse = CollectionPlaceResponse;
+
+/**
  * 컬렉션 장소 목록 조회 성공 응답
  * 200
  */

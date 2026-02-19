@@ -11,6 +11,8 @@
  */
 
 import {
+  AddCollectionPlaceRequest,
+  AddCollectionPlaceResponse,
   CollectionListResponse,
   CollectionPlacesResponse,
   CollectionResponse,
@@ -79,6 +81,24 @@ export const updateCollection = async (
 ) => {
   const res = await apiClient.put<UpdateCollectionResponse>(
     `/collections/${collectionId}`,
+    body,
+  );
+  return res.data;
+};
+
+/**
+ * 컬렉션 장소 추가 API
+ *
+ * @param collectionId - 컬렉션 ID
+ * @param body - place_id
+ * @returns 추가된 컬렉션 장소 정보
+ */
+export const addCollectionPlace = async (
+  collectionId: string,
+  body: AddCollectionPlaceRequest,
+) => {
+  const res = await apiClient.post<AddCollectionPlaceResponse>(
+    `/collections/${collectionId}/places`,
     body,
   );
   return res.data;

@@ -1,19 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useParams } from "next/navigation";
 import Header from "@/components/layout/Header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { InputForm } from "@/components/ui/input-form";
 import { usePlaceSearch } from "@/lib/hooks/use-place-search";
+import { useAddCollectionPlace } from "@/lib/hooks/collection/use-add-collection-place";
 
 const AddPlacePage = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const { collectionId } = useParams<{ collectionId: string }>();
   const [query, setQuery] = useState("");
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
   const { data } = usePlaceSearch(query);
+  const { mutate: addPlace, isPending } = useAddCollectionPlace({
+    onSuccess: () => router.back(),
+  });
 
   const places = data ?? [];
 
@@ -78,7 +83,12 @@ const AddPlacePage = () => {
           <div className="fixed bottom-0 inset-x-0 px-5 py-4 bg-white">
             <Button
               className="w-full bg-sky-500 typography-action-base-bold disabled:opacity-40"
-              disabled={!selectedPlaceId}
+              disabled={!selectedPlaceId || isPending}
+              onClick={() => {
+                if (selectedPlaceId) {
+                  addPlace({ collectionId, place_id: selectedPlaceId });
+                }
+              }}
             >
               장소 추가하기
             </Button>
