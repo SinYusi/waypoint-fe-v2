@@ -10,7 +10,12 @@
  * - 소유자 변경 (PATCH | `/plans/{planId}/owner`)
  */
 
-import { CreatePlanRequest, PlanResponse } from "@/types/plan";
+import {
+  CreatePlanRequest,
+  GetPlansParams,
+  PlanListResponse,
+  PlanResponse,
+} from "@/types/plan";
 import { apiClient } from "./client";
 
 /**
@@ -21,5 +26,18 @@ import { apiClient } from "./client";
  */
 export const createPlan = async (body: CreatePlanRequest) => {
   const res = await apiClient.post<PlanResponse>("/plans", body);
+  return res.data;
+};
+
+/**
+ * 플랜 목록 조회 API
+ *
+ * @param params - 페이지네이션 파라미터 (page, size)
+ * @returns 플랜 목록 및 페이지 정보
+ */
+export const getPlans = async (params?: GetPlansParams) => {
+  const res = await apiClient.get<PlanListResponse>("/plans", {
+    params,
+  });
   return res.data;
 };
