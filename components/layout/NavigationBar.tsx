@@ -8,7 +8,7 @@ import MyIcon from "@/public/icons/my.svg";
 
 const NAV_ITEMS = [
   { label: "보관함", path: "/home", Icon: CollectionIcon },
-  { label: "플래너", path: "/projects", Icon: ProjectIcon },
+  { label: "여행계획", path: "/projects", Icon: ProjectIcon },
   { label: "마이페이지", path: "/my", Icon: MyIcon },
 ];
 
