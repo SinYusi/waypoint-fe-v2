@@ -1,15 +1,16 @@
-import * as React from "react"
-import { Pencil, Check } from "lucide-react"
+import * as React from "react";
+import { Pencil, Check } from "lucide-react";
 
 import { cn } from "@/lib/utils/utils";
 import { Button } from "@/components/ui/button";
 
 type LabelProps = React.ComponentProps<"label"> & {
-  required?: boolean
-  isEditing?: boolean
-  onEdit?: () => void
-  onSave?: () => void
-}
+  required?: boolean;
+  isEditing?: boolean;
+  onEdit?: () => void;
+  onSave?: () => void;
+  labelClassName?: string;
+};
 
 function Label({
   className,
@@ -17,6 +18,7 @@ function Label({
   isEditing,
   onEdit,
   onSave,
+  labelClassName,
   children,
   ...props
 }: LabelProps) {
@@ -24,7 +26,10 @@ function Label({
     <div className={cn("flex items-center justify-between", className)}>
       <label
         data-slot="label"
-        className="inline-flex items-center gap-2 typography-label-base-bold text-foreground"
+        className={cn(
+          "inline-flex items-center gap-2 typography-label-base-bold text-foreground",
+          labelClassName,
+        )}
         {...props}
       >
         {children}
