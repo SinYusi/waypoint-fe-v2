@@ -1,12 +1,48 @@
 "use client";
 
+import ProjectForm from "@/components/common/projects/ProjectForm";
 import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
-import { InputForm } from "@/components/ui/input-form";
-import { Label } from "@/components/ui/label";
-import { CalendarIcon } from "lucide-react";
+import { useCreatePlan } from "@/lib/hooks/project/plan/use-create-plan";
+import { useProjectForm } from "@/lib/hooks/project/use-project-form";
+import { toApiDateRange } from "@/lib/utils/date";
+import { useRouter } from "next/navigation";
 
 const ProjectCreatePage = () => {
+  const router = useRouter();
+
+  const form = useProjectForm();
+
+  const { mutate, isPending } = useCreatePlan({
+    onSuccess: () => {
+      form.resetAll();
+      router.push("/projects");
+    },
+    onError: (err) => {
+      const message =
+        err.response?.data?.errors?.[0]?.reason ??
+        err.response?.data?.detail ??
+        "여행 계획 생성에 실패했어요. 잠시 후 다시 시도해 주세요.";
+
+      form.setDateErrorMessage(message);
+    },
+  });
+
+  const handleCreate = () => {
+    const result = form.validateForSubmit();
+    if (!result.ok) return;
+
+    const apiRange = toApiDateRange(result.value.range);
+    if (!apiRange) return;
+
+    if (isPending) return;
+
+    mutate({
+      title: result.value.title,
+      ...apiRange,
+    });
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-background gap-2.5 pt-20">
       {/* 헤더(뒤로가기 + 타이틀) */}
@@ -18,8 +54,15 @@ const ProjectCreatePage = () => {
         className="fixed top-0 inset-x-0"
       />
 
-      <main className="px-5 pt-7 pb-3.5 flex flex-col flex-1">
-        <div className="flex-1 flex flex-col gap-10 border-b border-border">
+      <form
+        id="create-project-form"
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleCreate();
+        }}
+        className="px-5 pt-7 pb-3.5 flex flex-col flex-1"
+      >
+        <main className="flex-1 flex flex-col gap-10 border-b border-border">
           {/* 타이틀 + 설명 */}
           <div className="flex flex-col gap-4">
             <h2 className="typography-display-2xl text-foreground">
@@ -30,28 +73,25 @@ const ProjectCreatePage = () => {
               시작할 수 있어요.
             </p>
           </div>
-          <form id="create-project-form" className="flex flex-col gap-5">
-            {/* 여행 이름 */}
-            <div className="flex flex-col gap-2">
-              <Label required labelClassName="typography-label-sm-sb">
-                여행 이름
-              </Label>
-              <InputForm hideIcon placeholder="예) 제주도 첫 캠핑" />
-            </div>
-            {/* 여행 날짜 */}
-            <div className="flex flex-col gap-2">
-              <Label required labelClassName="typography-label-sm-sb">
-                여행 날짜
-              </Label>
-              <InputForm
-                icon={CalendarIcon}
-                iconClassName="text-foreground"
-                placeholder="여행 시작과 종료일을 입력해주세요"
-              />
-            </div>
-          </form>
-        </div>
-      </main>
+          {/* 프로젝트 입력 폼 (이름/날짜) */}
+          <ProjectForm
+            title={form.title}
+            titleErrorMessage={form.titleErrorMessage}
+            onTitleChange={form.onTitleChange}
+            onTitleBlur={form.validateTitleOnBlur}
+            dateText={form.dateText}
+            dateErrorMessage={form.dateErrorMessage}
+            isCalendarOpen={form.isCalendarOpen}
+            calendarMonth={form.calendarMonth}
+            draftRange={form.draftRange}
+            onCalendarOpenChange={form.onCalendarOpenChange}
+            onOpenCalendar={form.openCalendar}
+            onDraftRangeChange={form.setDraftRange}
+            onMonthChange={form.setCalendarMonth}
+            onCompleteCalendar={form.completeCalendar}
+          />
+        </main>
+      </form>
 
       {/* 하단 버튼 */}
       <footer className="w-full h-[91px] px-5 pt-4 pb-5">
@@ -59,6 +99,12 @@ const ProjectCreatePage = () => {
           variant="default"
           type="submit"
           form="create-project-form"
+          disabled={
+            isPending ||
+            !form.title.trim() ||
+            !form.range?.from ||
+            !form.range?.to
+          }
           className="w-full"
         >
           여행계획 만들기
