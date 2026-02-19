@@ -42,3 +42,18 @@ export type PlanListResponse = {
   page: number;
   size: number;
 };
+
+/**
+ * 플랜 삭제 요청 Path 파라미터
+ * DELETE /plans/{planId}
+ */
+export type DeletePlanParams = {
+  planId: string;
+};
+
+/**
+ * 플랜 삭제 성공 응답
+ * 204
+ * (응답 바디 없음)
+ */
+export type DeletePlanResponse = void;
