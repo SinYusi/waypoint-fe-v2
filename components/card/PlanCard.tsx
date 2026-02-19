@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { Ellipsis, UsersRound } from "lucide-react";
-import HeaderBtn from "@/components/layout/HeaderBtn";
+import { Pencil, Trash2, UsersRound } from "lucide-react";
 import { cn } from "@/lib/utils/utils";
+import MoreActionMenu from "../common/MoreActionMenu";
 
 const BASE_WIDTH = 335;
 
@@ -14,7 +14,8 @@ interface PlanCardProps {
   dateRange?: string;
   imageSrc?: string;
   onClick?: () => void;
-  onMenuClick?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
   className?: string;
 }
 
@@ -24,7 +25,8 @@ const PlanCard = ({
   dateRange,
   imageSrc,
   onClick,
-  onMenuClick,
+  onEdit,
+  onDelete,
   className,
 }: PlanCardProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -89,12 +91,28 @@ const PlanCard = ({
               </div>
 
               {/* Menu Button */}
-              <div onClick={(event) => event.stopPropagation()}>
-                <HeaderBtn
-                  bgVariant="glass"
-                  icon={Ellipsis}
-                  label="메뉴"
-                  onClick={onMenuClick}
+              <div
+                onClick={(event) => event.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
+              >
+                <MoreActionMenu
+                  label="프로젝트 메뉴"
+                  headerBtnBgVariant="glass"
+                  sheetTitle="프로젝트 메뉴"
+                  items={[
+                    {
+                      id: "edit",
+                      label: "수정하기",
+                      icon: <Pencil />,
+                      onSelect: onEdit,
+                    },
+                    {
+                      id: "delete",
+                      label: "삭제하기",
+                      icon: <Trash2 />,
+                      onSelect: onDelete,
+                    },
+                  ]}
                 />
               </div>
             </div>
