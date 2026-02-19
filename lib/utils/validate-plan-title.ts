@@ -1,0 +1,26 @@
+/**
+ * 1~20자
+ * 한글/영문/숫자
+ * 특수문자: ' _ 공백만 허용
+ * 이모지 허용
+ */
+export const validatePlanTitle = (raw: string) => {
+  const title = raw.trim();
+
+  if (title.length > 20)
+    return {
+      ok: false as const,
+      message: "여행 이름은 20자 이내로 입력해 주세요.",
+    };
+
+  // 금지: 따옴표('), 언더스코어(_), 공백 외의 특수문자만 거르기(이모지는 통과)
+  const forbiddenAsciiSymbol = /[!"#$%&()*+,\-./:;<=>?@[\\\]^`{|}~]/;
+  if (forbiddenAsciiSymbol.test(title)) {
+    return {
+      ok: false as const,
+      message: "특수문자는 ' , _ , 공백만 사용할 수 있어요.",
+    };
+  }
+
+  return { ok: true as const, value: title };
+};
