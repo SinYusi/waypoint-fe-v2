@@ -44,12 +44,26 @@ function InputForm({
         )}
         {...props}
       />
-      {!hideIcon && (
-        <Icon
-          onClick={iconClick}
-          className={cn("size-5 shrink-0 text-muted-foreground", iconClassName)}
-        />
-      )}
+      {!hideIcon &&
+        (iconClick ? (
+          <button
+            type="button"
+            onClick={iconClick}
+            className="shrink-0"
+            aria-label="아이콘 버튼"
+          >
+            <Icon
+              className={cn("size-5 text-muted-foreground", iconClassName)}
+            />
+          </button>
+        ) : (
+          <Icon
+            className={cn(
+              "size-5 shrink-0 text-muted-foreground",
+              iconClassName,
+            )}
+          />
+        ))}
     </div>
   );
 }
