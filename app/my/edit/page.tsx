@@ -68,8 +68,10 @@ const EditMyInformationPage = () => {
   const isNextDisabled = !selectedReason || (isEtcSelected && !etcText.trim());
 
   const isNicknameEmpty = isEditing && editNickname.trim() === "";
+  const isNicknameTooLong = editNickname.length > 10;
   const hasNicknameError =
     !isNicknameEmpty &&
+    !isNicknameTooLong &&
     /[^\w\uAC00-\uD7A3\u1100-\u11FF\u3130-\u318F]/.test(editNickname);
 
   const toggleReason = (reason: string) => {
@@ -168,7 +170,12 @@ const EditMyInformationPage = () => {
                   disabled={isUpdating}
                   onClick={() => {
                     if (isEditing) {
-                      if (isNicknameEmpty || hasNicknameError) return;
+                      if (
+                        isNicknameEmpty ||
+                        isNicknameTooLong ||
+                        hasNicknameError
+                      )
+                        return;
                       updateMe({ nickname: editNickname });
                     } else {
                       setIsEditing(true);
@@ -184,6 +191,11 @@ const EditMyInformationPage = () => {
               </div>
               {isNicknameEmpty && (
                 <FieldDescription error>이름을 입력해 주세요.</FieldDescription>
+              )}
+              {isEditing && isNicknameTooLong && (
+                <FieldDescription error>
+                  이름은 10자 이하로 입력해 주세요.
+                </FieldDescription>
               )}
               {isEditing && hasNicknameError && (
                 <FieldDescription error>
