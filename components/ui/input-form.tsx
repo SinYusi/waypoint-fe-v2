@@ -1,17 +1,23 @@
 import * as React from "react";
-import { Search } from "lucide-react";
+import { Search, type LucideIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils/utils";
 
 type InputFormProps = React.ComponentProps<"input"> & {
   error?: boolean;
   hideIcon?: boolean;
+  icon?: LucideIcon;
+  iconClassName?: string;
+  iconClick?: () => void;
 };
 
 function InputForm({
   className,
   error,
   hideIcon = false,
+  icon: Icon = Search,
+  iconClassName,
+  iconClick,
   ...props
 }: InputFormProps) {
   return (
@@ -39,7 +45,10 @@ function InputForm({
         {...props}
       />
       {!hideIcon && (
-        <Search className="size-5 shrink-0 text-muted-foreground" />
+        <Icon
+          onClick={iconClick}
+          className={cn("size-5 shrink-0 text-muted-foreground", iconClassName)}
+        />
       )}
     </div>
   );
