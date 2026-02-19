@@ -12,6 +12,7 @@
 
 import {
   CreatePlanRequest,
+  DeletePlanParams,
   GetPlansParams,
   PlanListResponse,
   PlanResponse,
@@ -40,4 +41,14 @@ export const getPlans = async (params?: GetPlansParams) => {
     params,
   });
   return res.data;
+};
+
+/**
+ * 플랜 삭제 API
+ *
+ * @param planId - 삭제할 플랜 ID
+ * @returns void (204 No Content)
+ */
+export const deletePlan = async (planId: DeletePlanParams["planId"]) => {
+  await apiClient.delete(`/plans/${planId}`);
 };
