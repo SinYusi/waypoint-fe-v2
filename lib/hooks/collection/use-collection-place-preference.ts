@@ -29,12 +29,12 @@ export const useCollectionPlacePreference = (options?: Options) => {
   >({
     mutationFn: postCollectionPlacePreference,
     ...options,
-    onSuccess: (data, variables, context) => {
+    onSuccess: (data, variables, context, mutation) => {
       queryClient.invalidateQueries({
         queryKey: ["collectionPlaces"],
       });
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context, mutation);
     },
   });
 };
