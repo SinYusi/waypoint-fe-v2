@@ -13,6 +13,7 @@ interface CheckBoxFieldProps {
   icon?: LucideIcon;
   description: string;
   className?: string;
+  iconClassName?: string;
 }
 
 const CheckBoxField = ({
@@ -24,6 +25,7 @@ const CheckBoxField = ({
   icon: Icon,
   description,
   className = "",
+  iconClassName = "",
 }: CheckBoxFieldProps) => {
   return (
     <label
@@ -44,7 +46,9 @@ const CheckBoxField = ({
           {label}
         </span>
         <div className="typography-body-sm-reg text-muted-foreground flex items-center gap-[3px]">
-          {Icon && <Icon className="w-4.5 h-4.5 shrink-0" />}
+          {Icon && (
+            <Icon className={cn("w-4.5 h-4.5 shrink-0", iconClassName)} />
+          )}
           <span className="min-w-0 flex-1 truncate">{description}</span>
         </div>
       </div>
