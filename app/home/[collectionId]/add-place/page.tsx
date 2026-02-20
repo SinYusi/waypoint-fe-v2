@@ -10,6 +10,7 @@ import { usePlaceSearch } from "@/lib/hooks/use-place-search";
 import { useAddCollectionPlace } from "@/lib/hooks/collection/use-add-collection-place";
 import SearchAiIllust from "@/public/illust/search-ai.svg";
 import { SearchIcon, YoutubeIcon } from "lucide-react";
+import { toast } from "sonner";
 
 const AddPlacePage = () => {
   const router = useRouter();
@@ -20,7 +21,14 @@ const AddPlacePage = () => {
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
   const { data } = usePlaceSearch(query);
   const { mutate: addPlace, isPending } = useAddCollectionPlace({
-    onSuccess: () => router.back(),
+    onSuccess: () => {
+      toast("선택한 장소가 보관함에 추가되었습니다.");
+    },
+    onError: (error) => {
+      if (error.response?.status === 409) {
+        toast.error("이미 보관함에 추가된 장소입니다.");
+      }
+    },
   });
 
   const places = data ?? [];
