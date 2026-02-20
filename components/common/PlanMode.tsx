@@ -25,10 +25,10 @@ export default function PlanMode({
 					<PlanModeIcon aria-hidden className="size-4 opacity-40" />
 				}
 				className={cn(
-					"h-8 w-full rounded-full px-2.5 py-0.5 typography-nav-xl-bold text-foreground hover:text-foreground",
+					"h-8 w-full rounded-full px-2.5 py-0.5 text-foreground hover:text-foreground",
 					isVariant2
-						? "border-transparent bg-transparent hover:bg-transparent"
-						: "border-border bg-background hover:bg-background",
+						? "border-transparent bg-transparent hover:bg-transparent typography-nav-xl-reg"
+						: "border-border bg-background hover:bg-background typography-nav-xl-bold",
 				)}
 			>{text}</Button>
 		</div>
