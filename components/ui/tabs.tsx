@@ -1,10 +1,9 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { Tabs as TabsPrimitive } from "radix-ui"
-
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { Tabs as TabsPrimitive } from "radix-ui";
+import { cn } from "@/lib/utils/utils";
 
 const tabsListVariants = cva(
   "inline-flex items-center rounded-2xl border border-border bg-muted p-1 text-muted-foreground",
@@ -28,8 +27,8 @@ const tabsListVariants = cva(
       fullWidth: false,
       style: "pill",
     },
-  }
-)
+  },
+);
 
 const tabsTriggerVariants = cva(
   "inline-flex cursor-pointer items-center justify-center whitespace-nowrap rounded-xl px-3 py-1.5 typography-action-sm-reg outline-none focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50",
@@ -54,18 +53,24 @@ const tabsTriggerVariants = cva(
       fullWidth: false,
       style: "pill",
     },
-  }
-)
+  },
+);
 
 function Tabs({
   className,
   ...props
 }: React.ComponentProps<typeof TabsPrimitive.Root>) {
-  return <TabsPrimitive.Root data-slot="tabs" className={cn("w-full", className)} {...props} />
+  return (
+    <TabsPrimitive.Root
+      data-slot="tabs"
+      className={cn("w-full", className)}
+      {...props}
+    />
+  );
 }
 
 type TabsListProps = React.ComponentProps<typeof TabsPrimitive.List> &
-  VariantProps<typeof tabsListVariants>
+  VariantProps<typeof tabsListVariants>;
 
 function TabsList({
   className,
@@ -80,11 +85,11 @@ function TabsList({
       className={cn(tabsListVariants({ size, fullWidth, style }), className)}
       {...props}
     />
-  )
+  );
 }
 
 type TabsTriggerProps = React.ComponentProps<typeof TabsPrimitive.Trigger> &
-  VariantProps<typeof tabsTriggerVariants>
+  VariantProps<typeof tabsTriggerVariants>;
 
 function TabsTrigger({
   className,
@@ -99,7 +104,7 @@ function TabsTrigger({
       className={cn(tabsTriggerVariants({ size, fullWidth, style }), className)}
       {...props}
     />
-  )
+  );
 }
 
 function TabsContent({
@@ -111,12 +116,12 @@ function TabsContent({
       data-slot="tabs-content"
       className={cn(
         "mt-3 outline-none focus-visible:ring-ring/50 focus-visible:ring-[3px]",
-        className
+        className,
       )}
       {...props}
     />
-  )
+  );
 }
 
-export { Tabs, TabsList, TabsTrigger, TabsContent }
-export type { TabsListProps, TabsTriggerProps }
+export { Tabs, TabsList, TabsTrigger, TabsContent };
+export type { TabsListProps, TabsTriggerProps };

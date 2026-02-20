@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Ellipsis, UsersRound } from "lucide-react";
 import HeaderBtn from "@/components/layout/HeaderBtn";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 const BASE_WIDTH = 335;
 
@@ -44,7 +44,11 @@ const PlanCard = ({
   return (
     <div
       ref={containerRef}
-      className={cn("w-full max-w-83.75", onClick && "cursor-pointer", className)}
+      className={cn(
+        "w-full max-w-83.75",
+        onClick && "cursor-pointer",
+        className,
+      )}
       onClick={onClick}
     >
       <div style={{ zoom: scale }}>
@@ -59,12 +63,7 @@ const PlanCard = ({
           {/* Image Area – 16:9, extends behind info section */}
           <div className="relative aspect-video w-full bg-white">
             {imageSrc && (
-              <Image
-                src={imageSrc}
-                alt={title}
-                fill
-                className="object-cover"
-              />
+              <Image src={imageSrc} alt={title} fill className="object-cover" />
             )}
             {dateRange && (
               <span className="absolute bottom-[calc(6.25%+1.25rem)] left-4 rounded-full bg-[#1C202466] px-2.75 py-0.75 text-center typography-caption-xs-reg text-white backdrop-blur-lg">
