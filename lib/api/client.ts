@@ -28,7 +28,28 @@ apiClient.interceptors.request.use((config) => {
 
 apiClient.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
+    const originalRequest = error.config
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true
+
+      try {
+        const { data } = await axios.post<{ access_token: string }>(
+          `${baseURL}auth/reissue`,
+          null,
+          { withCredentials: true },
+        )
+
+        localStorage.setItem("accessToken", data.access_token)
+        originalRequest.headers.Authorization = `Bearer ${data.access_token}`
+        return apiClient(originalRequest)
+      } catch {
+        localStorage.removeItem("accessToken")
+        window.location.href = "/login"
+      }
+    }
+
     return Promise.reject(error)
   },
 )
