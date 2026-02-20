@@ -6,12 +6,14 @@ type PlanModeProps = {
 	variant?: "default" | "variant2";
 	text: string;
 	className?: string;
+	onClick?: () => void;
 };
 
 export default function PlanMode({
 	variant = "default",
 	text,
 	className,
+	onClick,
 }: PlanModeProps) {
 	const isVariant2 = variant === "variant2";
 
@@ -21,6 +23,7 @@ export default function PlanMode({
 				type="button"
 				variant="outline"
 				size="S"
+				onClick={onClick}
 				icon={
 					<PlanModeIcon aria-hidden className="size-4 opacity-40" />
 				}
