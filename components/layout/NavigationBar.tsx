@@ -53,7 +53,7 @@ const NavigationBar = ({
             style={{ background: "rgba(214, 214, 214, 0.4)" }}
           >
             <PlanMode text="여행 일정" className="flex-1" />
-            <PlanMode variant="variant2" text="예산" className="flex-1 px-2.5" />
+            <PlanMode variant="variant2" text="예산" className="flex-1" />
           </div>
         </div>
       </div>
@@ -81,11 +81,11 @@ const NavigationBar = ({
         >
           {/* Overlay pill: PlanMode default + PlanMode variant2 */}
           <div
-            className="flex w-51 shrink-0 items-center gap-2 rounded-full p-1 h-10"
+            className="flex flex-1 items-center gap-2 rounded-full p-1 h-10"
             style={{ background: "rgba(214, 214, 214, 0.4)" }}
           >
-            <PlanMode text="여행 일정" className="w-30.5" />
-            <PlanMode variant="variant2" text="예산" className="w-16.5" />
+            <PlanMode text="여행 일정" className="flex-122 min-w-0" />
+            <PlanMode variant="variant2" text="예산" className="flex-66 min-w-0" />
           </div>
 
           {/* Vertical divider */}
