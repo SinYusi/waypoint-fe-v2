@@ -12,15 +12,19 @@
 
 import {
   CollectionListResponse,
+  CollectionPlacesResponse,
   CollectionResponse,
   CreateCollectionRequest,
   DeleteCollectionParams,
   GetCollectionParams,
+  GetCollectionPlacesParams,
   GetCollectionsParams,
+  PostCollectionPlacePreferenceParams,
   UpdateCollectionParams,
   UpdateCollectionRequest,
   UpdateCollectionResponse,
 } from "@/types/collection";
+import { CollectionMembersResponse } from "@/types/member";
 import { apiClient } from "./client";
 
 /**
@@ -78,6 +82,56 @@ export const updateCollection = async (
     body,
   );
   return res.data;
+};
+
+/**
+ * 컬렉션 장소 목록 조회 API
+ *
+ * @param collectionId - 조회할 컬렉션 ID
+ * @param params - 페이지네이션 파라미터 (page, size)
+ * @returns 컬렉션 장소 목록 및 페이지 정보
+ */
+export const getCollectionPlaces = async (
+  collectionId: GetCollectionPlacesParams["collectionId"],
+  params?: Omit<GetCollectionPlacesParams, "collectionId">,
+) => {
+  const res = await apiClient.get<CollectionPlacesResponse>(
+    `/collections/${collectionId}/places`,
+    { params },
+  );
+  return res.data;
+};
+
+/**
+ * 컬렉션 멤버 조회 API
+ *
+ * @param collectionId - 조회할 컬렉션 ID
+ * @returns 컬렉션 멤버 목록
+ */
+export const getCollectionMembers = async (collectionId: string) => {
+  const res = await apiClient.get<CollectionMembersResponse>(
+    `/collections/${collectionId}/members`,
+  );
+  return res.data;
+};
+
+/**
+ * 컬렉션 장소 PICK/PASS API
+ *
+ * @param collectionId - 컬렉션 ID
+ * @param collectionPlaceId - 컬렉션 장소 ID
+ * @param type - PICK 또는 PASS
+ */
+export const postCollectionPlacePreference = async ({
+  collectionId,
+  collectionPlaceId,
+  type,
+}: PostCollectionPlacePreferenceParams) => {
+  await apiClient.post(
+    `/collections/${collectionId}/places/${collectionPlaceId}/preference`,
+    null,
+    { params: { type } },
+  );
 };
 
 /**

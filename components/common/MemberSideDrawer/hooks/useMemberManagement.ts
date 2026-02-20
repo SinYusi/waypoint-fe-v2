@@ -1,20 +1,8 @@
-import { useState } from "react";
-import {
-  mockCollectionMembersResponse,
-  mockPlanMembersResponse,
-} from "@/mocks/member";
-
 interface UseMemberManagementProps {
   variant: "COLLECTION" | "PLAN";
 }
 
-export const useMemberManagement = ({ variant }: UseMemberManagementProps) => {
-  // TODO: 멤버 목록 조회 API 호출
-  const [members] = useState(
-    variant === "COLLECTION"
-      ? mockCollectionMembersResponse
-      : mockPlanMembersResponse,
-  );
+export const useMemberManagement = ({ variant: _ }: UseMemberManagementProps) => {
   const handleKickMember = (memberId: string) => {
     // TODO: 멤버 내보내기 API 호출
     console.log("내보내기:", memberId);
@@ -26,7 +14,6 @@ export const useMemberManagement = ({ variant }: UseMemberManagementProps) => {
   };
 
   return {
-    members,
     handleKickMember,
     handleAssignOwner,
   };

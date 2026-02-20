@@ -12,6 +12,7 @@ interface PlaceCardProps {
   imageSrc?: string;
   rejectCount?: number;
   likeCount?: number;
+  myPreference?: "PICK" | "PASS" | "NOTHING";
   onClick?: () => void;
   onLikeClick?: () => void;
   onRejectClick?: () => void;
@@ -25,14 +26,15 @@ const PlaceCard = ({
   imageSrc,
   rejectCount = 0,
   likeCount = 0,
+  myPreference,
   onClick,
   onLikeClick,
   onRejectClick,
   onMenuClick,
   className,
 }: PlaceCardProps) => {
-  const [isLiked, setIsLiked] = useState(false);
-  const [isRejected, setIsRejected] = useState(false);
+  const [isLiked, setIsLiked] = useState(myPreference === "PICK");
+  const [isRejected, setIsRejected] = useState(myPreference === "PASS");
 
   return (
     <div
@@ -82,8 +84,8 @@ const PlaceCard = ({
                 className="size-5 transition-colors"
                 strokeWidth={isLiked ? 0 : 2}
                 style={{
-                  stroke: isLiked ? 'none' : 'var(--foreground, #1C2024)',
-                  fill: isLiked ? 'var(--red-500, #EF4444)' : 'none',
+                  stroke: isLiked ? "none" : "var(--foreground, #1C2024)",
+                  fill: isLiked ? "var(--red-500, #EF4444)" : "none",
                 }}
               />
               <span className="typography-body-sm-reg text-foreground">
@@ -105,8 +107,8 @@ const PlaceCard = ({
                 className="size-5 transition-colors"
                 strokeWidth={2}
                 style={{
-                  stroke: isRejected ? '#FFFFFF' : 'var(--foreground, #1C2024)',
-                  fill: isRejected ? 'var(--purple-500, #A855F7)' : 'none',
+                  stroke: isRejected ? "#FFFFFF" : "var(--foreground, #1C2024)",
+                  fill: isRejected ? "var(--purple-500, #A855F7)" : "none",
                 }}
               />
               <span className="typography-body-sm-reg text-foreground">

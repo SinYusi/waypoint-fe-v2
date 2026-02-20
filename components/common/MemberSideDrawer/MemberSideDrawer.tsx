@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { DoorClosed, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,12 +18,17 @@ import { useMemberManagement } from "./hooks/useMemberManagement";
 import MemberListSection from "./components/MemberListSection";
 import TravelPlanSection from "./components/TravelPlanSection";
 import HeaderBtn, { HeaderBtnBgVariant } from "@/components/layout/HeaderBtn";
+import type { CollectionMember, MemberRole, PlanMember } from "@/types/member";
+import AppDialog from "@/components/common/AppDialog";
+import AppAlertDialog from "@/components/common/AppAlertDialog";
 
 interface MemberSideDrawerProps {
   title: string;
   placeCount?: number;
   variant: "COLLECTION" | "PLAN";
   rightBtnBgVariant: HeaderBtnBgVariant;
+  members?: (CollectionMember | PlanMember)[];
+  meRole?: MemberRole;
 }
 
 const MemberSideDrawer = ({
@@ -30,45 +36,81 @@ const MemberSideDrawer = ({
   placeCount,
   variant,
   rightBtnBgVariant,
+  members = [],
+  meRole,
 }: MemberSideDrawerProps) => {
-  const { members, handleKickMember, handleAssignOwner } = useMemberManagement(
-    { variant },
-  );
+  const { handleKickMember, handleAssignOwner } = useMemberManagement({
+    variant,
+  });
+
+  const [ownerDialogOpen, setOwnerDialogOpen] = useState(false);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+
+  const handleLeaveClick = () => {
+    if (meRole === "OWNER") {
+      setOwnerDialogOpen(true);
+    } else {
+      setConfirmDialogOpen(true);
+    }
+  };
 
   return (
-    <Drawer direction="right">
-      <DrawerTrigger asChild>
-        <HeaderBtn bgVariant={rightBtnBgVariant} icon={Menu} label="메뉴" />
-      </DrawerTrigger>
-      <DrawerContent>
-        <DrawerClose className="absolute top-3 right-3">
-          <X size={24} />
-        </DrawerClose>
-        <DrawerHeader className="flex flex-col gap-1 w-full justify-center items-center mt-10">
-          <DrawerTitle className="flex flex-row gap-1">
-            <CollectionIcon color="#0ea5e9" />
-            <p className="typography-display-xl">{title}</p>
-          </DrawerTitle>
-          <DrawerDescription className="typography-action-sm-bold font-[#757575]">
-            {placeCount}개의 장소
-          </DrawerDescription>
-        </DrawerHeader>
-        <main className="flex flex-col gap-3 mx-5 mt-10">
-          <MemberListSection
-            members={members.members}
-            onKick={handleKickMember}
-            onAssignOwner={handleAssignOwner}
-          />
-          <TravelPlanSection />
-        </main>
-        <DrawerFooter>
-          <Button variant="ghost">
-            <DoorClosed size={18} className="opacity-40" />
-            <p className="typography-action-sm-reg">이 컬렉션에서 나가기</p>
-          </Button>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+    <>
+      <Drawer direction="right">
+        <DrawerTrigger asChild>
+          <HeaderBtn bgVariant={rightBtnBgVariant} icon={Menu} label="메뉴" />
+        </DrawerTrigger>
+        <DrawerContent>
+          <DrawerClose className="absolute top-3 right-3">
+            <X size={24} />
+          </DrawerClose>
+          <DrawerHeader className="flex flex-col gap-1 w-full justify-center items-center mt-10">
+            <DrawerTitle className="flex flex-row gap-1">
+              <CollectionIcon color="#0ea5e9" />
+              <p className="typography-display-xl">{title}</p>
+            </DrawerTitle>
+            <DrawerDescription className="typography-action-sm-bold font-[#757575]">
+              {placeCount}개의 장소
+            </DrawerDescription>
+          </DrawerHeader>
+          <main className="flex flex-col gap-3 mx-5 mt-10">
+            <MemberListSection
+              members={members}
+              onKick={handleKickMember}
+              onAssignOwner={handleAssignOwner}
+            />
+            <TravelPlanSection />
+          </main>
+          <DrawerFooter>
+            <Button variant="ghost" onClick={handleLeaveClick}>
+              <DoorClosed size={18} className="opacity-40" />
+              <p className="typography-action-sm-reg">이 컬렉션에서 나가기</p>
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+
+      <AppDialog
+        open={ownerDialogOpen}
+        onOpenChange={setOwnerDialogOpen}
+        title="지금은 보관함을 나갈 수 없어요"
+        description={`보관함을 맡아줄 사람이 한 명은 꼭 필요해요.\n관리 역할을 다른 멤버에게 먼저 넘겨주세요.`}
+        actionLabel="확인"
+        onAction={() => setOwnerDialogOpen(false)}
+      />
+
+      <AppAlertDialog
+        open={confirmDialogOpen}
+        onOpenChange={setConfirmDialogOpen}
+        title="정말 이 보관함에서 나가시겠어요?"
+        description={`지금 나가시면 다시 초대 받기 전까지는 이 보관함에 다시 들어오실 수 없어요.\n그래도 정말 나가시겠어요?`}
+        cancelLabel="취소"
+        actionLabel="나가기"
+        onAction={() => {
+          setConfirmDialogOpen(false);
+        }}
+      />
+    </>
   );
 };
 

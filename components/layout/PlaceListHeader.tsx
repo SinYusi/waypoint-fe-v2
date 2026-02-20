@@ -1,10 +1,12 @@
 "use client";
 
 import { cn } from "@/lib/utils/utils";
-import { Menu, Search, X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { InputForm } from "../ui/input-form";
 import HeaderBtn from "./HeaderBtn";
 import Dropdown, { DropdownDivider, DropdownItem } from "../common/DropDown";
+import MemberSideDrawer from "../common/MemberSideDrawer/MemberSideDrawer";
+import type { CollectionMember, MemberRole } from "@/types/member";
 
 type Member = { id: string; name: string };
 type SortBy = "LATEST" | "OLDEST";
@@ -20,7 +22,10 @@ interface PlaceListHeaderProps {
   members: Member[];
   value: PlaceListHeaderValue;
   onChange: (next: Partial<PlaceListHeaderValue>) => void;
-  onOpenMenu?: () => void;
+  title?: string;
+  placeCount?: number;
+  collectionMembers?: CollectionMember[];
+  meRole?: MemberRole;
   className?: string;
 }
 
@@ -28,7 +33,10 @@ const PlaceListHeader = ({
   members,
   value,
   onChange,
-  onOpenMenu,
+  title,
+  placeCount,
+  collectionMembers,
+  meRole,
   className,
 }: PlaceListHeaderProps) => {
   const { isSearchMode, sort, addedBy, place } = value;
@@ -148,11 +156,13 @@ const PlaceListHeader = ({
               }
             />
           )}
-          <HeaderBtn
-            icon={Menu}
-            label="메뉴"
-            bgVariant="ghost"
-            onClick={onOpenMenu}
+          <MemberSideDrawer
+            title={title ?? ""}
+            placeCount={placeCount}
+            variant="COLLECTION"
+            rightBtnBgVariant="ghost"
+            members={collectionMembers}
+            meRole={meRole}
           />
         </div>
       </div>

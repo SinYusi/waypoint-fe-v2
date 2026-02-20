@@ -10,6 +10,7 @@ interface HeaderBtnProps {
   bgVariant?: HeaderBtnBgVariant;
   icon: LucideIcon;
   label: string;
+  className?: string;
   onClick?: () => void;
 }
 
@@ -17,6 +18,7 @@ const HeaderBtn = ({
   bgVariant = "solid",
   icon: Icon,
   label,
+  className,
   onClick,
 }: HeaderBtnProps) => {
   return (
@@ -30,6 +32,7 @@ const HeaderBtn = ({
         bgVariant === "solid" && "bg-[#FAFAFA]",
         bgVariant === "glass" && "bg-[#FAFAFA]/60 backdrop-blur-sm",
         bgVariant === "ghost" && "bg-transparent backdrop-blur-xl",
+        className,
       )}
     >
       {Icon && <Icon className="size-6 text-foreground" />}
