@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { cn } from "@/lib/utils/utils";
 import { useRouter, usePathname } from "next/navigation";
 import CollectionIcon from "@/public/icons/collection.svg";
@@ -19,14 +20,21 @@ type NavigationBarVariant = "default" | "variant2" | "variant3";
 interface NavigationBarProps {
   className?: string;
   variant?: NavigationBarVariant;
+  onPlanModeClick?: () => void;
+  onBudgetClick?: () => void;
+  onAddPlaceClick?: () => void;
 }
 
 const NavigationBar = ({
   className = "",
   variant = "default",
+  onPlanModeClick,
+  onBudgetClick,
+  onAddPlaceClick,
 }: NavigationBarProps) => {
   const router = useRouter();
   const pathname = usePathname();
+  const [activeMode, setActiveMode] = useState<"planMode" | "budget">("planMode");
 
   /* ── variant3 ── */
   if (variant === "variant3") {
@@ -52,8 +60,18 @@ const NavigationBar = ({
             className="flex flex-1 items-center gap-2 rounded-full p-1 h-10"
             style={{ background: "rgba(214, 214, 214, 0.4)" }}
           >
-            <PlanMode text="여행 일정" className="flex-1" />
-            <PlanMode variant="variant2" text="예산" className="flex-1" />
+            <PlanMode
+              text="여행 일정"
+              variant={activeMode === "planMode" ? "default" : "variant2"}
+              className="flex-1"
+              onClick={() => { setActiveMode("planMode"); onPlanModeClick?.(); }}
+            />
+            <PlanMode
+              text="예산"
+              variant={activeMode === "budget" ? "default" : "variant2"}
+              className="flex-1"
+              onClick={() => { setActiveMode("budget"); onBudgetClick?.(); }}
+            />
           </div>
         </div>
       </div>
@@ -84,15 +102,25 @@ const NavigationBar = ({
             className="flex flex-1 items-center gap-2 rounded-full p-1 h-10"
             style={{ background: "rgba(214, 214, 214, 0.4)" }}
           >
-            <PlanMode text="여행 일정" className="flex-122 min-w-0" />
-            <PlanMode variant="variant2" text="예산" className="flex-66 min-w-0" />
+            <PlanMode
+              text="여행 일정"
+              variant={activeMode === "planMode" ? "default" : "variant2"}
+              className="flex-122 min-w-0"
+              onClick={() => { setActiveMode("planMode"); onPlanModeClick?.(); }}
+            />
+            <PlanMode
+              text="예산"
+              variant={activeMode === "budget" ? "default" : "variant2"}
+              className="flex-66 min-w-0"
+              onClick={() => { setActiveMode("budget"); onBudgetClick?.(); }}
+            />
           </div>
 
           {/* Vertical divider */}
           <div className="mx-2 w-px h-10 shrink-0 bg-[#E2E2E2]/50" />
 
           {/* PlanAddPlace */}
-          <PlanAddPlace text="장소 추가" className="h-10" />
+          <PlanAddPlace text="장소 추가" className="h-10" onClick={onAddPlaceClick} />
         </div>
       </div>
     );
