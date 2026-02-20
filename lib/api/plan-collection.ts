@@ -11,6 +11,7 @@
  */
 
 import {
+  DeletePlanCollectionParams,
   GetPlanCollectionParams,
   GetPlanCollectionsResponse,
 } from "@/types/plan-collection";
@@ -29,4 +30,18 @@ export const getPlanCollections = async (
     `/plans/${planId}/collections`,
   );
   return res.data;
+};
+
+/**
+ * 플랜에 연결된 컬렉션 삭제 API
+ *
+ * @param planId - 연결된 플랜 ID
+ * @param collectionId - 삭제할 컬렉션 ID
+ * @returns void (204 No Content)
+ */
+export const deletePlanCollection = async ({
+  planId,
+  collectionId,
+}: DeletePlanCollectionParams) => {
+  await apiClient.delete(`/plans/${planId}/collections/${collectionId}`);
 };
