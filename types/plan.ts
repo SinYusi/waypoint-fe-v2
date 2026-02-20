@@ -44,6 +44,14 @@ export type PlanListResponse = {
 };
 
 /**
+ * 플랜 조회 요청 Path 파라미터
+ * GET /plans/{planId}
+ */
+export type GetPlanParams = {
+  planId: string;
+};
+
+/**
  * 플랜 삭제 요청 Path 파라미터
  * DELETE /plans/{planId}
  */
@@ -57,3 +65,44 @@ export type DeletePlanParams = {
  * (응답 바디 없음)
  */
 export type DeletePlanResponse = void;
+
+/**
+ * 플랜 수정 요청 Path 파라미터
+ * PUT /plans/{planId}
+ */
+export type UpdatePlanParams = {
+  planId: string;
+};
+
+/**
+ * 플랜 수정 요청 바디
+ * PUT /plans/{planId}
+ *
+ * - 기본: title, start_date, end_date 전송
+ * - 날짜 축소 시: requiresConfirmation: true가 오면 confirm: true 추가하여 재요청
+ */
+export type UpdatePlanRequest = {
+  title: string;
+  start_date: string; // date (YYYY-MM-DD)
+  end_date: string; // date (YYYY-MM-DD)
+  confirm?: boolean; // 날짜 삭제(축소) 재요청시 사용
+};
+
+/**
+ * 날짜 축소로 인해 영향 받는 일차 정보
+ * affectedDays[].scheduleCount === 0 이면 일정 없이 삭제되는 날
+ */
+export type AffectedDays = {
+  day: number;
+  scheduleCount: number;
+};
+
+/**
+ * 플랜 수정 성공 응답
+ * 200
+ */
+export type UpdatePlanResponse = {
+  requiresConfirmation: boolean;
+  plan: PlanResponse;
+  affectedDays: AffectedDays[];
+};
