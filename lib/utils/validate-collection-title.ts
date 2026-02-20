@@ -7,6 +7,14 @@
 export const validateCollectionTitle = (raw: string) => {
   const title = raw.trim();
 
+  // 빈 문자열 방지
+  if (title.length === 0) {
+    return {
+      ok: false as const,
+      message: "보관함 이름을 입력해 주세요.",
+    };
+  }
+
   if (title.length > 20)
     return {
       ok: false as const,
