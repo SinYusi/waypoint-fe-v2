@@ -30,3 +30,19 @@ export type PlanCollectionResponse = {
  * GET /plans/{planId}/collections
  */
 export type GetPlanCollectionsResponse = PlanCollectionResponse[];
+
+/**
+ * 플랜에 연결된 컬렉션 삭제 요청 Path 파라미터
+ * DELETE /plans/{planId}/collections/{collectionId}
+ */
+export type DeletePlanCollectionParams = {
+  planId: string;
+  collectionId: string;
+};
+
+/**
+ * 플랜에 연결된 컬렉션 삭제 성공 응답
+ * 204
+ * (응답 바디 없음)
+ */
+export type DeletePlanCollectionResponse = void;
