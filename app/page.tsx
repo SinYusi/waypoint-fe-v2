@@ -1,11 +1,15 @@
-import DevLoginButton from "@/components/auth/dev-login-button";
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main>
-        <DevLoginButton />
-      </main>
-    </div>
-  );
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    router.replace(token ? "/home" : "/login");
+  }, [router]);
+
+  return null;
 }
