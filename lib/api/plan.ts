@@ -13,9 +13,13 @@
 import {
   CreatePlanRequest,
   DeletePlanParams,
+  GetPlanParams,
   GetPlansParams,
   PlanListResponse,
   PlanResponse,
+  UpdatePlanParams,
+  UpdatePlanRequest,
+  UpdatePlanResponse,
 } from "@/types/plan";
 import { apiClient } from "./client";
 
@@ -44,6 +48,17 @@ export const getPlans = async (params?: GetPlansParams) => {
 };
 
 /**
+ * 플랜 조회 API
+ *
+ * @param planId - 조회할 플랜 ID
+ * @returns 플랜 상세 정보
+ */
+export const getPlan = async (planId: GetPlanParams["planId"]) => {
+  const res = await apiClient.get<PlanResponse>(`/plans/${planId}`);
+  return res.data;
+};
+
+/**
  * 플랜 삭제 API
  *
  * @param planId - 삭제할 플랜 ID
@@ -51,4 +66,19 @@ export const getPlans = async (params?: GetPlansParams) => {
  */
 export const deletePlan = async (planId: DeletePlanParams["planId"]) => {
   await apiClient.delete(`/plans/${planId}`);
+};
+
+/**
+ * 플랜 수정 API
+ *
+ * @param planId - 수정할 플랜 ID
+ * @param body - 수정 요청 데이터
+ * @returns 플랜 수정 응답(확인 필요 여부 + plan + affectedDays)
+ */
+export const updatePlan = async (
+  planId: UpdatePlanParams["planId"],
+  body: UpdatePlanRequest,
+) => {
+  const res = await apiClient.put<UpdatePlanResponse>(`/plans/${planId}`, body);
+  return res.data;
 };
