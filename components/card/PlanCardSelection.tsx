@@ -65,7 +65,9 @@ const PlanCardSelection = ({
             "border bg-white",
             isSelected ? "border-sky-500" : "border-[#E2E2E2]",
             "shadow-[0px_10px_15px_-3px_#0000001A,0px_4px_6px_-4px_#0000001A]",
+            onSelected && "cursor-pointer",
           )}
+          onClick={() => onSelected?.(!isSelected)}
         >
           {/* 이미지 영역 */}
           <div className="relative h-[152.27px] w-full overflow-hidden bg-white">
@@ -156,7 +158,7 @@ const PlanCardSelection = ({
             )}
           >
             {/* Radio */}
-            <div className="shrink-0 pt-0.75">
+            <div className="shrink-0 pt-0.75" onClick={(e) => e.stopPropagation()}>
               <Radio id={radioId} name={name} selected={isSelected} onSelected={onSelected} />
             </div>
 
