@@ -22,6 +22,7 @@ const Mypage = () => {
   const { data: me, isLoading } = useMe();
   const { mutate: logoutMutate, isPending: isLogoutPending } = useLogout({
     onSuccess: () => {
+      localStorage.removeItem("accessToken");
       router.replace("/login");
     },
   });
