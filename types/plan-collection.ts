@@ -46,3 +46,25 @@ export type DeletePlanCollectionParams = {
  * (응답 바디 없음)
  */
 export type DeletePlanCollectionResponse = void;
+
+/**
+ * 플랜에 컬렉션 추가 요청 Path 파라미터
+ * POST /plans/{planId}/collections
+ */
+export type PostPlanCollectionsParams = {
+  planId: string;
+};
+
+/**
+ * 플랜에 컬렉션 추가 요청 바디
+ * POST /plans/{planId}/collections
+ */
+export type PostPlanCollectionsRequest = {
+  collection_ids: string[];
+};
+
+/**
+ * 플랜에 컬렉션 추가 성공 응답
+ * 201
+ */
+export type PostPlanCollectionsResponse = PlanCollectionResponse[];
