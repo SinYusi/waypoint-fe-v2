@@ -23,7 +23,7 @@ export default function PlanAddPlace({
 			size="S"
 			icon={<Plus aria-hidden className="size-4 text-black/40" strokeWidth={2} />}
 			className={cn(
-				"h-8 w-23.5 rounded-full py-2 pl-3 pr-4 typography-nav-xl-bold text-white hover:bg-primary",
+				"h-8 w-23.5 cursor-pointer rounded-full py-2 pl-3 pr-4 typography-nav-xl-bold text-white hover:bg-primary",
 				className,
 			)}
 			{...props}
