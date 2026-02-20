@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Header from "@/components/layout/Header";
 import { useCollection } from "@/lib/hooks/collection/use-collection";
@@ -15,6 +15,7 @@ import PlaceListHeader, {
 } from "@/components/layout/PlaceListHeader";
 import PlaceCard from "@/components/card/PlaceCard";
 import { PlusIcon } from "lucide-react";
+import { cn } from "@/lib/utils/utils";
 
 const CollectionDetailPage = () => {
   const router = useRouter();
@@ -32,6 +33,24 @@ const CollectionDetailPage = () => {
   });
   const { data: membersData } = useCollectionMembers(collectionId);
   const { mutate: postPreference } = useCollectionPlacePreference();
+
+  const [isOptionsVisible, setIsOptionsVisible] = useState(true);
+
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY < lastScrollY.current) {
+        setIsOptionsVisible(true);
+      } else if (currentScrollY > lastScrollY.current && currentScrollY > 60) {
+        setIsOptionsVisible(false);
+      }
+      lastScrollY.current = currentScrollY;
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const title = collection?.title ?? "";
   const places = placesData?.pages.flatMap((page) => page.contents) ?? [];
@@ -86,6 +105,10 @@ const CollectionDetailPage = () => {
               membersData ? [membersData.me, ...membersData.members] : undefined
             }
             meRole={membersData?.me.role}
+            className={cn(
+              "sticky top-[60px] z-9 bg-white transition-transform duration-300 ease-in-out",
+              !isOptionsVisible && "-translate-y-full",
+            )}
           />
           <main className="flex flex-col gap-4 px-5 pb-40 pt-5">
             {places.map((item) => (
