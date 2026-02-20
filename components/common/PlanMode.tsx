@@ -1,7 +1,6 @@
-import Image from "next/image";
-
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/utils";
+import PlanModeIcon from "@/public/icons/plan-mode.svg";
 
 type PlanModeProps = {
 	variant?: "default" | "variant2";
@@ -23,14 +22,7 @@ export default function PlanMode({
 				variant="outline"
 				size="S"
 				icon={
-					<Image
-						src="/icons/plan-mode.svg"
-						alt=""
-						width={16}
-						height={16}
-						aria-hidden
-						className="opacity-40"
-					/>
+					<PlanModeIcon aria-hidden className="size-4 opacity-40" />
 				}
 				className={cn(
 					"h-8 w-full rounded-full border-border px-2.5 py-0.5 typography-nav-xl-bold text-foreground hover:text-foreground",
