@@ -39,6 +39,7 @@ type BottomSheetProps = {
   cancelLabel?: React.ReactNode
   cancelVariant?: "default" | "outline"
   confirmLabel?: React.ReactNode
+  closeOnCancel?: boolean
   showCloseIcon?: boolean
   onCancel?: () => void
   onConfirm?: () => void
@@ -67,6 +68,7 @@ function BottomSheet({
   cancelLabel = "취소",
   cancelVariant = "outline",
   confirmLabel,
+  closeOnCancel = true,
   showCloseIcon = false,
   onCancel,
   onConfirm,
@@ -181,7 +183,34 @@ function BottomSheet({
 
         <div className="relative z-10 h-22.75 px-5 pt-4">
           <div className={cn("flex", confirmLabel ? "gap-2" : "") }>
-            <DrawerClose asChild>
+            {closeOnCancel ? (
+              <DrawerClose asChild>
+                <Button
+                  type="button"
+                  variant={cancelVariant}
+                  size="L"
+                  onClick={handleCancel}
+                  className={cn(
+                    "rounded-2xl",
+                    cancelVariant === "outline" && "border-border typography-label-base-sb text-foreground hover:bg-transparent",
+                    cancelVariant === "default" && "typography-label-base-sb",
+                    confirmLabel ? "flex-1" : "w-full",
+                  )}
+                >
+                  {showCloseIcon && (
+                    <span className="inline-flex size-6 items-center justify-center">
+                      <X className="size-6 text-[#1C2024]" strokeWidth={2} />
+                    </span>
+                  )}
+                  <span className={cn(
+                    "typography-label-base-sb",
+                    cancelVariant === "outline" ? "text-[#1C2024]" : "text-white",
+                  )}>
+                    {cancelLabel}
+                  </span>
+                </Button>
+              </DrawerClose>
+            ) : (
               <Button
                 type="button"
                 variant={cancelVariant}
@@ -206,7 +235,7 @@ function BottomSheet({
                   {cancelLabel}
                 </span>
               </Button>
-            </DrawerClose>
+            )}
 
             {confirmLabel && (
               <Button
