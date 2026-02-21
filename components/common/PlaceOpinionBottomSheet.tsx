@@ -18,10 +18,12 @@ const CUSTOM_INPUT_REASON_ID = 0;
 function OpinionItem({
   opinion,
   myMemberId,
+  categoryKey,
   onEdit,
 }: {
   opinion: BlockOpinion;
   myMemberId?: string;
+  categoryKey: OpinionCategoryKey;
   onEdit?: (opinion: BlockOpinion) => void;
 }) {
   return (
@@ -33,7 +35,7 @@ function OpinionItem({
         onEdit={() => onEdit?.(opinion)}
         onDelete={() => onEdit?.(opinion)}
       />
-      <OpinionCard opinion={opinion} />
+      <OpinionCard opinion={opinion} categoryKey={categoryKey} />
     </div>
   );
 }
@@ -111,6 +113,7 @@ function PlaceOpinionBottomSheet({
                 key={opinion.opinion_Id}
                 opinion={opinion}
                 myMemberId={myMemberId}
+                categoryKey={categoryKey}
                 onEdit={handleEdit}
               />
             ))
