@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import AppAlertDialog from "@/components/common/AppAlertDialog";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import OpinionBottomSheet from "@/components/common/OpinionBottomSheet";
 import OpinionCard from "@/components/common/OpinionCard";
@@ -58,6 +59,7 @@ function PlaceOpinionBottomSheet({
   className,
 }: PlaceOpinionBottomSheetProps) {
   const [editingOpinion, setEditingOpinion] = useState<BlockOpinion | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
   // 편집 중인 현재 값 (변경 감지용)
   const [editCurrentState, setEditCurrentState] = useState<OpinionState>("POSITIVE");
@@ -144,9 +146,25 @@ function PlaceOpinionBottomSheet({
         onCustomInputTextChange={setEditCurrentCustomText}
         cancelLabel="의견 삭제"
         confirmLabel="수정 완료"
+        closeOnCancel={false}
+        onCancel={() => setDeleteConfirmOpen(true)}
         confirmDisabled={!hasChanged}
       />
     )}
+
+    <AppAlertDialog
+      open={deleteConfirmOpen}
+      onOpenChange={setDeleteConfirmOpen}
+      title="의견을 삭제하시겠습니까?"
+      description={`의견 삭제 후엔 남겼던 의견 데이터를 되돌릴 수 없어요.`}
+      cancelLabel="취소"
+      onCancel={() => setDeleteConfirmOpen(false)}
+      actionLabel="삭제하기"
+      onAction={() => {
+        setDeleteConfirmOpen(false);
+        setEditingOpinion(null);
+      }}
+    />
     </>
   );
 }
