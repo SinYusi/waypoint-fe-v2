@@ -118,3 +118,23 @@ export type PlanCollectionResponse = {
   title: string;
   added_by: PlanAddedBy;
 };
+
+export type TimeBlockType = "PLACE" | "FREE";
+
+export type CreatePlanBlockRequest = {
+  type: TimeBlockType;
+  collection_place_id?: string;
+  day: number;
+  start_time: string;
+  end_time: string;
+  memo: string;
+};
+
+export type BlockResponse = {
+  time_block_id: string;
+  type: TimeBlockType;
+  block_status: "FIXED" | "PENDING" | "DIRECT";
+  start_time: string;
+  end_time: string;
+  candidate_count: number;
+};
