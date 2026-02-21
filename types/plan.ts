@@ -131,7 +131,7 @@ export type CreatePlanBlockRequest = {
 };
 
 export type CreatePlanBlockByPlaceRequest = {
-  place_id: string;
+  place_id?: string;
   day: number;
   start_time: string;
   end_time: string;
