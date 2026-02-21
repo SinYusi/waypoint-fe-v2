@@ -31,6 +31,8 @@ type OpinionBottomSheetProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   categoryKey: OpinionCategoryKey;
+  cancelLabel?: string;
+  confirmLabel?: string;
   /** 외부에서 제어할 때 사용 (생략 시 내부 상태로 관리) */
   state?: OpinionState;
   onStateChange?: (state: OpinionState) => void;
@@ -46,6 +48,8 @@ function OpinionBottomSheet({
   open,
   onOpenChange,
   categoryKey,
+  cancelLabel = "취소",
+  confirmLabel = "입력 완료",
   state: stateProp,
   onStateChange,
   selectedReasonIds: selectedReasonIdsProp,
@@ -92,8 +96,8 @@ function OpinionBottomSheet({
     <BottomSheet
       open={open}
       onOpenChange={onOpenChange}
-      cancelLabel="취소"
-      confirmLabel="입력 완료"
+      cancelLabel={cancelLabel}
+      confirmLabel={confirmLabel}
       confirmDisabled={isConfirmDisabled}
       className={cn("h-165.5 w-full gap-0.5 rounded-t-3xl", className)}
       content={

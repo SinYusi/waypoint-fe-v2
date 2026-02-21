@@ -1,10 +1,15 @@
 "use client";
 
+import { useState } from "react";
+
 import { BottomSheet } from "@/components/ui/bottom-sheet";
+import OpinionBottomSheet from "@/components/common/OpinionBottomSheet";
 import OpinionCard from "@/components/common/OpinionCard";
 import OpinionProfile from "@/components/common/OpinionProfile";
-import { type BlockOpinion } from "@/lib/opinion-bottom-sheet";
+import { type BlockOpinion, type OpinionCategoryKey, type OpinionState } from "@/lib/opinion-bottom-sheet";
 import { cn } from "@/lib/utils/utils";
+
+const CUSTOM_INPUT_REASON_ID = 0;
 
 /* --------------------------------------------------------
    의견 아이템
@@ -12,9 +17,11 @@ import { cn } from "@/lib/utils/utils";
 function OpinionItem({
   opinion,
   myMemberId,
+  onEdit,
 }: {
   opinion: BlockOpinion;
   myMemberId?: string;
+  onEdit?: (opinion: BlockOpinion) => void;
 }) {
   return (
     <div className="flex w-full flex-col gap-2.25">
@@ -22,6 +29,8 @@ function OpinionItem({
         nickname={opinion.added_by.nickname}
         picture={opinion.added_by.picture}
         isOwn={myMemberId === opinion.added_by.plan_member_id}
+        onEdit={() => onEdit?.(opinion)}
+        onDelete={() => onEdit?.(opinion)}
       />
       <OpinionCard opinion={opinion} />
     </div>
@@ -36,6 +45,7 @@ type PlaceOpinionBottomSheetProps = {
   onOpenChange: (open: boolean) => void;
   opinions?: BlockOpinion[];
   myMemberId?: string;
+  categoryKey: OpinionCategoryKey;
   className?: string;
 };
 
@@ -44,9 +54,26 @@ function PlaceOpinionBottomSheet({
   onOpenChange,
   opinions = [],
   myMemberId,
+  categoryKey,
   className,
 }: PlaceOpinionBottomSheetProps) {
+  const [editingOpinion, setEditingOpinion] = useState<BlockOpinion | null>(null);
+
+  const handleEdit = (opinion: BlockOpinion) => {
+    setEditingOpinion(opinion);
+  };
+
+  // 기존 의견 → OpinionBottomSheet 초기값 변환
+  const editState = editingOpinion?.type as OpinionState | undefined;
+  const editSelectedReasonIds = editingOpinion
+    ? [
+        ...editingOpinion.tag_ids.map(Number),
+        ...(editingOpinion.comment ? [CUSTOM_INPUT_REASON_ID] : []),
+      ]
+    : [];
+  const editCustomInputText = editingOpinion?.comment ?? "";
   return (
+    <>
     <BottomSheet
       open={open}
       onOpenChange={onOpenChange}
@@ -63,12 +90,31 @@ function PlaceOpinionBottomSheet({
             </div>
           ) : (
             opinions.map((opinion) => (
-              <OpinionItem key={opinion.opinion_Id} opinion={opinion} myMemberId={myMemberId} />
+              <OpinionItem
+                key={opinion.opinion_Id}
+                opinion={opinion}
+                myMemberId={myMemberId}
+                onEdit={handleEdit}
+              />
             ))
           )}
         </div>
       }
     />
+
+    {editingOpinion && (
+      <OpinionBottomSheet
+        open={!!editingOpinion}
+        onOpenChange={(o) => { if (!o) setEditingOpinion(null); }}
+        categoryKey={categoryKey}
+        state={editState}
+        selectedReasonIds={editSelectedReasonIds}
+        customInputText={editCustomInputText}
+        cancelLabel="의견 삭제"
+        confirmLabel="수정 완료"
+      />
+    )}
+    </>
   );
 }
 
