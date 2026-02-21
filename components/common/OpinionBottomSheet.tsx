@@ -128,7 +128,7 @@ function OpinionBottomSheet({
         </Chips>
       }
       header={
-        <div className="mb-5 flex w-81.75 flex-col gap-5">
+        <div className="mb-5 flex w-full flex-col gap-5">
           <div className="flex h-19 flex-col gap-2">
             <span className="h-7 w-full typography-display-lg-bold text-foreground">
               장소에 대한 의견을 남겨보세요
@@ -139,7 +139,7 @@ function OpinionBottomSheet({
           </div>
 
           {/* 탭: 선호해요 / 가능해요 / 불가능해요 */}
-          <Tabs value={state} onValueChange={handleStateChange} className="w-81.75">
+          <Tabs value={state} onValueChange={handleStateChange} className="w-full">
             <TabsList style="underline" fullWidth className="w-full">
               {(["POSITIVE", "NEUTRAL", "NEGATIVE"] as const).map((s) => (
                 <TabsTrigger
