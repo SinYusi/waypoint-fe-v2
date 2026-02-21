@@ -15,12 +15,14 @@ import {
   DeletePlanParams,
   GetPlanParams,
   GetPlansParams,
+  PlanCollectionResponse,
   PlanListResponse,
   PlanResponse,
   UpdatePlanParams,
   UpdatePlanRequest,
   UpdatePlanResponse,
 } from "@/types/plan";
+import { CollectionPlacesResponse } from "@/types/collection";
 import { apiClient } from "./client";
 
 /**
@@ -83,4 +85,24 @@ export const updatePlan = async (
   return res.data;
 };
 
+export const getPlanCollections = async (planId: string) => {
+  const res = await apiClient.get<PlanCollectionResponse[]>(
+    `/plans/${planId}/collections`,
+  );
+  return res.data;
+};
 
+export const getPlanCollectionPlaces = async (
+  planId: string,
+  collectionId: string,
+  params?: {
+    page?: number;
+    size?: number;
+  },
+) => {
+  const res = await apiClient.get<CollectionPlacesResponse>(
+    `/plans/${planId}/collections/${collectionId}/places`,
+    { params },
+  );
+  return res.data;
+};
