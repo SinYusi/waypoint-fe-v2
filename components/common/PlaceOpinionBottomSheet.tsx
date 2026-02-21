@@ -59,19 +59,34 @@ function PlaceOpinionBottomSheet({
 }: PlaceOpinionBottomSheetProps) {
   const [editingOpinion, setEditingOpinion] = useState<BlockOpinion | null>(null);
 
+  // 편집 중인 현재 값 (변경 감지용)
+  const [editCurrentState, setEditCurrentState] = useState<OpinionState>("POSITIVE");
+  const [editCurrentReasonIds, setEditCurrentReasonIds] = useState<number[]>([]);
+  const [editCurrentCustomText, setEditCurrentCustomText] = useState("");
+
+  // 원본과 비교해 변경 여부 판단
+  const hasChanged = editingOpinion
+    ? editCurrentState !== editingOpinion.type ||
+      editCurrentCustomText !== (editingOpinion.comment ?? "") ||
+      JSON.stringify(
+        [...editCurrentReasonIds.filter((id) => id !== CUSTOM_INPUT_REASON_ID)].sort((a, b) => a - b),
+      ) !==
+        JSON.stringify(
+          [...editingOpinion.tag_ids.map(Number)].sort((a, b) => a - b),
+        )
+    : false;
+
   const handleEdit = (opinion: BlockOpinion) => {
+    // 클릭 시 현재 편집 값을 원본으로 초기화
+    setEditCurrentState(opinion.type);
+    setEditCurrentReasonIds([
+      ...opinion.tag_ids.map(Number),
+      ...(opinion.comment ? [CUSTOM_INPUT_REASON_ID] : []),
+    ]);
+    setEditCurrentCustomText(opinion.comment ?? "");
     setEditingOpinion(opinion);
   };
 
-  // 기존 의견 → OpinionBottomSheet 초기값 변환
-  const editState = editingOpinion?.type as OpinionState | undefined;
-  const editSelectedReasonIds = editingOpinion
-    ? [
-        ...editingOpinion.tag_ids.map(Number),
-        ...(editingOpinion.comment ? [CUSTOM_INPUT_REASON_ID] : []),
-      ]
-    : [];
-  const editCustomInputText = editingOpinion?.comment ?? "";
   return (
     <>
     <BottomSheet
@@ -107,11 +122,29 @@ function PlaceOpinionBottomSheet({
         open={!!editingOpinion}
         onOpenChange={(o) => { if (!o) setEditingOpinion(null); }}
         categoryKey={categoryKey}
-        state={editState}
-        selectedReasonIds={editSelectedReasonIds}
-        customInputText={editCustomInputText}
+        state={editCurrentState}
+        selectedReasonIds={editCurrentReasonIds}
+        customInputText={editCurrentCustomText}
+        onStateChange={(s) => {
+            setEditCurrentState(s);
+            if (editingOpinion && s === editingOpinion.type) {
+              // 원본 타입으로 돌아오면 원본 선택 복원
+              setEditCurrentReasonIds([
+                ...editingOpinion.tag_ids.map(Number),
+                ...(editingOpinion.comment ? [CUSTOM_INPUT_REASON_ID] : []),
+              ]);
+              setEditCurrentCustomText(editingOpinion.comment ?? "");
+            } else {
+              // 다른 타입으로 이동하면 리셋
+              setEditCurrentReasonIds([]);
+              setEditCurrentCustomText("");
+            }
+          }}
+        onSelectedReasonIdsChange={setEditCurrentReasonIds}
+        onCustomInputTextChange={setEditCurrentCustomText}
         cancelLabel="의견 삭제"
         confirmLabel="수정 완료"
+        confirmDisabled={!hasChanged}
       />
     )}
     </>
