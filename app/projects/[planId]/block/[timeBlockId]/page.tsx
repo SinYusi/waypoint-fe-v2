@@ -152,7 +152,7 @@ const BlockDetailPage = () => {
                     메모
                   </span>
                 </Label>
-                <div className="w-full h-[44px]">
+                <div className="w-full h-11">
                   {isEditingMemo ? (
                     <Textarea
                       placeholder="텍스트를 입력해주세요."
@@ -162,7 +162,7 @@ const BlockDetailPage = () => {
                       className="typography-body-base! text-foreground!"
                     />
                   ) : (
-                    <div className="flex h-[44px] items-center gap-[10px] py-[10px]">
+                    <div className="flex h-11 items-center gap-2.5 py-2.5">
                       <p className="h-6 w-full truncate align-middle typography-body-base text-foreground">
                         {memo}
                       </p>
