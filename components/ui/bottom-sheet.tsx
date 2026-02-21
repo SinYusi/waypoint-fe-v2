@@ -171,7 +171,7 @@ function BottomSheet({
 
         {showBottomGradient && (
           <div
-            className="pointer-events-none absolute bottom-22.75 left-0 right-0 h-35"
+            className="pointer-events-none absolute bottom-0 left-0 right-0 h-35"
             style={{
               background:
                 "linear-gradient(180deg, rgba(252, 252, 252, 0) 0%, #FCFCFC 60%)",
@@ -179,7 +179,7 @@ function BottomSheet({
           />
         )}
 
-        <div className="h-22.75 bg-background px-5 pt-4">
+        <div className="relative z-10 h-22.75 px-5 pt-4">
           <div className={cn("flex", confirmLabel ? "gap-2" : "") }>
             <DrawerClose asChild>
               <Button
