@@ -28,11 +28,13 @@ export type BottomSheetItem = {
 type BottomSheetProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
-  items: BottomSheetItem[]
+  items?: BottomSheetItem[]
+  /** items 대신 자유롭게 콘텐츠를 렌더링할 슬롯 */
+  content?: React.ReactNode
   header?: React.ReactNode
   title?: React.ReactNode
   showTitle?: boolean
-  itemVariant?: "default" | "member" | "opinion"
+  itemVariant?: "default" | "member"
   closeOnSelect?: boolean
   cancelLabel?: React.ReactNode
   showCloseIcon?: boolean
@@ -48,7 +50,8 @@ function normalizeDescription(description?: Description) {
 function BottomSheet({
   open,
   onOpenChange,
-  items,
+  items = [],
+  content,
   header,
   title = "작업 메뉴",
   showTitle = false,
@@ -90,12 +93,8 @@ function BottomSheet({
               {title}
             </h2>
           )}
-          <div
-            className={cn(
-              "flex flex-col gap-2.5 pb-3.5",
-              itemVariant === "opinion" && "w-81.75 gap-3.5 pb-0",
-            )}
-          >
+          {content ?? (
+          <div className="flex flex-col gap-2.5 pb-3.5">
             {items.map((item) => {
               const descriptionLines = normalizeDescription(item.description);
               const hasDescription = descriptionLines.length > 0;
@@ -119,14 +118,11 @@ function BottomSheet({
                     "w-full justify-start gap-2 text-foreground",
                     itemVariant === "member"
                       ? "h-11 rounded-sm px-2 typography-label-base-reg hover:bg-accent"
-                      : itemVariant === "opinion"
-                        ? "h-11 rounded-2xl border-border bg-transparent px-4 typography-action-sm-reg hover:bg-secondary-hover hover:border-transparent"
-                        : "rounded-full px-1 pr-8 hover:bg-accent",
+                      : "rounded-full px-1 pr-8 hover:bg-accent",
                     itemVariant === "default" &&
                       (hasDescription
                         ? "h-auto min-h-11 py-2 typography-label-base-reg"
                         : "h-11 typography-label-base-sb"),
-                    itemVariant === "opinion" && item.selected && "bg-accent border-accent",
                     item.className,
                   )}
                 >
@@ -146,6 +142,7 @@ function BottomSheet({
               );
             })}
           </div>
+          )}
         </div>
 
         <div className="mx-5 h-px bg-border" />
