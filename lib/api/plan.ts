@@ -11,6 +11,8 @@
  */
 
 import {
+  BlockResponse,
+  CreatePlanBlockRequest,
   CreatePlanRequest,
   DeletePlanParams,
   GetPlanParams,
@@ -120,4 +122,12 @@ export const getPlanCollectionPlaceDetail = async (
     `/plans/${planId}/collections/${collectionId}/places/${collectionPlaceId}`,
   );
   return normalizePlaceDetail(res.data);
+};
+
+export const createPlanBlock = async (
+  planId: string,
+  body: CreatePlanBlockRequest,
+) => {
+  const res = await apiClient.post<BlockResponse>(`/plans/${planId}/blocks`, body);
+  return res.data;
 };
