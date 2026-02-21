@@ -24,7 +24,7 @@ type CollectionMemberApiResponse = {
   role?: "OWNER" | "MEMBER";
 };
 
-type PlaceDetailApiResponse = {
+export type PlaceDetailApiResponse = {
   collection_place_id: string;
   memo: string | null;
   place: {
@@ -130,7 +130,7 @@ const normalizeMyPreference = (value?: string | null): MyPreference => {
   return null;
 };
 
-const normalizePlaceDetail = (data: PlaceDetailApiResponse): PlaceDetail => {
+export const normalizePlaceDetail = (data: PlaceDetailApiResponse): PlaceDetail => {
   const category =
     typeof data.place.category === "string"
       ? resolveMiddleCategory(data.place.category)
