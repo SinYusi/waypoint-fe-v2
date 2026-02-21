@@ -20,6 +20,10 @@ import type {
   OpinionCategoryKey,
   OpinionState,
 } from "@/lib/opinion-bottom-sheet";
+import {
+  useDeleteBlockOpinion,
+  useUpdateBlockOpinion,
+} from "@/lib/hooks/use-block-opinion";
 import { useBlockDetail } from "@/lib/hooks/use-block-detail";
 
 const MEMO_MAX_LENGTH = 300;
@@ -78,6 +82,8 @@ const BlockDetailPage = () => {
     blockId,
     enabled: Boolean(planId && blockId),
   });
+  const updateBlockOpinionMutation = useUpdateBlockOpinion({ planId, blockId });
+  const deleteBlockOpinionMutation = useDeleteBlockOpinion({ planId, blockId });
 
   const placeName = blockDetail?.placeName ?? "";
   const category = blockDetail?.category ?? "";
@@ -148,6 +154,36 @@ const BlockDetailPage = () => {
       [opinion.type]: opinion.comment ?? "",
     });
     setEditingOpinion(opinion);
+  };
+
+  const closeOpinionEditor = () => {
+    setEditingOpinion(null);
+    setDeleteConfirmOpen(false);
+  };
+
+  const handleConfirmOpinionUpdate = () => {
+    if (!editingOpinion || updateBlockOpinionMutation.isPending || !hasChanged) return;
+
+    const hasCustomInput = editCurrentReasonIds.includes(CUSTOM_INPUT_REASON_ID);
+    const tagIds = editCurrentReasonIds
+      .filter((id) => id !== CUSTOM_INPUT_REASON_ID)
+      .map(String);
+
+    updateBlockOpinionMutation.mutate(
+      {
+        opinionId: editingOpinion.opinion_Id,
+        payload: {
+          type: editCurrentState,
+          tag_ids: tagIds,
+          ...(hasCustomInput ? { comment: editCurrentCustomText.trim() } : { comment: "" }),
+        },
+      },
+      {
+        onSuccess: () => {
+          closeOpinionEditor();
+        },
+      },
+    );
   };
 
   return (
@@ -343,9 +379,10 @@ const BlockDetailPage = () => {
           }}
           cancelLabel="의견 삭제"
           confirmLabel="수정 완료"
-          confirmDisabled={!hasChanged}
+          confirmDisabled={!hasChanged || updateBlockOpinionMutation.isPending}
           closeOnCancel={false}
           onCancel={() => setDeleteConfirmOpen(true)}
+          onConfirm={handleConfirmOpinionUpdate}
         />
       )}
 
@@ -357,9 +394,18 @@ const BlockDetailPage = () => {
         cancelLabel="취소"
         onCancel={() => setDeleteConfirmOpen(false)}
         actionLabel="삭제하기"
+        actionDisabled={deleteBlockOpinionMutation.isPending}
         onAction={() => {
-          setDeleteConfirmOpen(false);
-          setEditingOpinion(null);
+          if (!editingOpinion || deleteBlockOpinionMutation.isPending) return;
+
+          deleteBlockOpinionMutation.mutate(
+            { opinionId: editingOpinion.opinion_Id },
+            {
+              onSuccess: () => {
+                closeOpinionEditor();
+              },
+            },
+          );
         }}
       />
 
