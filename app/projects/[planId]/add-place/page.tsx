@@ -6,10 +6,11 @@ import PlanCardSelection from "@/components/card/PlanCardSelection";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCollectionPlacePreference } from "@/lib/hooks/collection/use-collection-place-preference";
+import { useIntersectionObserver } from "@/lib/hooks/use-intersection-observer";
 import { usePlanCollectionPlaces } from "@/lib/hooks/plan/use-plan-collection-places";
 import { usePlanCollections } from "@/lib/hooks/plan/use-plan-collections";
 import { useParams, useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 const AddPlanPage = () => {
 	const params = useParams<{ planId: string | string[] }>();
@@ -45,11 +46,24 @@ const AddPlanPage = () => {
 			};
 		});
 	};
-	const { data: placesData } = usePlanCollectionPlaces(planId ?? "", selectedDay, {
+	const {
+		data: placesData,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+	} = usePlanCollectionPlaces(planId ?? "", selectedDay, {
 		size: 20,
 	});
 	const places = placesData?.pages.flatMap((page) => page.contents) ?? [];
 	const { mutate: postPreference } = useCollectionPlacePreference();
+	const handleIntersect = useCallback(() => {
+		if (!hasNextPage || isFetchingNextPage) return;
+		fetchNextPage();
+	}, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+	const loadMoreRef = useIntersectionObserver({
+		onIntersect: handleIntersect,
+		enabled: !!hasNextPage && !isFetchingNextPage,
+	});
 
 	const handleAddToPlan = () => {
 		if (!planId || !selectedDay || !selectedPlaceId) return;
@@ -134,6 +148,7 @@ const AddPlanPage = () => {
 										}
 									/>
 								))}
+								<div ref={loadMoreRef} className="h-10" />
 							</div>
 						</div>
 					</TabsContent>
