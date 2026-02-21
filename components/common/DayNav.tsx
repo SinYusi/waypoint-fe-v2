@@ -75,7 +75,7 @@ const DayNav = ({
     <nav
       aria-label={ariaLabel}
       className={cn(
-        "flex items-center gap-2.25 px-5 py-3 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+        "flex h-10 items-center gap-2 overflow-x-auto px-5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
         className,
       )}
     >
@@ -92,7 +92,7 @@ const DayNav = ({
             disabled={item.disabled}
             onClick={() => handleSelect(item.value)}
             className={cn(
-              "px-3 py-1.5 rounded-xl shrink-0",
+              "h-10 shrink-0 rounded-xl px-3",
               isActive
                 ? "bg-foreground text-primary-foreground typography-body-sm-bold"
                 : "bg-transparent border border-border typography-body-sm-reg",
