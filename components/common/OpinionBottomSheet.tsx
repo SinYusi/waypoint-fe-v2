@@ -33,6 +33,7 @@ type OpinionBottomSheetProps = {
   categoryKey: OpinionCategoryKey;
   cancelLabel?: string;
   confirmLabel?: string;
+  confirmDisabled?: boolean;
   /** 외부에서 제어할 때 사용 (생략 시 내부 상태로 관리) */
   state?: OpinionState;
   onStateChange?: (state: OpinionState) => void;
@@ -50,6 +51,7 @@ function OpinionBottomSheet({
   categoryKey,
   cancelLabel = "취소",
   confirmLabel = "입력 완료",
+  confirmDisabled: confirmDisabledProp,
   state: stateProp,
   onStateChange,
   selectedReasonIds: selectedReasonIdsProp,
@@ -67,6 +69,7 @@ function OpinionBottomSheet({
   const customInputText = customInputTextProp ?? internalCustomInputText;
   const isCustomInputSelected = selectedReasonIds.includes(CUSTOM_INPUT_REASON.id);
   const isConfirmDisabled =
+    (confirmDisabledProp ?? false) ||
     selectedReasonIds.length === 0 ||
     (isCustomInputSelected && customInputText.trim() === "");
 
