@@ -80,7 +80,7 @@ const PlanPlaceCard = ({
       )}
 
       {/* Footer */}
-      <div className="flex items-center justify-between px-4 py-3 border-t border-[#e2e2e2]">
+      <div className="flex items-center justify-between px-4 py-3 border-t border-dashed border-[#e2e2e2]">
         <div className="flex items-center">
           {REACTION_TYPES.map((type) => (
             <PlaceReactionItem
