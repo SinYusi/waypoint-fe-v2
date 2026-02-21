@@ -51,9 +51,15 @@ type OpinionCardProps = {
   opinion: BlockOpinion;
   categoryKey: OpinionCategoryKey;
   className?: string;
+  showDividerBetweenTagsAndComment?: boolean;
 };
 
-function OpinionCard({ opinion, categoryKey, className }: OpinionCardProps) {
+function OpinionCard({
+  opinion,
+  categoryKey,
+  className,
+  showDividerBetweenTagsAndComment = false,
+}: OpinionCardProps) {
   const hasTags = opinion.tag_ids.length > 0;
   const hasComment = Boolean(opinion.comment);
 
@@ -89,6 +95,11 @@ function OpinionCard({ opinion, categoryKey, className }: OpinionCardProps) {
                 </Chip>
               ))}
             </Chips>
+          )}
+
+          {/* 태그와 직접 입력 코멘트 사이 구분선 */}
+          {showDividerBetweenTagsAndComment && hasTags && hasComment && (
+            <div className="h-px bg-border" />
           )}
 
           {/* 직접 입력 코멘트 */}
