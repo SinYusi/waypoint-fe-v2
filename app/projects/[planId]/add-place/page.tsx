@@ -110,11 +110,8 @@ const AddPlanPage = () => {
 	};
 
 	const handleOpenManualAdd = () => {
-		if (!selectedDay) {
-			toast.error("먼저 컬렉션을 선택해 주세요.");
-			return;
-		}
-		router.push(`/home/${selectedDay}/add-place/manual`);
+		if (!planId) return;
+		router.push(`/projects/${planId}/add-place/manual`);
 	};
 
 	return (
