@@ -6,7 +6,6 @@ import PlanCardSelection from "@/components/card/PlanCardSelection";
 import { Button } from "@/components/ui/button";
 import { InputForm } from "@/components/ui/input-form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useAddCollectionPlace } from "@/lib/hooks/collection/use-add-collection-place";
 import { useCollectionPlacePreference } from "@/lib/hooks/collection/use-collection-place-preference";
 import { useIntersectionObserver } from "@/lib/hooks/use-intersection-observer";
 import { usePlaceSearch } from "@/lib/hooks/use-place-search";
@@ -65,19 +64,6 @@ const AddPlanPage = () => {
 	const places = placesData?.pages.flatMap((page) => page.contents) ?? [];
 	const { data: searchedPlaces = [] } = usePlaceSearch(query);
 	const { mutate: postPreference } = useCollectionPlacePreference();
-	const { mutate: addPlace, isPending: isAddingPlace } = useAddCollectionPlace({
-		onSuccess: () => {
-			toast("선택한 장소가 보관함에 추가되었습니다.");
-			setSelectedSearchPlaceId(null);
-		},
-		onError: (error) => {
-			if (error.response?.status === 409) {
-				toast.error("이미 보관함에 추가된 장소입니다.");
-				return;
-			}
-			toast.error("장소 추가에 실패했어요. 잠시 후 다시 시도해 주세요.");
-		},
-	});
 	const handleIntersect = useCallback(() => {
 		if (!hasNextPage || isFetchingNextPage) return;
 		fetchNextPage();
@@ -107,13 +93,20 @@ const AddPlanPage = () => {
 		});
 	};
 
-	const handleAddPlaceToCollection = () => {
-		if (!selectedDay || !selectedSearchPlaceId) return;
-
-		addPlace({
-			collectionId: selectedDay,
-			place_id: selectedSearchPlaceId,
-		});
+	const handleOpenPlaceAddFromSearch = () => {
+		if (!planId || !selectedDay || !selectedSearchPlaceId) return;
+		const selectedPlace = searchedPlaces.find(
+			(place) => place.place_id === selectedSearchPlaceId,
+		);
+		if (!selectedPlace) {
+			toast.error("선택한 장소 정보를 찾지 못했습니다.");
+			return;
+		}
+		window.sessionStorage.setItem(
+			"project:selected-search-place",
+			JSON.stringify(selectedPlace),
+		);
+		router.push(`/projects/${planId}/place-add?collectionId=${selectedDay}&source=search`);
 	};
 
 	const handleOpenManualAdd = () => {
@@ -277,9 +270,9 @@ const AddPlanPage = () => {
 					/>
 					<div className="px-5 pt-4">
 						<Button
-							onClick={handleAddPlaceToCollection}
+							onClick={handleOpenPlaceAddFromSearch}
 							className="h-11 w-full rounded-2xl bg-primary px-8 py-0 text-primary-foreground"
-							disabled={!selectedSearchPlaceId || !selectedDay || isAddingPlace}
+							disabled={!selectedSearchPlaceId || !selectedDay}
 						>
 							여행 게획에 추가하기
 						</Button>
