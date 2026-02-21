@@ -95,6 +95,23 @@ const ProjectPlaceAddPage = () => {
     }
   }, [isSearchSource]);
 
+  const manualPlace = useMemo(() => {
+    if (!isManualSource || typeof window === "undefined") return null;
+    const raw = window.sessionStorage.getItem("project:selected-manual-place");
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw) as {
+        name: string;
+        address: string;
+        tag?: string;
+        memo?: string;
+        google_maps_uri?: string;
+      };
+    } catch {
+      return null;
+    }
+  }, [isManualSource]);
+
   const { data: placeDetail, isLoading, isError } = usePlanCollectionPlaceDetail({
     planId,
     collectionId,
@@ -102,13 +119,15 @@ const ProjectPlaceAddPage = () => {
     enabled: Boolean(!isSearchSource && planId && collectionId && collectionPlaceId),
   });
 
-  const placeName = placeDetail?.name ?? searchPlace?.name ?? "";
-  const category = placeDetail?.category ?? searchPlace?.category?.level2?.name ?? "";
-  const address = placeDetail?.address ?? searchPlace?.address ?? "";
+  const placeName = placeDetail?.name ?? searchPlace?.name ?? manualPlace?.name ?? "";
+  const category =
+    placeDetail?.category ?? searchPlace?.category?.level2?.name ?? manualPlace?.tag ?? "";
+  const address = placeDetail?.address ?? searchPlace?.address ?? manualPlace?.address ?? "";
   const aiSummary = placeDetail?.aiSummary ?? "";
   const sourceTitle = placeDetail?.sourceTitle ?? "";
   const sourceUrl = placeDetail?.sourceUrl;
-  const externalUrl = placeDetail?.externalUrl ?? searchPlace?.google_maps_uri;
+  const externalUrl =
+    placeDetail?.externalUrl ?? searchPlace?.google_maps_uri ?? manualPlace?.google_maps_uri;
   const coverImageUrl = placeDetail?.photoUrls?.[0] ?? searchPlace?.photos?.[0];
   const dayNumber = useMemo(() => Number(day.replace(/[^\d]/g, "")), [day]);
   const normalizedMemo = useMemo(() => normalizeMemo(memo), [memo]);

@@ -7,13 +7,32 @@ import { InputForm } from "@/components/ui/input-form";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { FieldDescription } from "@/components/ui/field-description";
+import { useParams, useRouter } from "next/navigation";
 
 const ManualAddPlacePage = () => {
+  const router = useRouter();
+  const params = useParams<{ planId: string | string[] }>();
+  const planId = Array.isArray(params.planId) ? params.planId[0] : params.planId;
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
   const [tag, setTag] = useState("");
   const [memo, setMemo] = useState("");
   const [link, setLink] = useState("");
+
+  const handleAddToPlan = () => {
+    if (!planId) return;
+    window.sessionStorage.setItem(
+      "project:selected-manual-place",
+      JSON.stringify({
+        name: name.trim(),
+        address: location.trim(),
+        tag: tag.trim(),
+        memo: memo.trim(),
+        google_maps_uri: link.trim(),
+      }),
+    );
+    router.push(`/projects/${planId}/place-add?source=manual`);
+  };
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -95,6 +114,7 @@ const ManualAddPlacePage = () => {
         <Button
           className="w-full bg-primary typography-action-base-bold disabled:opacity-40"
           disabled={!name.trim() || !location.trim() || !tag.trim() || !memo.trim()}
+          onClick={handleAddToPlan}
         >
           여행 계획에 추가하기
         </Button>
