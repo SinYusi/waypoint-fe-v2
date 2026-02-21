@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import CandidateCard from "@/components/card/CandidateCard";
 import { type PlaceType } from "@/components/card/PlaceTypeIcon";
 import { type ReactionType } from "@/components/card/PlaceReactionItem";
 import { Button } from "../ui/button";
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 
 // ─── Item types ──────────────────────────────────────────────────────────────
 
@@ -35,15 +37,30 @@ interface CandidateGroupProps {
   onSelectCandidate?: () => void;
 }
 
+// ─── Constants ───────────────────────────────────────────────────────────────
+
+const COLLAPSE_THRESHOLD = 4;
+const COLLAPSED_SHOW_COUNT = 3;
+
 // ─── Component ───────────────────────────────────────────────────────────────
 
 const CandidateGroup = ({
   candidates,
   onSelectCandidate,
 }: CandidateGroupProps) => {
+  const isCollapsible = candidates.length >= COLLAPSE_THRESHOLD;
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const visibleCandidates =
+    isCollapsible && !isExpanded
+      ? candidates.slice(0, COLLAPSED_SHOW_COUNT)
+      : candidates;
+
+  const hiddenCount = candidates.length - COLLAPSED_SHOW_COUNT;
+
   return (
     <div className="flex flex-col gap-3 rounded-3xl border border-dashed border-[#e2e2e2] bg-[#f0f0f0] p-3">
-      {candidates.map((item) => (
+      {visibleCandidates.map((item) => (
         <CandidateCard
           key={item.id}
           mode="view"
@@ -69,14 +86,38 @@ const CandidateGroup = ({
         }}
       />
 
-      {/* 후보지 선택하기 */}
-      <Button
-        variant="outline"
-        className="w-full rounded-xl border border-[#e2e2e2] bg-[#fafafa] py-2.5 px-4 typography-action-sm-bold text-foreground"
-        onClick={onSelectCandidate}
-      >
-        후보지 선택하기
-      </Button>
+      {/* Bottom */}
+      {isCollapsible ? (
+        <div className="flex items-center justify-between">
+          <button
+            type="button"
+            className="flex items-center gap-1 typography-action-sm-reg text-foreground py-2.5 px-2"
+            onClick={() => setIsExpanded((prev) => !prev)}
+          >
+            {isExpanded ? "접기" : `+ ${hiddenCount}개 더보기`}
+            {isExpanded ? (
+              <ChevronUpIcon className="size-6 opacity-40" />
+            ) : (
+              <ChevronDownIcon className="size-6 opacity-40" />
+            )}
+          </button>
+          <Button
+            variant="outline"
+            className="rounded-xl border border-[#e2e2e2] bg-[#fafafa] py-2.5 px-4 typography-action-sm-bold text-foreground"
+            onClick={onSelectCandidate}
+          >
+            후보지 선택하기
+          </Button>
+        </div>
+      ) : (
+        <Button
+          variant="outline"
+          className="w-full rounded-xl border border-[#e2e2e2] bg-[#fafafa] py-2.5 px-4 typography-action-sm-bold text-foreground"
+          onClick={onSelectCandidate}
+        >
+          후보지 선택하기
+        </Button>
+      )}
     </div>
   );
 };
