@@ -4,6 +4,7 @@ import Header from "@/components/layout/Header";
 import DayNav from "@/components/common/DayNav";
 import PlanCardSelection from "@/components/card/PlanCardSelection";
 import { Button } from "@/components/ui/button";
+import { FieldDescription } from "@/components/ui/field-description";
 import { InputForm } from "@/components/ui/input-form";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,12 +12,55 @@ import { Textarea } from "@/components/ui/textarea";
 import { useCollectionPlacePreference } from "@/lib/hooks/collection/use-collection-place-preference";
 import { useIntersectionObserver } from "@/lib/hooks/use-intersection-observer";
 import { usePlaceSearch } from "@/lib/hooks/use-place-search";
+import { useCreatePlanBlock } from "@/lib/hooks/plan/use-create-plan-block";
 import { usePlanCollectionPlaces } from "@/lib/hooks/plan/use-plan-collection-places";
 import { usePlanCollections } from "@/lib/hooks/plan/use-plan-collections";
 import { MapPin } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
+import type { KeyboardEvent } from "react";
 import { useCallback, useMemo, useState } from "react";
-import { toast } from "sonner";
+
+const DEFAULT_TIME = "00:00";
+
+const toDigitIndex = (cursor: number) => {
+	if (cursor <= 1) return cursor;
+	if (cursor === 2) return 2;
+	return Math.min(cursor - 1, 3);
+};
+
+const toCursorPosition = (digitIndex: number) => {
+	if (digitIndex <= 1) return digitIndex;
+	return digitIndex + 1;
+};
+
+const replaceTimeDigit = (value: string, digitIndex: number, nextDigit: string) => {
+	const chars = value.split("");
+	const valueIndex = digitIndex >= 2 ? digitIndex + 1 : digitIndex;
+	chars[valueIndex] = nextDigit;
+	return chars.join("");
+};
+
+const setCaret = (input: HTMLInputElement, digitIndex: number) => {
+	const pos = toCursorPosition(Math.max(0, Math.min(4, digitIndex)));
+	requestAnimationFrame(() => input.setSelectionRange(pos, pos));
+};
+
+const isValidTime = (value: string) => {
+	if (!/^\d{2}:\d{2}$/.test(value)) return false;
+	const [hour, minute] = value.split(":").map(Number);
+	return hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59;
+};
+
+const toMinutes = (value: string) => {
+	const [hour, minute] = value.split(":").map(Number);
+	return hour * 60 + minute;
+};
+
+const MEMO_POLICY_REGEX =
+	/^[\p{Script=Hangul}\p{L}\p{N}\p{Extended_Pictographic}\p{Emoji_Modifier}\u200D\uFE0F !@#$%^&*()\-_+=\[\]{}.,?\/\n]*$/u;
+
+const normalizeMemo = (value: string) =>
+	value.normalize("NFC").replace(/\u00A0/g, " ").replace(/\r\n?/g, "\n");
 
 const AddPlanPage = () => {
 	const params = useParams<{ planId: string | string[] }>();
@@ -40,14 +84,33 @@ const AddPlanPage = () => {
 	const [query, setQuery] = useState("");
 	const [selectedSearchPlaceId, setSelectedSearchPlaceId] = useState<string | null>(null);
 	const [freeDay, setFreeDay] = useState("");
-	const [freeStartTime, setFreeStartTime] = useState("");
-	const [freeEndTime, setFreeEndTime] = useState("");
+	const [freeStartTime, setFreeStartTime] = useState(DEFAULT_TIME);
+	const [freeEndTime, setFreeEndTime] = useState(DEFAULT_TIME);
 	const [freeMemo, setFreeMemo] = useState("");
+	const [freeSubmitError, setFreeSubmitError] = useState("");
 	const selectedDay =
 		selectedCollectionId && dayItems.some((item) => item.value === selectedCollectionId)
 			? selectedCollectionId
 			: (dayItems[0]?.value ?? "");
 	const selectedPlaceId = selectedPlaceByCollection[selectedDay] ?? null;
+	const freeDayNumber = useMemo(() => Number(freeDay.replace(/[^\d]/g, "")), [freeDay]);
+	const normalizedFreeMemo = useMemo(() => normalizeMemo(freeMemo), [freeMemo]);
+	const isFreeStartTimeValid = isValidTime(freeStartTime);
+	const isFreeEndTimeValid = isValidTime(freeEndTime);
+	const isFreeStartNotAfterEnd =
+		isFreeStartTimeValid && isFreeEndTimeValid
+			? toMinutes(freeStartTime) <= toMinutes(freeEndTime)
+			: false;
+	const isFreeMemoPolicyValid = MEMO_POLICY_REGEX.test(normalizedFreeMemo);
+	const canSubmitFree =
+		!!planId &&
+		Number.isInteger(freeDayNumber) &&
+		freeDayNumber > 0 &&
+		isFreeStartTimeValid &&
+		isFreeEndTimeValid &&
+		isFreeStartNotAfterEnd &&
+		normalizedFreeMemo.trim().length > 0 &&
+		isFreeMemoPolicyValid;
 
 	const handlePlaceSelected = (collectionPlaceId: string, selected: boolean) => {
 		if (!selectedDay) return;
@@ -70,6 +133,24 @@ const AddPlanPage = () => {
 	const places = placesData?.pages.flatMap((page) => page.contents) ?? [];
 	const { data: searchedPlaces = [] } = usePlaceSearch(query);
 	const { mutate: postPreference } = useCollectionPlacePreference();
+	const { mutate: createBlock, isPending: isCreatingBlock } = useCreatePlanBlock({
+		onSuccess: () => {
+			setFreeSubmitError("");
+			setActiveTab("saved");
+			setSelectedCollectionId(null);
+			setFreeDay("");
+			setFreeStartTime(DEFAULT_TIME);
+			setFreeEndTime(DEFAULT_TIME);
+			setFreeMemo("");
+		},
+		onError: (err) => {
+			const message =
+				err.response?.data?.errors?.[0]?.reason ??
+				err.response?.data?.detail ??
+				"자유 시간 추가에 실패했어요. 잠시 후 다시 시도해 주세요.";
+			setFreeSubmitError(message);
+		},
+	});
 	const handleIntersect = useCallback(() => {
 		if (!hasNextPage || isFetchingNextPage) return;
 		fetchNextPage();
@@ -104,10 +185,7 @@ const AddPlanPage = () => {
 		const selectedPlace = searchedPlaces.find(
 			(place) => place.place_id === selectedSearchPlaceId,
 		);
-		if (!selectedPlace) {
-			toast.error("선택한 장소 정보를 찾지 못했습니다.");
-			return;
-		}
+		if (!selectedPlace) return;
 		window.sessionStorage.setItem(
 			"project:selected-search-place",
 			JSON.stringify(selectedPlace),
@@ -118,6 +196,77 @@ const AddPlanPage = () => {
 	const handleOpenManualAdd = () => {
 		if (!planId) return;
 		router.push(`/projects/${planId}/add-place/manual`);
+	};
+
+	const handleFreeTimeKeyDown = (
+		e: KeyboardEvent<HTMLInputElement>,
+		value: string,
+		setValue: (next: string) => void,
+	) => {
+		const input = e.currentTarget;
+		const key = e.key;
+
+		if (
+			key === "Tab" ||
+			key === "ArrowLeft" ||
+			key === "ArrowRight" ||
+			key === "Home" ||
+			key === "End"
+		) {
+			return;
+		}
+
+		const cursor = input.selectionStart ?? 0;
+		const digitIndex = toDigitIndex(cursor);
+
+		if (/^\d$/.test(key)) {
+			e.preventDefault();
+			const next = replaceTimeDigit(value, digitIndex, key);
+			setValue(next);
+			setCaret(input, digitIndex + 1);
+			return;
+		}
+
+		if (key === "Backspace") {
+			e.preventDefault();
+			const prevDigitIndex = Math.max(0, digitIndex - (cursor > 0 ? 1 : 0));
+			const next = replaceTimeDigit(value, prevDigitIndex, "0");
+			setValue(next);
+			setCaret(input, prevDigitIndex);
+			return;
+		}
+
+		if (key === "Delete") {
+			e.preventDefault();
+			const next = replaceTimeDigit(value, digitIndex, "0");
+			setValue(next);
+			setCaret(input, digitIndex);
+			return;
+		}
+
+		if (key === ":") {
+			e.preventDefault();
+			setCaret(input, 2);
+			return;
+		}
+
+		e.preventDefault();
+	};
+
+	const handleAddFreeTimeToPlan = () => {
+		if (!canSubmitFree || !planId) return;
+		setFreeSubmitError("");
+
+		createBlock({
+			planId,
+			body: {
+				type: "FREE",
+				day: freeDayNumber,
+				start_time: freeStartTime,
+				end_time: freeEndTime,
+				memo: normalizedFreeMemo.trim(),
+			},
+		});
 	};
 
 	return (
@@ -265,9 +414,16 @@ const AddPlanPage = () => {
 								<InputForm
 									id="free-start-time"
 									hideIcon
-									placeholder="00:00"
+									type="text"
+									inputMode="numeric"
+									maxLength={5}
 									value={freeStartTime}
-									onChange={(e) => setFreeStartTime(e.target.value)}
+									onKeyDown={(e) =>
+										handleFreeTimeKeyDown(e, freeStartTime, setFreeStartTime)
+									}
+									onFocus={(e) => setCaret(e.currentTarget, 0)}
+									onChange={() => {}}
+									error={!isFreeStartTimeValid || !isFreeStartNotAfterEnd}
 								/>
 							</div>
 
@@ -278,9 +434,16 @@ const AddPlanPage = () => {
 								<InputForm
 									id="free-end-time"
 									hideIcon
-									placeholder="00:00"
+									type="text"
+									inputMode="numeric"
+									maxLength={5}
 									value={freeEndTime}
-									onChange={(e) => setFreeEndTime(e.target.value)}
+									onKeyDown={(e) =>
+										handleFreeTimeKeyDown(e, freeEndTime, setFreeEndTime)
+									}
+									onFocus={(e) => setCaret(e.currentTarget, 0)}
+									onChange={() => {}}
+									error={!isFreeEndTimeValid || !isFreeStartNotAfterEnd}
 								/>
 							</div>
 
@@ -292,9 +455,24 @@ const AddPlanPage = () => {
 									id="free-memo"
 									placeholder="메모를 입력해 주세요"
 									value={freeMemo}
-									onChange={(e) => setFreeMemo(e.target.value)}
+									onChange={(e) => {
+										setFreeMemo(e.target.value);
+										if (freeSubmitError) setFreeSubmitError("");
+									}}
+									error={freeMemo.length > 0 && !isFreeMemoPolicyValid}
 									className="bg-muted"
 								/>
+								{freeMemo.length > 0 && !isFreeMemoPolicyValid && (
+									<FieldDescription error>
+										한글, 영문, 숫자, 이모지, 특수문자(!@#$%^&*()-_+=[]{} ,.?/) 및 줄바꿈만 사용할
+										수 있습니다.
+									</FieldDescription>
+								)}
+								{freeSubmitError && (
+									<p className="px-1 typography-caption-xs-reg text-destructive">
+										{freeSubmitError}
+									</p>
+								)}
 							</div>
 						</div>
 					</TabsContent>
@@ -332,6 +510,24 @@ const AddPlanPage = () => {
 							disabled={!selectedSearchPlaceId || !selectedDay}
 						>
 							여행 게획에 추가하기
+						</Button>
+					</div>
+				</div>
+			)}
+
+			{activeTab === "free" && (
+				<div className="fixed inset-x-0 bottom-0 z-50 h-22.75 border-t border-border bg-background">
+					<div
+						aria-hidden
+						className="pointer-events-none absolute -top-12 inset-x-0 h-12 bg-gradient-bottom-fade"
+					/>
+					<div className="px-5 pt-4">
+						<Button
+							onClick={handleAddFreeTimeToPlan}
+							className="h-11 w-full rounded-2xl bg-primary px-8 py-0 text-primary-foreground"
+							disabled={!canSubmitFree || isCreatingBlock}
+						>
+							여행 게획에 추가히기
 						</Button>
 					</div>
 				</div>
