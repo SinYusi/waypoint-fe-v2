@@ -46,7 +46,7 @@ const ManualAddPlacePage = () => {
       <div className="mt-15 flex flex-col gap-5 overflow-y-auto px-5 pt-7 pb-20">
         <div className="flex flex-col gap-2">
           <Label htmlFor="name" required>
-            장소 이름
+            <span className="typography-label-sm-sb text-foreground">장소 이름</span>
           </Label>
           <InputForm
             id="name"
@@ -59,7 +59,7 @@ const ManualAddPlacePage = () => {
 
         <div className="flex flex-col gap-2">
           <Label htmlFor="location" required>
-            장소 위치
+            <span className="typography-label-sm-sb text-foreground">장소 위치</span>
           </Label>
           <InputForm
             id="location"
@@ -72,7 +72,7 @@ const ManualAddPlacePage = () => {
 
         <div className="flex flex-col gap-2">
           <Label htmlFor="tag" required>
-            장소 태그
+            <span className="typography-label-sm-sb text-foreground">장소 태그</span>
           </Label>
           <InputForm
             id="tag"
@@ -85,7 +85,7 @@ const ManualAddPlacePage = () => {
 
         <div className="flex flex-col gap-2">
           <Label htmlFor="memo" required>
-            메모
+            <span className="typography-label-sm-sb text-foreground">메모</span>
           </Label>
           <Textarea
             id="memo"
@@ -96,7 +96,9 @@ const ManualAddPlacePage = () => {
         </div>
 
         <div className="flex flex-col gap-2">
-          <Label htmlFor="link">링크</Label>
+          <Label htmlFor="link">
+            <span className="typography-label-sm-sb text-foreground">링크</span>
+          </Label>
           <InputForm
             id="link"
             hideIcon

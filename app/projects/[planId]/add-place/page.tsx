@@ -5,7 +5,9 @@ import DayNav from "@/components/common/DayNav";
 import PlanCardSelection from "@/components/card/PlanCardSelection";
 import { Button } from "@/components/ui/button";
 import { InputForm } from "@/components/ui/input-form";
+import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import { useCollectionPlacePreference } from "@/lib/hooks/collection/use-collection-place-preference";
 import { useIntersectionObserver } from "@/lib/hooks/use-intersection-observer";
 import { usePlaceSearch } from "@/lib/hooks/use-place-search";
@@ -37,6 +39,10 @@ const AddPlanPage = () => {
 	>({});
 	const [query, setQuery] = useState("");
 	const [selectedSearchPlaceId, setSelectedSearchPlaceId] = useState<string | null>(null);
+	const [freeDay, setFreeDay] = useState("");
+	const [freeStartTime, setFreeStartTime] = useState("");
+	const [freeEndTime, setFreeEndTime] = useState("");
+	const [freeMemo, setFreeMemo] = useState("");
 	const selectedDay =
 		selectedCollectionId && dayItems.some((item) => item.value === selectedCollectionId)
 			? selectedCollectionId
@@ -237,7 +243,61 @@ const AddPlanPage = () => {
 							</div>
 						</div>
 					</TabsContent>
-					<TabsContent value="free" className="px-5" />
+					<TabsContent value="free" className="px-5">
+						<div className="flex flex-col gap-8 py-5">
+							<div className="flex flex-col gap-2">
+								<Label htmlFor="free-day" required>
+									<span className="typography-label-sm-sb text-foreground">날짜</span>
+								</Label>
+								<InputForm
+									id="free-day"
+									hideIcon
+									placeholder="예) 1일차"
+									value={freeDay}
+									onChange={(e) => setFreeDay(e.target.value)}
+								/>
+							</div>
+
+							<div className="flex flex-col gap-2">
+								<Label htmlFor="free-start-time" required>
+									<span className="typography-label-sm-sb text-foreground">시작 시간</span>
+								</Label>
+								<InputForm
+									id="free-start-time"
+									hideIcon
+									placeholder="00:00"
+									value={freeStartTime}
+									onChange={(e) => setFreeStartTime(e.target.value)}
+								/>
+							</div>
+
+							<div className="flex flex-col gap-2">
+								<Label htmlFor="free-end-time" required>
+									<span className="typography-label-sm-sb text-foreground">종료 시간</span>
+								</Label>
+								<InputForm
+									id="free-end-time"
+									hideIcon
+									placeholder="00:00"
+									value={freeEndTime}
+									onChange={(e) => setFreeEndTime(e.target.value)}
+								/>
+							</div>
+
+							<div className="flex flex-col gap-2">
+								<Label htmlFor="free-memo" required>
+									<span className="typography-label-sm-sb text-foreground">메모</span>
+								</Label>
+								<Textarea
+									id="free-memo"
+									placeholder="메모를 입력해 주세요"
+									value={freeMemo}
+									onChange={(e) => setFreeMemo(e.target.value)}
+									className="bg-muted"
+								/>
+							</div>
+						</div>
+					</TabsContent>
 				</Tabs>
 			</main>
 
