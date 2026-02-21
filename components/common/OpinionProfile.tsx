@@ -33,7 +33,7 @@ function OpinionProfile({
       {/* 프로필 영역 */}
       <div className="flex items-center gap-2">
         <ProfileImage size="sm" src={picture} alt={nickname} className="size-9" />
-        <span className="typography-body-base text-[#1C2024]">{nickname}</span>
+        <span className="typography-body-base text-foreground">{nickname}</span>
       </div>
 
       {/* 수정/삭제 버튼 — 내 의견일 때만 표시 */}
@@ -45,7 +45,7 @@ function OpinionProfile({
             onClick={onDelete}
             className="flex size-10 items-center justify-center rounded-2xl px-2 py-2.5 no-underline hover:no-underline"
           >
-            <Trash2 className="size-6 text-[#000000] opacity-40" strokeWidth={2} />
+            <Trash2 className="size-6 text-foreground opacity-40" strokeWidth={2} />
           </Button>
           <Button
             type="button"
