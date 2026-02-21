@@ -5,6 +5,7 @@ import {
   OPINION_STATE_LABEL,
   getTagText,
   type BlockOpinion,
+  type OpinionCategoryKey,
   type OpinionState,
 } from "@/lib/opinion-bottom-sheet";
 import { cn } from "@/lib/utils/utils";
@@ -48,10 +49,11 @@ function OpinionTypeLabel({ type }: { type: OpinionState }) {
 -------------------------------------------------------- */
 type OpinionCardProps = {
   opinion: BlockOpinion;
+  categoryKey: OpinionCategoryKey;
   className?: string;
 };
 
-function OpinionCard({ opinion, className }: OpinionCardProps) {
+function OpinionCard({ opinion, categoryKey, className }: OpinionCardProps) {
   const hasTags = opinion.tag_ids.length > 0;
   const hasComment = Boolean(opinion.comment);
 
@@ -83,7 +85,7 @@ function OpinionCard({ opinion, className }: OpinionCardProps) {
                   variant="primary"
                   className="h-8 w-fit cursor-default gap-2.5 rounded-xl border-border bg-white px-3 py-1.5 typography-body-sm-reg hover:border-border hover:bg-white"
                 >
-                  {getTagText(id)}
+                  {getTagText(categoryKey, opinion.type, id)}
                 </Chip>
               ))}
             </Chips>
