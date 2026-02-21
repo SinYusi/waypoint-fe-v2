@@ -20,6 +20,8 @@ export type BottomSheetItem = {
   description?: Description;
   icon?: React.ReactNode;
   disabled?: boolean;
+  selected?: boolean;
+  className?: string;
   onSelect?: () => void;
 };
 
@@ -27,9 +29,11 @@ type BottomSheetProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   items: BottomSheetItem[]
+  header?: React.ReactNode
   title?: React.ReactNode
   showTitle?: boolean
-  itemVariant?: "default" | "member"
+  itemVariant?: "default" | "member" | "opinion"
+  closeOnSelect?: boolean
   cancelLabel?: React.ReactNode
   showCloseIcon?: boolean
   onCancel?: () => void
@@ -45,9 +49,11 @@ function BottomSheet({
   open,
   onOpenChange,
   items,
+  header,
   title = "작업 메뉴",
   showTitle = false,
   itemVariant = "default",
+  closeOnSelect = true,
   cancelLabel = "취소",
   showCloseIcon = false,
   onCancel,
@@ -60,7 +66,9 @@ function BottomSheet({
 
   const handleSelect = (onSelect?: () => void) => {
     onSelect?.();
-    onOpenChange(false);
+    if (closeOnSelect) {
+      onOpenChange(false);
+    }
   };
 
   return (
@@ -76,6 +84,7 @@ function BottomSheet({
         <DrawerTitle className="sr-only">{title}</DrawerTitle>
 
         <div className="px-6 pt-6 pb-2">
+          {header}
           {showTitle && (
             <h2 className="mb-2 h-7 w-fit whitespace-nowrap typography-title-lg-sb text-black">
               {title}
@@ -105,11 +114,15 @@ function BottomSheet({
                     "w-full justify-start gap-2 text-foreground",
                     itemVariant === "member"
                       ? "h-11 rounded-sm px-2 typography-label-base-reg hover:bg-accent"
-                      : "rounded-full px-1 pr-8 hover:bg-accent",
+                      : itemVariant === "opinion"
+                        ? "h-11 rounded-2xl border-border bg-transparent px-4 typography-action-sm-reg hover:bg-secondary-hover hover:border-transparent"
+                        : "rounded-full px-1 pr-8 hover:bg-accent",
                     itemVariant === "default" &&
                       (hasDescription
                         ? "h-auto min-h-11 py-2 typography-label-base-reg"
-                        : "h-11 typography-label-base-sb")
+                        : "h-11 typography-label-base-sb"),
+                    itemVariant === "opinion" && item.selected && "bg-accent border-accent",
+                    item.className,
                   )}
                 >
                   <span className={cn("min-w-0 text-left", itemVariant === "member" && "w-fit")}>
