@@ -3,6 +3,7 @@ import {
   type BlockOpinion as OpinionItem,
   type OpinionCategoryKey,
 } from "@/lib/opinion-bottom-sheet"
+import { apiClient } from "@/lib/api/client"
 
 export type BlockOpinionType = "POSITIVE" | "NEUTRAL" | "NEGATIVE"
 
@@ -112,6 +113,13 @@ export type UpdateBlockOpinionRequest = {
   type: BlockOpinionType
   tag_ids: string[]
   comment?: string
+}
+
+export type UpdateBlockRequest = {
+  day?: string
+  start_time?: string
+  end_time?: string
+  memo?: string
 }
 
 const MOCK_BLOCK_DETAIL_STORE = new Map<string, BlockDetailApiResponse>()
@@ -347,6 +355,19 @@ export const getBlockDetail = async (planId: string, blockId: string): Promise<B
   await new Promise((resolve) => setTimeout(resolve, 200))
 
   return normalizeBlockDetail(mockData)
+}
+
+export const updateBlock = async (
+  planId: string,
+  blockId: string,
+  payload: UpdateBlockRequest,
+): Promise<BlockDetail> => {
+  const { data } = await apiClient.patch<BlockDetailApiResponse>(
+    `/plans/${planId}/blocks/${blockId}`,
+    payload,
+  )
+
+  return normalizeBlockDetail(data)
 }
 
 export const updateBlockOpinion = async (
