@@ -6,6 +6,8 @@ import Header from "@/components/layout/Header";
 import HeaderBtn from "@/components/layout/HeaderBtn";
 import NavigationBar from "@/components/layout/NavigationBar";
 import AISummarySection from "@/components/common/AISummarySection";
+import AppAlertDialog from "@/components/common/AppAlertDialog";
+import OpinionBottomSheet from "@/components/common/OpinionBottomSheet";
 import OpinionCard from "@/components/common/OpinionCard";
 import OpinionProfile from "@/components/common/OpinionProfile";
 import { Label } from "@/components/ui/label";
@@ -13,10 +15,25 @@ import { Textarea } from "@/components/ui/textarea";
 import GoogleMap from "@/components/common/GoogleMap";
 import { Calendar, MapPin, Sparkles, SquareArrowOutUpRight } from "lucide-react";
 import { useParams } from "next/navigation";
-import type { OpinionCategoryKey } from "@/lib/opinion-bottom-sheet";
+import type {
+  BlockOpinion,
+  OpinionCategoryKey,
+  OpinionState,
+} from "@/lib/opinion-bottom-sheet";
 import { useBlockDetail } from "@/lib/hooks/use-block-detail";
 
 const MEMO_MAX_LENGTH = 300;
+const CUSTOM_INPUT_REASON_ID = 0;
+const EMPTY_REASON_IDS_BY_STATE: Record<OpinionState, number[]> = {
+  POSITIVE: [],
+  NEUTRAL: [],
+  NEGATIVE: [],
+};
+const EMPTY_CUSTOM_TEXT_BY_STATE: Record<OpinionState, string> = {
+  POSITIVE: "",
+  NEUTRAL: "",
+  NEGATIVE: "",
+};
 
 const resolveOpinionCategoryKey = (category: string): OpinionCategoryKey => {
   if (category.includes("식당") || category.includes("주점")) return "FNB";
@@ -42,6 +59,15 @@ const BlockDetailPage = () => {
 
   const [isEditingMemo, setIsEditingMemo] = useState(false);
   const [memoDraft, setMemoDraft] = useState("");
+  const [editingOpinion, setEditingOpinion] = useState<BlockOpinion | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [editCurrentState, setEditCurrentState] = useState<OpinionState>("POSITIVE");
+  const [editReasonIdsByState, setEditReasonIdsByState] = useState<Record<OpinionState, number[]>>(
+    EMPTY_REASON_IDS_BY_STATE,
+  );
+  const [editCustomTextByState, setEditCustomTextByState] = useState<Record<OpinionState, string>>(
+    EMPTY_CUSTOM_TEXT_BY_STATE,
+  );
 
   const {
     data: blockDetail,
@@ -67,6 +93,18 @@ const BlockDetailPage = () => {
   const myPlanMemberId = blockDetail?.myPlanMemberId;
   const opinions = blockDetail?.opinions ?? [];
   const opinionCategoryKey = resolveOpinionCategoryKey(category);
+  const editCurrentReasonIds = editReasonIdsByState[editCurrentState] ?? [];
+  const editCurrentCustomText = editCustomTextByState[editCurrentState] ?? "";
+  const hasChanged = editingOpinion
+    ? editCurrentState !== editingOpinion.type ||
+      editCurrentCustomText !== (editingOpinion.comment ?? "") ||
+      JSON.stringify(
+        [...editCurrentReasonIds.filter((id) => id !== CUSTOM_INPUT_REASON_ID)].sort((a, b) => a - b),
+      ) !==
+        JSON.stringify(
+          [...editingOpinion.tag_ids.map(Number)].sort((a, b) => a - b),
+        )
+    : false;
   const dayText = `${blockDetail?.day ?? 0}일차`;
   const dateText = (() => {
     if (!blockDetail?.date) return "";
@@ -92,6 +130,24 @@ const BlockDetailPage = () => {
   const handleSaveMemo = () => {
     setMemoDraft((prev) => prev.slice(0, MEMO_MAX_LENGTH));
     setIsEditingMemo(false);
+  };
+
+  const handleOpenOpinionEditor = (opinion: BlockOpinion) => {
+    const initialReasonIds = [
+      ...opinion.tag_ids.map(Number),
+      ...(opinion.comment ? [CUSTOM_INPUT_REASON_ID] : []),
+    ];
+
+    setEditCurrentState(opinion.type);
+    setEditReasonIdsByState({
+      ...EMPTY_REASON_IDS_BY_STATE,
+      [opinion.type]: initialReasonIds,
+    });
+    setEditCustomTextByState({
+      ...EMPTY_CUSTOM_TEXT_BY_STATE,
+      [opinion.type]: opinion.comment ?? "",
+    });
+    setEditingOpinion(opinion);
   };
 
   return (
@@ -239,8 +295,8 @@ const BlockDetailPage = () => {
                           nickname={opinion.added_by.nickname}
                           picture={opinion.added_by.picture}
                           isOwn={myPlanMemberId === opinion.added_by.plan_member_id}
-                          onEdit={() => {}}
-                          onDelete={() => {}}
+                          onEdit={() => handleOpenOpinionEditor(opinion)}
+                          onDelete={() => handleOpenOpinionEditor(opinion)}
                         />
                         <OpinionCard
                           opinion={opinion}
@@ -261,6 +317,51 @@ const BlockDetailPage = () => {
           </div>
         </div>
       </div>
+
+      {editingOpinion && (
+        <OpinionBottomSheet
+          open={!!editingOpinion}
+          onOpenChange={(open) => {
+            if (!open) setEditingOpinion(null);
+          }}
+          categoryKey={opinionCategoryKey}
+          state={editCurrentState}
+          selectedReasonIds={editCurrentReasonIds}
+          customInputText={editCurrentCustomText}
+          onStateChange={setEditCurrentState}
+          onSelectedReasonIdsChange={(selectedReasonIds) => {
+            setEditReasonIdsByState((prev) => ({
+              ...prev,
+              [editCurrentState]: selectedReasonIds,
+            }));
+          }}
+          onCustomInputTextChange={(text) => {
+            setEditCustomTextByState((prev) => ({
+              ...prev,
+              [editCurrentState]: text,
+            }));
+          }}
+          cancelLabel="의견 삭제"
+          confirmLabel="수정 완료"
+          confirmDisabled={!hasChanged}
+          closeOnCancel={false}
+          onCancel={() => setDeleteConfirmOpen(true)}
+        />
+      )}
+
+      <AppAlertDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        title="의견을 삭제하시겠습니까?"
+        description="의견 삭제 후엔 남겼던 의견 데이터를 되돌릴 수 없어요."
+        cancelLabel="취소"
+        onCancel={() => setDeleteConfirmOpen(false)}
+        actionLabel="삭제하기"
+        onAction={() => {
+          setDeleteConfirmOpen(false);
+          setEditingOpinion(null);
+        }}
+      />
 
       <NavigationBar className="fixed bottom-0 left-0 right-0 z-50" />
     </div>
