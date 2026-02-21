@@ -1,9 +1,10 @@
-export type BlockOpinionType = "POSITIVE" | "NEUTRAL" | "NEGATIVE"
 import {
   OPINION_REASON_MAP,
   type BlockOpinion as OpinionItem,
   type OpinionCategoryKey,
 } from "@/lib/opinion-bottom-sheet"
+
+export type BlockOpinionType = "POSITIVE" | "NEUTRAL" | "NEGATIVE"
 
 type PlanMember = {
   plan_member_id: string
@@ -61,7 +62,7 @@ type BlockDetailApiResponse = {
         neutral: number
         negative: number
       }
-      my: {
+      my?: {
         opinion_id: string
         type: BlockOpinionType
       }
@@ -106,6 +107,14 @@ export type BlockDetail = {
   negativeMembers: PlanMember[]
   myOpinion: BlockOpinionType | null
 }
+
+export type UpdateBlockOpinionRequest = {
+  type: BlockOpinionType
+  tag_ids: string[]
+  comment?: string
+}
+
+const MOCK_BLOCK_DETAIL_STORE = new Map<string, BlockDetailApiResponse>()
 
 const resolveOpinionCategoryKey = (category: string): OpinionCategoryKey => {
   if (category.includes("식당") || category.includes("주점")) return "FNB"
@@ -240,6 +249,43 @@ const getMockBlockDetail = (planId: string, blockId: string): BlockDetailApiResp
   }
 }
 
+const mockStoreKey = (planId: string, blockId: string) => `${planId}:${blockId}`
+
+const getOrCreateMockBlockDetail = (planId: string, blockId: string) => {
+  const key = mockStoreKey(planId, blockId)
+  const existing = MOCK_BLOCK_DETAIL_STORE.get(key)
+  if (existing) return existing
+
+  const created = getMockBlockDetail(planId, blockId)
+  MOCK_BLOCK_DETAIL_STORE.set(key, created)
+  return created
+}
+
+const syncOpinionSummary = (data: BlockDetailApiResponse) => {
+  const positive = data.opinions.filter((opinion) => opinion.type === "POSITIVE").length
+  const neutral = data.opinions.filter((opinion) => opinion.type === "NEUTRAL").length
+  const negative = data.opinions.filter((opinion) => opinion.type === "NEGATIVE").length
+  const myPlanMemberId = data.block.added_by.plan_member_id
+  const myOpinion = data.opinions.find((opinion) => opinion.added_by.plan_member_id === myPlanMemberId)
+
+  data.block.opinion_summary = {
+    total_count: data.opinions.length,
+    distribution: {
+      positive,
+      neutral,
+      negative,
+    },
+    ...(myOpinion
+      ? {
+          my: {
+            opinion_id: myOpinion.opinion_Id,
+            type: myOpinion.type,
+          },
+        }
+      : {}),
+  }
+}
+
 const dedupeMembers = (members: PlanMember[]) => {
   const unique = new Map<string, PlanMember>()
   for (const member of members) {
@@ -296,9 +342,58 @@ const normalizeBlockDetail = (data: BlockDetailApiResponse): BlockDetail => {
 }
 
 export const getBlockDetail = async (planId: string, blockId: string): Promise<BlockDetail> => {
-  const mockData = getMockBlockDetail(planId, blockId)
+  const mockData = getOrCreateMockBlockDetail(planId, blockId)
 
   await new Promise((resolve) => setTimeout(resolve, 200))
 
   return normalizeBlockDetail(mockData)
+}
+
+export const updateBlockOpinion = async (
+  planId: string,
+  blockId: string,
+  opinionId: string,
+  payload: UpdateBlockOpinionRequest,
+): Promise<OpinionItem> => {
+  const data = getOrCreateMockBlockDetail(planId, blockId)
+  const targetIndex = data.opinions.findIndex((opinion) => opinion.opinion_Id === opinionId)
+
+  if (targetIndex === -1) {
+    throw new Error("Opinion not found")
+  }
+
+  const target = data.opinions[targetIndex]
+  const updated: BlockOpinionApi = {
+    ...target,
+    type: payload.type,
+    tag_ids: payload.tag_ids,
+    comment: payload.comment ?? "",
+  }
+
+  data.opinions[targetIndex] = updated
+  syncOpinionSummary(data)
+
+  await new Promise((resolve) => setTimeout(resolve, 200))
+
+  return {
+    opinion_Id: updated.opinion_Id,
+    type: updated.type,
+    comment: updated.comment,
+    tag_ids: updated.tag_ids,
+    added_by: updated.added_by,
+  }
+}
+
+export const deleteBlockOpinion = async (
+  planId: string,
+  blockId: string,
+  opinionId: string,
+): Promise<void> => {
+  const data = getOrCreateMockBlockDetail(planId, blockId)
+  const nextOpinions = data.opinions.filter((opinion) => opinion.opinion_Id !== opinionId)
+
+  data.opinions = nextOpinions
+  syncOpinionSummary(data)
+
+  await new Promise((resolve) => setTimeout(resolve, 200))
 }
