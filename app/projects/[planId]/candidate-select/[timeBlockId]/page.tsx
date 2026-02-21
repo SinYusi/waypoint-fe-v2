@@ -18,11 +18,12 @@ import { useParams, useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 
 const AddPlanPage = () => {
-	// TODO: 타겟 time_block_id 연결 필요
-	const TARGET_TIME_BLOCK_ID = "";
-	const params = useParams<{ planId: string | string[] }>();
+	const params = useParams<{ planId: string | string[]; timeBlockId: string | string[] }>();
 	const router = useRouter();
 	const planId = Array.isArray(params.planId) ? params.planId[0] : params.planId;
+	const timeBlockId = Array.isArray(params.timeBlockId)
+		? params.timeBlockId[0]
+		: params.timeBlockId;
 	const { data: planCollections = [] } = usePlanCollections(planId ?? "");
 
 	const dayItems = useMemo(
@@ -70,10 +71,10 @@ const AddPlanPage = () => {
 	const { mutate: addCollectionPlace, isPending: isAddingCollectionPlace } =
 		useAddCollectionPlace({
 			onSuccess: (data) => {
-				if (!planId || !TARGET_TIME_BLOCK_ID) return;
+				if (!planId || !timeBlockId) return;
 				addCandidatesToBlock({
 					planId,
-					timeBlockId: TARGET_TIME_BLOCK_ID,
+					timeBlockId,
 					body: {
 						collection_place_ids: [data.collection_place_id],
 					},
@@ -94,11 +95,11 @@ const AddPlanPage = () => {
 
 	const handleAddToPlan = () => {
 		if (!planId || !selectedDay || !selectedPlaceId) return;
-		if (!TARGET_TIME_BLOCK_ID) return;
+		if (!timeBlockId) return;
 
 		addCandidatesToBlock({
 			planId,
-			timeBlockId: TARGET_TIME_BLOCK_ID,
+			timeBlockId,
 			body: {
 				collection_place_ids: [selectedPlaceId],
 			},
@@ -120,7 +121,7 @@ const AddPlanPage = () => {
 
 	const handleOpenPlaceAddFromSearch = () => {
 		if (!planId || !selectedDay || !selectedSearchPlaceId) return;
-		if (!TARGET_TIME_BLOCK_ID) return;
+		if (!timeBlockId) return;
 		addCollectionPlace({
 			collectionId: selectedDay,
 			place_id: selectedSearchPlaceId,
@@ -133,11 +134,9 @@ const AddPlanPage = () => {
 			mode: "candidate",
 			collectionId: selectedDay,
 		});
-		// TODO: manual 후보지 추가에서도 time_block_id 연결 필요
-		if (TARGET_TIME_BLOCK_ID) {
-			search.set("timeBlockId", TARGET_TIME_BLOCK_ID);
-		}
-		router.push(`/projects/${planId}/candidate-select/manual?${search.toString()}`);
+		router.push(
+			`/projects/${planId}/candidate-select/${timeBlockId}/manual?${search.toString()}`,
+		);
 	};
 
 	return (
@@ -274,7 +273,7 @@ const AddPlanPage = () => {
 						<Button
 							onClick={handleAddToPlan}
 							className="h-11 w-full rounded-2xl bg-primary px-8 py-0 text-primary-foreground"
-							disabled={!selectedPlaceId || !TARGET_TIME_BLOCK_ID || isAddingCandidates}
+							disabled={!selectedPlaceId || !timeBlockId || isAddingCandidates}
 						>
 							후보지 추가하기
 						</Button>
@@ -295,7 +294,7 @@ const AddPlanPage = () => {
 							disabled={
 								!selectedSearchPlaceId ||
 								!selectedDay ||
-								!TARGET_TIME_BLOCK_ID ||
+								!timeBlockId ||
 								isAddingCollectionPlace ||
 								isAddingCandidates
 							}

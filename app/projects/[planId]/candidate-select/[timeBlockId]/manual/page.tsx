@@ -12,11 +12,13 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 const CandidateManualAddPlacePage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const params = useParams<{ planId: string | string[] }>();
+  const params = useParams<{ planId: string | string[]; timeBlockId: string | string[] }>();
   const planId = Array.isArray(params.planId) ? params.planId[0] : params.planId;
+  const timeBlockId = Array.isArray(params.timeBlockId)
+    ? params.timeBlockId[0]
+    : params.timeBlockId;
   const mode = searchParams.get("mode") ?? "";
   const collectionId = searchParams.get("collectionId") ?? "";
-  const timeBlockId = searchParams.get("timeBlockId") ?? "";
 
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
