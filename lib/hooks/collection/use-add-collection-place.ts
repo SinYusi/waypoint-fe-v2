@@ -39,6 +39,9 @@ export const useAddCollectionPlace = (options?: Options) => {
       queryClient.invalidateQueries({
         queryKey: ["collectionPlaces", { collectionId: variables.collectionId }],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["planCollectionPlaces"],
+      });
 
       options?.onSuccess?.(data, variables, onMutateResult, context);
     },
