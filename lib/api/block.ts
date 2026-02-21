@@ -1,4 +1,9 @@
 export type BlockOpinionType = "POSITIVE" | "NEUTRAL" | "NEGATIVE"
+import {
+  OPINION_REASON_MAP,
+  type BlockOpinion as OpinionItem,
+  type OpinionCategoryKey,
+} from "@/lib/opinion-bottom-sheet"
 
 type PlanMember = {
   plan_member_id: string
@@ -6,7 +11,7 @@ type PlanMember = {
   picture: string
 }
 
-type BlockOpinion = {
+type BlockOpinionApi = {
   opinion_Id: string
   type: BlockOpinionType
   comment: string
@@ -24,7 +29,7 @@ type BlockDetailApiResponse = {
   }
   start_time: string
   end_time: string
-  opinions: BlockOpinion[]
+  opinions: BlockOpinionApi[]
   block: {
     block_id: string
     memo: string
@@ -92,6 +97,7 @@ export type BlockDetail = {
   aiSummary: string
   sourceTitle: string
   sourceUrl: string
+  opinions: OpinionItem[]
   positiveCount: number
   neutralCount: number
   negativeCount: number
@@ -100,13 +106,43 @@ export type BlockDetail = {
   myOpinion: BlockOpinionType | null
 }
 
+const resolveOpinionCategoryKey = (category: string): OpinionCategoryKey => {
+  if (category.includes("식당") || category.includes("주점")) return "FNB"
+  if (category.includes("카페") || category.includes("디저트")) return "DESSERT"
+  if (category.includes("숙소")) return "STAY"
+  if (category.includes("쇼핑")) return "SHOPPING"
+  if (
+    category.includes("관광") ||
+    category.includes("문화") ||
+    category.includes("공원") ||
+    category.includes("자연")
+  ) {
+    return "TOUR"
+  }
+
+  return "GENERAL"
+}
+
+const getTagIdsForMockOpinion = (
+  categoryKey: OpinionCategoryKey,
+  type: BlockOpinionType,
+  count = 2,
+) => {
+  return OPINION_REASON_MAP[categoryKey][type]
+    .slice(0, count)
+    .map((reason) => String(reason.id))
+}
+
 const getMockBlockDetail = (planId: string, blockId: string): BlockDetailApiResponse => {
-  const opinions: BlockOpinion[] = [
+  const placeMiddleCategoryName = "카페"
+  const opinionCategoryKey = resolveOpinionCategoryKey(placeMiddleCategoryName)
+
+  const opinions: BlockOpinionApi[] = [
     {
       opinion_Id: "op-1",
       type: "POSITIVE",
       comment: "동선 좋고 분위기 좋아요.",
-      tag_ids: ["taste", "atmosphere"],
+      tag_ids: getTagIdsForMockOpinion(opinionCategoryKey, "POSITIVE", 2),
       added_by: {
         plan_member_id: "pm-1",
         nickname: "민지",
@@ -117,7 +153,7 @@ const getMockBlockDetail = (planId: string, blockId: string): BlockDetailApiResp
       opinion_Id: "op-2",
       type: "NEGATIVE",
       comment: "대기 시간이 너무 길 수도 있어요.",
-      tag_ids: ["wait"],
+      tag_ids: getTagIdsForMockOpinion(opinionCategoryKey, "NEGATIVE", 2),
       added_by: {
         plan_member_id: "pm-2",
         nickname: "지훈",
@@ -126,9 +162,9 @@ const getMockBlockDetail = (planId: string, blockId: string): BlockDetailApiResp
     },
     {
       opinion_Id: "op-3",
-      type: "POSITIVE",
-      comment: "사진 찍기 좋은 곳이에요.",
-      tag_ids: ["photo"],
+      type: "NEUTRAL",
+      comment: "동선만 맞으면 들러도 좋을 것 같아요.",
+      tag_ids: getTagIdsForMockOpinion(opinionCategoryKey, "NEUTRAL", 2),
       added_by: {
         plan_member_id: "pm-3",
         nickname: "서연",
@@ -159,7 +195,7 @@ const getMockBlockDetail = (planId: string, blockId: string): BlockDetailApiResp
         address: "서울특별시 마포구 연남동 123-45",
         category: {
           level1: { category_id: "l1", name: "F&B" },
-          level2: { category_id: "l2", name: "카페" },
+          level2: { category_id: "l2", name: placeMiddleCategoryName },
           level3: { category_id: "l3", name: "디저트 카페" },
         },
         primary_type: "cafe",
@@ -181,8 +217,8 @@ const getMockBlockDetail = (planId: string, blockId: string): BlockDetailApiResp
       opinion_summary: {
         total_count: 3,
         distribution: {
-          positive: 2,
-          neutral: 0,
+          positive: 1,
+          neutral: 1,
           negative: 1,
         },
         my: {
@@ -240,6 +276,13 @@ const normalizeBlockDetail = (data: BlockDetailApiResponse): BlockDetail => {
     aiSummary: data.social_media.summary,
     sourceTitle: `${data.social_media.author_name} - ${data.social_media.title}`,
     sourceUrl: data.social_media.url,
+    opinions: data.opinions.map((opinion) => ({
+      opinion_Id: opinion.opinion_Id,
+      type: opinion.type,
+      comment: opinion.comment,
+      tag_ids: opinion.tag_ids,
+      added_by: opinion.added_by,
+    })),
     positiveCount: data.block.opinion_summary.distribution.positive,
     neutralCount: data.block.opinion_summary.distribution.neutral,
     negativeCount: data.block.opinion_summary.distribution.negative,
