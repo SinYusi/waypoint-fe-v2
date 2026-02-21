@@ -3,7 +3,6 @@ import { Trash2 } from "lucide-react";
 import EditIcon from "@/public/icons/edit.svg";
 import ProfileImage from "@/components/common/ProfileImage";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils/utils";
 
 type OpinionProfileProps = {
   nickname: string;
@@ -12,7 +11,6 @@ type OpinionProfileProps = {
   isOwn?: boolean;
   onEdit?: () => void;
   onDelete?: () => void;
-  className?: string;
 };
 
 function OpinionProfile({
@@ -21,15 +19,9 @@ function OpinionProfile({
   isOwn = false,
   onEdit,
   onDelete,
-  className,
 }: OpinionProfileProps) {
   return (
-    <div
-      className={cn(
-        "flex h-10 w-full items-center justify-between px-2 py-1",
-        className,
-      )}
-    >
+    <div className="flex w-full items-center justify-between">
       {/* 프로필 영역 */}
       <div className="flex items-center gap-2">
         <ProfileImage size="sm" src={picture} alt={nickname} className="size-9" />
