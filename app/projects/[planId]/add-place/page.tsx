@@ -2,7 +2,9 @@
 
 import Header from "@/components/layout/Header";
 import DayNav from "@/components/common/DayNav";
+import PlanCardSelection from "@/components/card/PlanCardSelection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { usePlanCollectionPlaces } from "@/lib/hooks/plan/use-plan-collection-places";
 import { usePlanCollections } from "@/lib/hooks/plan/use-plan-collections";
 import { useParams } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -21,10 +23,29 @@ const AddPlanPage = () => {
 		[planCollections],
 	);
 	const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null);
+	const [selectedPlaceByCollection, setSelectedPlaceByCollection] = useState<
+		Record<string, string | null>
+	>({});
 	const selectedDay =
 		selectedCollectionId && dayItems.some((item) => item.value === selectedCollectionId)
 			? selectedCollectionId
 			: (dayItems[0]?.value ?? "");
+	const selectedPlaceId = selectedPlaceByCollection[selectedDay] ?? null;
+
+	const handlePlaceSelected = (collectionPlaceId: string, selected: boolean) => {
+		if (!selectedDay) return;
+
+		setSelectedPlaceByCollection((prev) => {
+			return {
+				...prev,
+				[selectedDay]: selected ? collectionPlaceId : null,
+			};
+		});
+	};
+	const { data: placesData } = usePlanCollectionPlaces(planId ?? "", selectedDay, {
+		size: 20,
+	});
+	const places = placesData?.pages.flatMap((page) => page.contents) ?? [];
 
 	return (
 		<div className="flex min-h-screen flex-col bg-[#fafafa]">
@@ -62,6 +83,28 @@ const AddPlanPage = () => {
 									ariaLabel="컬렉션 선택"
 								/>
 							)}
+
+							<div className="mt-4 flex w-full flex-col gap-4 self-center">
+								{places.map((item) => (
+									<PlanCardSelection
+										key={item.collection_place_id}
+										isSelected={selectedPlaceId === item.collection_place_id}
+										onSelected={(selected) =>
+											handlePlaceSelected(item.collection_place_id, selected)
+										}
+										title={item.place.name}
+										address={item.place.address}
+										imageSrc={item.place.photos[0]}
+										pickCount={item.pick_pass.picked.count}
+										passCount={item.pick_pass.passed.count}
+										myPreference={
+											item.pick_pass.my_preference === "NOTHING"
+												? null
+												: item.pick_pass.my_preference
+										}
+									/>
+								))}
+							</div>
 						</div>
 					</TabsContent>
 					<TabsContent value="search" className="px-5" />
