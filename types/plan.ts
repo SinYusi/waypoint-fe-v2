@@ -106,3 +106,15 @@ export type UpdatePlanResponse = {
   plan: PlanResponse;
   affectedDays: AffectedDays[];
 };
+  
+export type PlanAddedBy = {
+  plan_member_id: string;
+  nickname: string;
+  picture: string;
+};
+
+export type PlanCollectionResponse = {
+  collection_id: string;
+  title: string;
+  added_by: PlanAddedBy;
+};
