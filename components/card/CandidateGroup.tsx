@@ -80,6 +80,20 @@ const CandidateGroup = (props: CandidateGroupProps) => {
             placeName={item.placeName}
           />
         ))}
+        {isCollapsible && (
+          <button
+            type="button"
+            className="flex items-center justify-center gap-1 typography-action-sm-reg text-foreground py-2.5 px-2 w-full"
+            onClick={() => setIsExpanded((prev) => !prev)}
+          >
+            {isExpanded ? "접기" : `+ ${hiddenCount}개 더보기`}
+            {isExpanded ? (
+              <ChevronUpIcon className="size-6 opacity-40" />
+            ) : (
+              <ChevronDownIcon className="size-6 opacity-40" />
+            )}
+          </button>
+        )}
       </div>
     );
   }
