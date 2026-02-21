@@ -130,6 +130,14 @@ export type CreatePlanBlockRequest = {
   memo: string;
 };
 
+export type CreatePlanBlockByPlaceRequest = {
+  place_id: string;
+  day: number;
+  start_time: string;
+  end_time: string;
+  memo: string;
+};
+
 export type BlockResponse = {
   time_block_id: string;
   type: TimeBlockType;
