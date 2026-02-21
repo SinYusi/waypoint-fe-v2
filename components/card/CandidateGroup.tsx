@@ -15,6 +15,12 @@ interface Reactions {
   bad: number;
 }
 
+export interface EditCandidateItem {
+  id: string;
+  placeType: PlaceType;
+  placeName: string;
+}
+
 export interface ViewCandidateItem {
   id: string;
   placeType: PlaceType;
@@ -31,11 +37,18 @@ export interface ViewCandidateItem {
 
 // ─── Group props ─────────────────────────────────────────────────────────────
 
-interface CandidateGroupProps {
+interface CandidateGroupEditProps {
+  mode: "edit";
+  candidates: EditCandidateItem[];
+}
+
+interface CandidateGroupViewProps {
   mode: "view";
   candidates: ViewCandidateItem[];
   onSelectCandidate?: () => void;
 }
+
+type CandidateGroupProps = CandidateGroupEditProps | CandidateGroupViewProps;
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -44,10 +57,8 @@ const COLLAPSED_SHOW_COUNT = 3;
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-const CandidateGroup = ({
-  candidates,
-  onSelectCandidate,
-}: CandidateGroupProps) => {
+const CandidateGroup = (props: CandidateGroupProps) => {
+  const { mode, candidates } = props;
   const isCollapsible = candidates.length >= COLLAPSE_THRESHOLD;
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -58,9 +69,26 @@ const CandidateGroup = ({
 
   const hiddenCount = candidates.length - COLLAPSED_SHOW_COUNT;
 
+  if (mode === "edit") {
+    return (
+      <div className="flex flex-col gap-3 rounded-3xl border border-dashed border-[#e2e2e2] bg-[#f0f0f0] p-3">
+        {(visibleCandidates as EditCandidateItem[]).map((item) => (
+          <CandidateCard
+            key={item.id}
+            mode="edit"
+            placeType={item.placeType}
+            placeName={item.placeName}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  const { onSelectCandidate } = props as CandidateGroupViewProps;
+
   return (
     <div className="flex flex-col gap-3 rounded-3xl border border-dashed border-[#e2e2e2] bg-[#f0f0f0] p-3">
-      {visibleCandidates.map((item) => (
+      {(visibleCandidates as ViewCandidateItem[]).map((item) => (
         <CandidateCard
           key={item.id}
           mode="view"
