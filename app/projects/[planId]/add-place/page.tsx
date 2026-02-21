@@ -4,13 +4,18 @@ import Header from "@/components/layout/Header";
 import DayNav from "@/components/common/DayNav";
 import PlanCardSelection from "@/components/card/PlanCardSelection";
 import { Button } from "@/components/ui/button";
+import { InputForm } from "@/components/ui/input-form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAddCollectionPlace } from "@/lib/hooks/collection/use-add-collection-place";
 import { useCollectionPlacePreference } from "@/lib/hooks/collection/use-collection-place-preference";
 import { useIntersectionObserver } from "@/lib/hooks/use-intersection-observer";
+import { usePlaceSearch } from "@/lib/hooks/use-place-search";
 import { usePlanCollectionPlaces } from "@/lib/hooks/plan/use-plan-collection-places";
 import { usePlanCollections } from "@/lib/hooks/plan/use-plan-collections";
+import { MapPin } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 const AddPlanPage = () => {
 	const params = useParams<{ planId: string | string[] }>();
@@ -27,9 +32,12 @@ const AddPlanPage = () => {
 		[planCollections],
 	);
 	const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null);
+	const [activeTab, setActiveTab] = useState<"saved" | "search" | "free">("saved");
 	const [selectedPlaceByCollection, setSelectedPlaceByCollection] = useState<
 		Record<string, string | null>
 	>({});
+	const [query, setQuery] = useState("");
+	const [selectedSearchPlaceId, setSelectedSearchPlaceId] = useState<string | null>(null);
 	const selectedDay =
 		selectedCollectionId && dayItems.some((item) => item.value === selectedCollectionId)
 			? selectedCollectionId
@@ -55,7 +63,21 @@ const AddPlanPage = () => {
 		size: 20,
 	});
 	const places = placesData?.pages.flatMap((page) => page.contents) ?? [];
+	const { data: searchedPlaces = [] } = usePlaceSearch(query);
 	const { mutate: postPreference } = useCollectionPlacePreference();
+	const { mutate: addPlace, isPending: isAddingPlace } = useAddCollectionPlace({
+		onSuccess: () => {
+			toast("선택한 장소가 보관함에 추가되었습니다.");
+			setSelectedSearchPlaceId(null);
+		},
+		onError: (error) => {
+			if (error.response?.status === 409) {
+				toast.error("이미 보관함에 추가된 장소입니다.");
+				return;
+			}
+			toast.error("장소 추가에 실패했어요. 잠시 후 다시 시도해 주세요.");
+		},
+	});
 	const handleIntersect = useCallback(() => {
 		if (!hasNextPage || isFetchingNextPage) return;
 		fetchNextPage();
@@ -85,6 +107,23 @@ const AddPlanPage = () => {
 		});
 	};
 
+	const handleAddPlaceToCollection = () => {
+		if (!selectedDay || !selectedSearchPlaceId) return;
+
+		addPlace({
+			collectionId: selectedDay,
+			place_id: selectedSearchPlaceId,
+		});
+	};
+
+	const handleOpenManualAdd = () => {
+		if (!selectedDay) {
+			toast.error("먼저 컬렉션을 선택해 주세요.");
+			return;
+		}
+		router.push(`/home/${selectedDay}/add-place/manual`);
+	};
+
 	return (
 		<div className="flex min-h-screen flex-col bg-background">
 			<Header
@@ -96,7 +135,10 @@ const AddPlanPage = () => {
 			/>
 
 			<main className="flex flex-1 flex-col pt-16 pb-24">
-				<Tabs defaultValue="saved">
+				<Tabs
+					value={activeTab}
+					onValueChange={(value) => setActiveTab(value as "saved" | "search" | "free")}
+				>
 					<TabsList style="underline" fullWidth className="w-full px-5">
 						<TabsTrigger value="saved" style="underline" fullWidth>
 							보관함
@@ -152,26 +194,98 @@ const AddPlanPage = () => {
 							</div>
 						</div>
 					</TabsContent>
-					<TabsContent value="search" className="px-5" />
+					<TabsContent value="search" className="px-5">
+						<div className="flex flex-col gap-4 py-5">
+							<InputForm
+								value={query}
+								onChange={(e) => {
+									setQuery(e.target.value);
+									setSelectedSearchPlaceId(null);
+								}}
+								placeholder="장소를 검색해 주세요"
+							/>
+							<div className="flex flex-col gap-4">
+								{searchedPlaces.map((place) => {
+									const isSelected = selectedSearchPlaceId === place.place_id;
+									return (
+										<button
+											key={place.place_id}
+											type="button"
+											className={`w-full rounded-2xl px-5 py-4 text-left ${
+												isSelected
+													? "border-2 border-primary bg-muted"
+													: "border-2 border-transparent bg-muted"
+											}`}
+											onClick={() =>
+												setSelectedSearchPlaceId(isSelected ? null : place.place_id)
+											}
+										>
+											<p className="typography-action-base-bold text-foreground">
+												{place.name}
+											</p>
+											<div className="mt-1 flex items-center gap-1">
+												<MapPin
+													className="size-4.5 shrink-0 text-[#737373]"
+													strokeWidth={2}
+												/>
+												<p className="typography-body-sm-reg text-muted-foreground">
+													{place.address}
+												</p>
+											</div>
+										</button>
+									);
+								})}
+								{query.length > 0 && (
+									<Button
+										variant="ghost"
+										className="w-full typography-action-sm-reg text-muted-foreground"
+										onClick={handleOpenManualAdd}
+									>
+										장소를 찾지 못하시겠나요?
+									</Button>
+								)}
+							</div>
+						</div>
+					</TabsContent>
 					<TabsContent value="free" className="px-5" />
 				</Tabs>
 			</main>
 
-			<div className="fixed inset-x-0 bottom-0 z-50 h-22.75 border-t border-border bg-background">
-				<div
-					aria-hidden
-					className="pointer-events-none absolute -top-12 inset-x-0 h-12 bg-gradient-bottom-fade"
-				/>
-				<div className="px-5 pt-4">
-					<Button
-						onClick={handleAddToPlan}
-						className="h-11 w-full rounded-2xl bg-primary px-8 py-0 text-primary-foreground"
-						disabled={!selectedPlaceId}
-					>
-						여행 계획에 추가하기
-					</Button>
+			{activeTab === "saved" && (
+				<div className="fixed inset-x-0 bottom-0 z-50 h-22.75 border-t border-border bg-background">
+					<div
+						aria-hidden
+						className="pointer-events-none absolute -top-12 inset-x-0 h-12 bg-gradient-bottom-fade"
+					/>
+					<div className="px-5 pt-4">
+						<Button
+							onClick={handleAddToPlan}
+							className="h-11 w-full rounded-2xl bg-primary px-8 py-0 text-primary-foreground"
+							disabled={!selectedPlaceId}
+						>
+							여행 게획에 추가하기
+						</Button>
+					</div>
 				</div>
-			</div>
+			)}
+
+			{activeTab === "search" && (
+				<div className="fixed inset-x-0 bottom-0 z-50 h-22.75 border-t border-border bg-background">
+					<div
+						aria-hidden
+						className="pointer-events-none absolute -top-12 inset-x-0 h-12 bg-gradient-bottom-fade"
+					/>
+					<div className="px-5 pt-4">
+						<Button
+							onClick={handleAddPlaceToCollection}
+							className="h-11 w-full rounded-2xl bg-primary px-8 py-0 text-primary-foreground"
+							disabled={!selectedSearchPlaceId || !selectedDay || isAddingPlace}
+						>
+							여행 게획에 추가하기
+						</Button>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 };
