@@ -83,14 +83,19 @@ function BottomSheet({
       >
         <DrawerTitle className="sr-only">{title}</DrawerTitle>
 
-        <div className="px-6 pt-6 pb-2">
+        <div className="min-h-0 flex-1 overflow-y-auto px-6 pt-6 pb-2">
           {header}
           {showTitle && (
             <h2 className="mb-2 h-7 w-fit whitespace-nowrap typography-title-lg-sb text-black">
               {title}
             </h2>
           )}
-          <div className="flex flex-col gap-2.5 pb-3.5">
+          <div
+            className={cn(
+              "flex flex-col gap-2.5 pb-3.5",
+              itemVariant === "opinion" && "w-81.75 gap-3.5 pb-0",
+            )}
+          >
             {items.map((item) => {
               const descriptionLines = normalizeDescription(item.description);
               const hasDescription = descriptionLines.length > 0;
