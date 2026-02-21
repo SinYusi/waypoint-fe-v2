@@ -97,6 +97,7 @@ export type BlockDetail = {
   aiSummary: string
   sourceTitle: string
   sourceUrl: string
+  myPlanMemberId: string
   opinions: OpinionItem[]
   positiveCount: number
   neutralCount: number
@@ -134,6 +135,7 @@ const getTagIdsForMockOpinion = (
 }
 
 const getMockBlockDetail = (planId: string, blockId: string): BlockDetailApiResponse => {
+  const myPlanMemberId = "pm-me"
   const placeMiddleCategoryName = "카페"
   const opinionCategoryKey = resolveOpinionCategoryKey(placeMiddleCategoryName)
 
@@ -142,10 +144,10 @@ const getMockBlockDetail = (planId: string, blockId: string): BlockDetailApiResp
       opinion_Id: "op-1",
       type: "POSITIVE",
       comment: "동선 좋고 분위기 좋아요.",
-      tag_ids: getTagIdsForMockOpinion(opinionCategoryKey, "POSITIVE", 2),
+      tag_ids: getTagIdsForMockOpinion(opinionCategoryKey, "POSITIVE", 3),
       added_by: {
-        plan_member_id: "pm-1",
-        nickname: "민지",
+        plan_member_id: myPlanMemberId,
+        nickname: "나",
         picture: "",
       },
     },
@@ -153,7 +155,7 @@ const getMockBlockDetail = (planId: string, blockId: string): BlockDetailApiResp
       opinion_Id: "op-2",
       type: "NEGATIVE",
       comment: "대기 시간이 너무 길 수도 있어요.",
-      tag_ids: getTagIdsForMockOpinion(opinionCategoryKey, "NEGATIVE", 2),
+      tag_ids: getTagIdsForMockOpinion(opinionCategoryKey, "NEGATIVE", 3),
       added_by: {
         plan_member_id: "pm-2",
         nickname: "지훈",
@@ -164,7 +166,7 @@ const getMockBlockDetail = (planId: string, blockId: string): BlockDetailApiResp
       opinion_Id: "op-3",
       type: "NEUTRAL",
       comment: "동선만 맞으면 들러도 좋을 것 같아요.",
-      tag_ids: getTagIdsForMockOpinion(opinionCategoryKey, "NEUTRAL", 2),
+      tag_ids: getTagIdsForMockOpinion(opinionCategoryKey, "NEUTRAL", 3),
       added_by: {
         plan_member_id: "pm-3",
         nickname: "서연",
@@ -210,7 +212,7 @@ const getMockBlockDetail = (planId: string, blockId: string): BlockDetailApiResp
       },
       selected: true,
       added_by: {
-        plan_member_id: "pm-owner",
+        plan_member_id: myPlanMemberId,
         nickname: "여행대장",
         picture: "",
       },
@@ -276,6 +278,7 @@ const normalizeBlockDetail = (data: BlockDetailApiResponse): BlockDetail => {
     aiSummary: data.social_media.summary,
     sourceTitle: `${data.social_media.author_name} - ${data.social_media.title}`,
     sourceUrl: data.social_media.url,
+    myPlanMemberId: data.block.added_by.plan_member_id,
     opinions: data.opinions.map((opinion) => ({
       opinion_Id: opinion.opinion_Id,
       type: opinion.type,
