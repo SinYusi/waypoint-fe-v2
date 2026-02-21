@@ -66,11 +66,19 @@ function OpinionBottomSheet({
   className,
 }: OpinionBottomSheetProps) {
   const [internalState, setInternalState] = useState<OpinionState>("POSITIVE");
-  const [internalSelectedReasonIds, setInternalSelectedReasonIds] = useState<number[]>([]);
-  const [internalCustomInputText, setInternalCustomInputText] = useState("");
+  const [internalSelectedReasonIdsByState, setInternalSelectedReasonIdsByState] = useState<Record<OpinionState, number[]>>({
+    POSITIVE: [],
+    NEUTRAL: [],
+    NEGATIVE: [],
+  });
+  const [internalCustomInputTextByState, setInternalCustomInputTextByState] = useState<Record<OpinionState, string>>({
+    POSITIVE: "",
+    NEUTRAL: "",
+    NEGATIVE: "",
+  });
   const state = stateProp ?? internalState;
-  const selectedReasonIds = selectedReasonIdsProp ?? internalSelectedReasonIds;
-  const customInputText = customInputTextProp ?? internalCustomInputText;
+  const selectedReasonIds = selectedReasonIdsProp ?? internalSelectedReasonIdsByState[state];
+  const customInputText = customInputTextProp ?? internalCustomInputTextByState[state];
   const isCustomInputSelected = selectedReasonIds.includes(CUSTOM_INPUT_REASON.id);
   const isConfirmDisabled =
     (confirmDisabledProp ?? false) ||
@@ -78,7 +86,7 @@ function OpinionBottomSheet({
     (isCustomInputSelected && customInputText.trim() === "");
 
   const handleCustomInputTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInternalCustomInputText(e.target.value);
+    setInternalCustomInputTextByState((prev) => ({ ...prev, [state]: e.target.value }));
     onCustomInputTextChange?.(e.target.value);
   };
 
@@ -86,6 +94,9 @@ function OpinionBottomSheet({
     const next = value as OpinionState;
     setInternalState(next);
     onStateChange?.(next);
+    // 탭 전환 시 해당 탭의 선택 상태로 외부 콜백 동기화
+    onSelectedReasonIdsChange?.(internalSelectedReasonIdsByState[next]);
+    onCustomInputTextChange?.(internalCustomInputTextByState[next]);
   };
 
   const handleReasonClick = (reason: OpinionReason) => {
@@ -94,7 +105,7 @@ function OpinionBottomSheet({
       ? selectedReasonIds.filter((id) => id !== reason.id)
       : [...selectedReasonIds, reason.id];
 
-    setInternalSelectedReasonIds(nextSelectedReasonIds);
+    setInternalSelectedReasonIdsByState((prev) => ({ ...prev, [state]: nextSelectedReasonIds }));
     onSelectedReasonIdsChange?.(nextSelectedReasonIds);
     onSelectReason?.(reason, !isSelected);
   };
