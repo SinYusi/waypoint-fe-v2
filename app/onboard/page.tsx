@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import CheckBox from "@/components/common/CheckBox";
 import { InputForm } from "@/components/ui/input-form";
 import { ChevronRight } from "lucide-react";
+import { useUpdateMe } from "@/lib/hooks/use-update-me";
 
 const OnboardPage = () => {
   const router = useRouter();
@@ -24,6 +25,18 @@ const OnboardPage = () => {
   const [selectedCard, setSelectedCard] = useState<
     "collection" | "plan" | null
   >(null);
+
+  const { mutate: updateMe, isPending } = useUpdateMe({
+    onSuccess: () => {
+      if (selectedCard === "collection") {
+        router.replace("/home/create");
+      } else if (selectedCard === "plan") {
+        // TODO: 새 여행 계획 페이지 route 구현 후 연결
+      } else {
+        router.replace("/home");
+      }
+    },
+  });
 
   const handleAllChange = (checked: boolean) => {
     setAllChecked(checked);
@@ -55,13 +68,7 @@ const OnboardPage = () => {
     } else if (step === 2) {
       setStep(3);
     } else {
-      if (selectedCard === "collection") {
-        router.replace("/home/create");
-      } else if (selectedCard === "plan") {
-        // TODO: 새 여행 계획 페이지 route 구현 후 연결
-      } else {
-        router.replace("/home");
-      }
+      updateMe({ nickname });
     }
   };
 
@@ -229,7 +236,7 @@ const OnboardPage = () => {
       <div className="fixed bottom-0 inset-x-0 px-5 pb-9">
         <Button
           className="w-full"
-          disabled={isNextDisabled}
+          disabled={isNextDisabled || isPending}
           onClick={handleNext}
         >
           {step === 3 && selectedCard !== null ? "시작하기" : "다음"}
