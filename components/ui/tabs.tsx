@@ -89,13 +89,18 @@ function TabsList({
 }
 
 type TabsTriggerProps = React.ComponentProps<typeof TabsPrimitive.Trigger> &
-  VariantProps<typeof tabsTriggerVariants>;
+  VariantProps<typeof tabsTriggerVariants> & {
+    /** 텍스트 왼쪽에 표시할 아이콘. size-6 opacity-40 자동 적용 */
+    icon?: React.ReactNode;
+  };
 
 function TabsTrigger({
   className,
   size,
   fullWidth,
   style,
+  icon,
+  children,
   ...props
 }: TabsTriggerProps) {
   return (
@@ -103,7 +108,16 @@ function TabsTrigger({
       data-slot="tabs-trigger"
       className={cn(tabsTriggerVariants({ size, fullWidth, style }), className)}
       {...props}
-    />
+    >
+      {icon ? (
+        <span className="inline-flex items-center gap-1">
+          <span className="size-6 shrink-0 opacity-40 [&_svg]:size-6">{icon}</span>
+          <span>{children}</span>
+        </span>
+      ) : (
+        children
+      )}
+    </TabsPrimitive.Trigger>
   );
 }
 
