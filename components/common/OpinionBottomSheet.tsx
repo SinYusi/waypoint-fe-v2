@@ -97,7 +97,7 @@ function OpinionBottomSheet({
       confirmDisabled={isConfirmDisabled}
       className={cn("h-165.5 w-full gap-0.5 rounded-t-3xl", className)}
       content={
-        <Chips className="items-start gap-2.5 pb-0">
+        <Chips className="max-w-full items-start gap-2.5 pb-0">
           {OPINION_REASON_MAP[categoryKey][state].map((reason) => (
             <Chip
               key={`${categoryKey}-${state}-${reason.id}`}
