@@ -23,6 +23,10 @@ import {
   UpdatePlanResponse,
 } from "@/types/plan";
 import { CollectionPlacesResponse } from "@/types/collection";
+import {
+  normalizePlaceDetail,
+  type PlaceDetailApiResponse,
+} from "@/lib/api/place";
 import { apiClient } from "./client";
 
 /**
@@ -105,4 +109,15 @@ export const getPlanCollectionPlaces = async (
     { params },
   );
   return res.data;
+};
+
+export const getPlanCollectionPlaceDetail = async (
+  planId: string,
+  collectionId: string,
+  collectionPlaceId: string,
+) => {
+  const res = await apiClient.get<PlaceDetailApiResponse>(
+    `/plans/${planId}/collections/${collectionId}/places/${collectionPlaceId}`,
+  );
+  return normalizePlaceDetail(res.data);
 };
