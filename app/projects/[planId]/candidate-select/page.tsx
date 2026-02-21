@@ -137,7 +137,7 @@ const AddPlanPage = () => {
 		if (TARGET_TIME_BLOCK_ID) {
 			search.set("timeBlockId", TARGET_TIME_BLOCK_ID);
 		}
-		router.push(`/projects/${planId}/add-place/manual?${search.toString()}`);
+		router.push(`/projects/${planId}/candidate-select/manual?${search.toString()}`);
 	};
 
 	return (
