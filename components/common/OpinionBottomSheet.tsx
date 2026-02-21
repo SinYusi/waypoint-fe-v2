@@ -94,9 +94,9 @@ function OpinionBottomSheet({
     const next = value as OpinionState;
     setInternalState(next);
     onStateChange?.(next);
-    // 탭 전환 시 해당 탭의 선택 상태로 외부 콜백 동기화
-    onSelectedReasonIdsChange?.(internalSelectedReasonIdsByState[next]);
-    onCustomInputTextChange?.(internalCustomInputTextByState[next]);
+    // controlled 모드(외부에서 selectedReasonIds를 주입)일 때는 부모가 onStateChange에서 직접 처리하므로
+    // onSelectedReasonIdsChange/onCustomInputTextChange를 여기서 호출하지 않음
+    // uncontrolled 모드일 때만 내부 탭별 상태로 자동 전환됨
   };
 
   const handleReasonClick = (reason: OpinionReason) => {
