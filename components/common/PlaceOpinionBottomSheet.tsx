@@ -43,6 +43,7 @@ function PlaceOpinionBottomSheet({
       onOpenChange={onOpenChange}
       cancelLabel="닫기"
       cancelVariant="default"
+      showDivider={false}
       className={cn("h-165.5 w-full rounded-t-3xl", className)}
       content={
         <div className="flex flex-col gap-4">
