@@ -8,7 +8,10 @@ import { FieldDescription } from "@/components/ui/field-description";
 import { InputForm } from "@/components/ui/input-form";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useCreatePlanBlock } from "@/lib/hooks/plan/use-create-plan-block";
+import {
+  useCreatePlanBlock,
+  useCreatePlanBlockByPlace,
+} from "@/lib/hooks/plan/use-create-plan-block";
 import { usePlanCollectionPlaceDetail } from "@/lib/hooks/plan/use-plan-collection-place-detail";
 import { MapPin, Sparkles, SquareArrowOutUpRight } from "lucide-react";
 import Image from "next/image";
@@ -65,27 +68,47 @@ const ProjectPlaceAddPage = () => {
   const searchParams = useSearchParams();
   const collectionId = searchParams.get("collectionId") ?? "";
   const collectionPlaceId = searchParams.get("placeId") ?? "";
+  const source = searchParams.get("source") ?? "";
+  const isSearchSource = source === "search";
   const [day, setDay] = useState("");
   const [startTime, setStartTime] = useState(DEFAULT_TIME);
   const [endTime, setEndTime] = useState(DEFAULT_TIME);
   const [memo, setMemo] = useState("");
   const [submitError, setSubmitError] = useState("");
 
+  const searchPlace = useMemo(() => {
+    if (!isSearchSource || typeof window === "undefined") return null;
+    const raw = window.sessionStorage.getItem("project:selected-search-place");
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw) as {
+        place_id: string;
+        name: string;
+        address: string;
+        category?: { level2?: { name?: string } };
+        google_maps_uri?: string;
+        photos?: string[];
+      };
+    } catch {
+      return null;
+    }
+  }, [isSearchSource]);
+
   const { data: placeDetail, isLoading, isError } = usePlanCollectionPlaceDetail({
     planId,
     collectionId,
     collectionPlaceId,
-    enabled: Boolean(planId && collectionId && collectionPlaceId),
+    enabled: Boolean(!isSearchSource && planId && collectionId && collectionPlaceId),
   });
 
-  const placeName = placeDetail?.name ?? "";
-  const category = placeDetail?.category ?? "";
-  const address = placeDetail?.address ?? "";
+  const placeName = placeDetail?.name ?? searchPlace?.name ?? "";
+  const category = placeDetail?.category ?? searchPlace?.category?.level2?.name ?? "";
+  const address = placeDetail?.address ?? searchPlace?.address ?? "";
   const aiSummary = placeDetail?.aiSummary ?? "";
   const sourceTitle = placeDetail?.sourceTitle ?? "";
   const sourceUrl = placeDetail?.sourceUrl;
-  const externalUrl = placeDetail?.externalUrl;
-  const coverImageUrl = placeDetail?.photoUrls?.[0];
+  const externalUrl = placeDetail?.externalUrl ?? searchPlace?.google_maps_uri;
+  const coverImageUrl = placeDetail?.photoUrls?.[0] ?? searchPlace?.photos?.[0];
   const dayNumber = useMemo(() => Number(day.replace(/[^\d]/g, "")), [day]);
   const normalizedMemo = useMemo(() => normalizeMemo(memo), [memo]);
   const isStartTimeValid = isValidTime(startTime);
@@ -97,7 +120,7 @@ const ProjectPlaceAddPage = () => {
   const isMemoPolicyValid = MEMO_POLICY_REGEX.test(normalizedMemo);
   const canSubmit =
     !!planId &&
-    !!collectionPlaceId &&
+    (!!collectionPlaceId || !!searchPlace?.place_id) &&
     Number.isInteger(dayNumber) &&
     dayNumber > 0 &&
     isStartTimeValid &&
@@ -120,6 +143,21 @@ const ProjectPlaceAddPage = () => {
       setSubmitError(message);
     },
   });
+  const { mutate: createBlockByPlace, isPending: isCreatingBlockByPlace } =
+    useCreatePlanBlockByPlace({
+      onSuccess: () => {
+        setSubmitError("");
+        router.back();
+      },
+      onError: (err) => {
+        const message =
+          err.response?.data?.errors?.[0]?.reason ??
+          err.response?.data?.detail ??
+          "블록 추가에 실패했어요. 잠시 후 다시 시도해 주세요.";
+
+        setSubmitError(message);
+      },
+    });
 
   const openInNewTab = (url?: string) => {
     if (!url) return;
@@ -176,8 +214,24 @@ const ProjectPlaceAddPage = () => {
   };
 
   const handleComplete = () => {
-    if (!canSubmit || !planId || !collectionPlaceId) return;
+    if (!canSubmit || !planId) return;
     setSubmitError("");
+
+    if (isSearchSource && searchPlace?.place_id) {
+      createBlockByPlace({
+        planId,
+        body: {
+          place_id: searchPlace.place_id,
+          day: dayNumber,
+          start_time: startTime,
+          end_time: endTime,
+          memo: normalizedMemo.trim(),
+        },
+      });
+      return;
+    }
+
+    if (!collectionPlaceId) return;
 
     createBlock({
       planId,
@@ -315,7 +369,7 @@ const ProjectPlaceAddPage = () => {
                 isLoading={isLoading}
                 headerIcon={<Sparkles className="size-6 text-foreground" />}
                 title="AI 요약"
-                summary={aiSummary}
+                summary={aiSummary || (isSearchSource ? "AI 요약 정보가 아직 없습니다." : "")}
                 sourceTitle={sourceTitle}
                 sourceUrl={sourceUrl}
                 onOpenLink={openInNewTab}
@@ -343,7 +397,7 @@ const ProjectPlaceAddPage = () => {
           <Button
             className="h-11 w-full rounded-2xl bg-primary px-8 py-0 text-primary-foreground"
             onClick={handleComplete}
-            disabled={!canSubmit || isCreatingBlock}
+            disabled={!canSubmit || isCreatingBlock || isCreatingBlockByPlace}
           >
             작성완료
           </Button>
