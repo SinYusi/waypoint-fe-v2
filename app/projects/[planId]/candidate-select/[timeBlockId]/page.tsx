@@ -13,6 +13,7 @@ import { usePlaceSearch } from "@/lib/hooks/use-place-search";
 import { useAddPlanBlockCandidates } from "@/lib/hooks/plan/use-create-plan-block";
 import { usePlanCollectionPlaces } from "@/lib/hooks/plan/use-plan-collection-places";
 import { usePlanCollections } from "@/lib/hooks/plan/use-plan-collections";
+import CollectionEmptyIllust from "@/public/illust/collection-empty.svg";
 import { MapPin } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
@@ -25,6 +26,7 @@ const AddPlanPage = () => {
 		? params.timeBlockId[0]
 		: params.timeBlockId;
 	const { data: planCollections = [] } = usePlanCollections(planId ?? "");
+	const isPlanCollectionsEmpty = planCollections.length === 0;
 
 	const dayItems = useMemo(
 		() =>
@@ -139,6 +141,29 @@ const AddPlanPage = () => {
 		);
 	};
 
+	const handleCreateCollection = () => {
+		router.push("/home/create");
+	};
+
+	const renderEmptyCollections = () => (
+		<div className="flex flex-col items-center gap-12 px-5 py-8">
+			<div className="flex flex-col gap-5 items-center">
+				<CollectionEmptyIllust />
+				<div className="flex flex-col text-center gap-2">
+					<h2 className="typography-display-xl">우리만의 장소 보관함 만들기</h2>
+					<p className="typography-body-sm-md">
+						함께 꿈꾸는 여행지들을 보관함에 담고,
+						<br />
+						서로 가고 싶은 곳들을 자유롭게 나눠볼까요?
+					</p>
+				</div>
+			</div>
+			<Button onClick={handleCreateCollection} className="w-full">
+				새 보관함 만들기
+			</Button>
+		</div>
+	);
+
 	return (
 		<div className="flex min-h-screen flex-col bg-background">
 			<Header
@@ -165,46 +190,50 @@ const AddPlanPage = () => {
 
 
 					<TabsContent value="saved">
-						<div className="flex w-full flex-col px-5 py-5">
-							{dayItems.length > 0 && (
-								<DayNav
-									items={dayItems}
-									value={selectedDay}
-									onValueChange={setSelectedCollectionId}
-									className="w-full px-0"
-									ariaLabel="컬렉션 선택"
-								/>
-							)}
-
-							<div className="mt-4 flex w-full flex-col gap-4 self-center">
-								{places.map((item) => (
-									<PlanCardSelection
-										key={item.collection_place_id}
-										isSelected={selectedPlaceId === item.collection_place_id}
-										onSelected={(selected) =>
-											handlePlaceSelected(item.collection_place_id, selected)
-										}
-										title={item.place.name}
-										address={item.place.address}
-										imageSrc={item.place.photos[0]}
-										pickCount={item.pick_pass.picked.count}
-										passCount={item.pick_pass.passed.count}
-										myPreference={
-											item.pick_pass.my_preference === "NOTHING"
-												? null
-												: item.pick_pass.my_preference
-										}
-										onPickClick={() =>
-											handlePreference(item.collection_place_id, "PICK")
-										}
-										onPassClick={() =>
-											handlePreference(item.collection_place_id, "PASS")
-										}
+						{isPlanCollectionsEmpty ? (
+							renderEmptyCollections()
+						) : (
+							<div className="flex w-full flex-col px-5 py-5">
+								{dayItems.length > 0 && (
+									<DayNav
+										items={dayItems}
+										value={selectedDay}
+										onValueChange={setSelectedCollectionId}
+										className="w-full px-0"
+										ariaLabel="컬렉션 선택"
 									/>
-								))}
-								<div ref={loadMoreRef} className="h-10" />
+								)}
+
+								<div className="mt-4 flex w-full flex-col gap-4 self-center">
+									{places.map((item) => (
+										<PlanCardSelection
+											key={item.collection_place_id}
+											isSelected={selectedPlaceId === item.collection_place_id}
+											onSelected={(selected) =>
+												handlePlaceSelected(item.collection_place_id, selected)
+											}
+											title={item.place.name}
+											address={item.place.address}
+											imageSrc={item.place.photos[0]}
+											pickCount={item.pick_pass.picked.count}
+											passCount={item.pick_pass.passed.count}
+											myPreference={
+												item.pick_pass.my_preference === "NOTHING"
+													? null
+													: item.pick_pass.my_preference
+											}
+											onPickClick={() =>
+												handlePreference(item.collection_place_id, "PICK")
+											}
+											onPassClick={() =>
+												handlePreference(item.collection_place_id, "PASS")
+											}
+										/>
+									))}
+									<div ref={loadMoreRef} className="h-10" />
+								</div>
 							</div>
-						</div>
+						)}
 					</TabsContent>
 					<TabsContent value="search" className="px-5">
 						<div className="flex flex-col gap-4 py-5">
@@ -263,7 +292,7 @@ const AddPlanPage = () => {
 				</Tabs>
 			</main>
 
-			{activeTab === "saved" && (
+			{!isPlanCollectionsEmpty && activeTab === "saved" && (
 				<div className="fixed inset-x-0 bottom-0 z-50 h-22.75 border-t border-border bg-background">
 					<div
 						aria-hidden
@@ -281,7 +310,7 @@ const AddPlanPage = () => {
 				</div>
 			)}
 
-			{activeTab === "search" && (
+			{!isPlanCollectionsEmpty && activeTab === "search" && (
 				<div className="fixed inset-x-0 bottom-0 z-50 h-22.75 border-t border-border bg-background">
 					<div
 						aria-hidden
