@@ -5,6 +5,7 @@ import DayNav from "@/components/common/DayNav";
 import PlanCardSelection from "@/components/card/PlanCardSelection";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useCollectionPlacePreference } from "@/lib/hooks/collection/use-collection-place-preference";
 import { usePlanCollectionPlaces } from "@/lib/hooks/plan/use-plan-collection-places";
 import { usePlanCollections } from "@/lib/hooks/plan/use-plan-collections";
 import { useParams } from "next/navigation";
@@ -47,9 +48,23 @@ const AddPlanPage = () => {
 		size: 20,
 	});
 	const places = placesData?.pages.flatMap((page) => page.contents) ?? [];
+	const { mutate: postPreference } = useCollectionPlacePreference();
 
 	const handleAddToPlan = () => {
 		if (!selectedPlaceId) return;
+	};
+
+	const handlePreference = (
+		collectionPlaceId: string,
+		type: "PICK" | "PASS",
+	) => {
+		if (!selectedDay) return;
+
+		postPreference({
+			collectionId: selectedDay,
+			collectionPlaceId,
+			type,
+		});
 	};
 
 	return (
@@ -106,6 +121,12 @@ const AddPlanPage = () => {
 											item.pick_pass.my_preference === "NOTHING"
 												? null
 												: item.pick_pass.my_preference
+										}
+										onPickClick={() =>
+											handlePreference(item.collection_place_id, "PICK")
+										}
+										onPassClick={() =>
+											handlePreference(item.collection_place_id, "PASS")
 										}
 									/>
 								))}
