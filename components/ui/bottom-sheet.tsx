@@ -37,8 +37,12 @@ type BottomSheetProps = {
   itemVariant?: "default" | "member"
   closeOnSelect?: boolean
   cancelLabel?: React.ReactNode
+  confirmLabel?: React.ReactNode
   showCloseIcon?: boolean
   onCancel?: () => void
+  onConfirm?: () => void
+  closeOnConfirm?: boolean
+  confirmDisabled?: boolean
   className?: string
 }
 
@@ -58,13 +62,24 @@ function BottomSheet({
   itemVariant = "default",
   closeOnSelect = true,
   cancelLabel = "취소",
+  confirmLabel,
   showCloseIcon = false,
   onCancel,
+  onConfirm,
+  closeOnConfirm = true,
+  confirmDisabled = false,
   className,
 }: BottomSheetProps) {
   const handleCancel = () => {
     onCancel?.();
     onOpenChange(false);
+  };
+
+  const handleConfirm = () => {
+    onConfirm?.();
+    if (closeOnConfirm) {
+      onOpenChange(false);
+    }
   };
 
   const handleSelect = (onSelect?: () => void) => {
@@ -148,24 +163,42 @@ function BottomSheet({
         <div className="mx-5 h-px bg-border" />
 
         <div className="h-22.75 bg-background px-5 pt-4">
-          <DrawerClose asChild>
-            <Button
-              type="button"
-              variant="outline"
-              size="L"
-              onClick={handleCancel}
-              className="h-11 w-full rounded-2xl border-border typography-label-base-sb text-foreground hover:bg-transparent"
-            >
-              {showCloseIcon && (
-                <span className="inline-flex size-6 items-center justify-center">
-                  <X className="size-6 text-[#1C2024]" strokeWidth={2} />
+          <div className={cn("flex", confirmLabel ? "gap-2" : "") }>
+            <DrawerClose asChild>
+              <Button
+                type="button"
+                variant="outline"
+                size="L"
+                onClick={handleCancel}
+                className={cn(
+                  "h-11 rounded-2xl border-border typography-label-base-sb text-foreground hover:bg-transparent",
+                  confirmLabel ? "flex-1" : "w-full",
+                )}
+              >
+                {showCloseIcon && (
+                  <span className="inline-flex size-6 items-center justify-center">
+                    <X className="size-6 text-[#1C2024]" strokeWidth={2} />
+                  </span>
+                )}
+                <span className="typography-label-base-sb text-[#1C2024]">
+                  {cancelLabel}
                 </span>
-              )}
-              <span className="typography-label-base-sb text-[#1C2024]">
-                {cancelLabel}
-              </span>
-            </Button>
-          </DrawerClose>
+              </Button>
+            </DrawerClose>
+
+            {confirmLabel && (
+              <Button
+                type="button"
+                variant="default"
+                size="L"
+                disabled={confirmDisabled}
+                onClick={handleConfirm}
+                className="h-11 flex-1 rounded-2xl"
+              >
+                {confirmLabel}
+              </Button>
+            )}
+          </div>
         </div>
       </DrawerContent>
     </Drawer>
