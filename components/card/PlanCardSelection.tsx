@@ -56,6 +56,11 @@ const PlanCardSelection = ({
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    setIsLiked(myPreference === "PICK");
+    setIsRejected(myPreference === "PASS");
+  }, [myPreference]);
+
   return (
     <div ref={containerRef} className={cn("w-full", className)}>
       <div style={{ zoom: scale }}>
@@ -94,7 +99,8 @@ const PlanCardSelection = ({
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setIsRejected((prev) => !prev);
+                    setIsRejected(true);
+                    setIsLiked(false);
                     onPassClick?.();
                   }}
                   className="flex h-5 w-8.75 shrink-0 cursor-pointer items-center gap-1.5"
@@ -124,7 +130,8 @@ const PlanCardSelection = ({
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setIsLiked((prev) => !prev);
+                    setIsLiked(true);
+                    setIsRejected(false);
                     onPickClick?.();
                   }}
                   className="flex h-5 w-8.75 shrink-0 cursor-pointer items-center gap-1.5"
