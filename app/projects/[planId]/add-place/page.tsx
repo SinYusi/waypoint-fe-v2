@@ -3,6 +3,7 @@
 import Header from "@/components/layout/Header";
 import DayNav from "@/components/common/DayNav";
 import PlanCardSelection from "@/components/card/PlanCardSelection";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePlanCollectionPlaces } from "@/lib/hooks/plan/use-plan-collection-places";
 import { usePlanCollections } from "@/lib/hooks/plan/use-plan-collections";
@@ -47,8 +48,12 @@ const AddPlanPage = () => {
 	});
 	const places = placesData?.pages.flatMap((page) => page.contents) ?? [];
 
+	const handleAddToPlan = () => {
+		if (!selectedPlaceId) return;
+	};
+
 	return (
-		<div className="flex min-h-screen flex-col bg-[#fafafa]">
+		<div className="flex min-h-screen flex-col bg-background">
 			<Header
 				variant="center"
 				title="일정 추가"
@@ -111,6 +116,22 @@ const AddPlanPage = () => {
 					<TabsContent value="free" className="px-5" />
 				</Tabs>
 			</main>
+
+			<div className="fixed inset-x-0 bottom-0 z-50 h-22.75 border-t border-border bg-background">
+				<div
+					aria-hidden
+					className="pointer-events-none absolute -top-12 inset-x-0 h-12 bg-gradient-bottom-fade"
+				/>
+				<div className="px-5 pt-4">
+					<Button
+						onClick={handleAddToPlan}
+						className="h-11 w-full rounded-2xl bg-primary px-8 py-0 text-primary-foreground"
+						disabled={!selectedPlaceId}
+					>
+						여행 계획에 추가하기
+					</Button>
+				</div>
+			</div>
 		</div>
 	);
 };
