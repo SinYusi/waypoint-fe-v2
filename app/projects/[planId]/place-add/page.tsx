@@ -4,17 +4,64 @@ import AISummarySection from "@/components/common/AISummarySection";
 import Header from "@/components/layout/Header";
 import HeaderBtn from "@/components/layout/HeaderBtn";
 import { Button } from "@/components/ui/button";
+import { InputForm } from "@/components/ui/input-form";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useCreatePlanBlock } from "@/lib/hooks/plan/use-create-plan-block";
 import { usePlanCollectionPlaceDetail } from "@/lib/hooks/plan/use-plan-collection-place-detail";
 import { MapPin, Sparkles, SquareArrowOutUpRight } from "lucide-react";
 import Image from "next/image";
-import { useParams, useSearchParams } from "next/navigation";
+import type { KeyboardEvent } from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useMemo, useState } from "react";
+
+const DEFAULT_TIME = "00:00";
+
+const toDigitIndex = (cursor: number) => {
+  if (cursor <= 1) return cursor;
+  if (cursor === 2) return 2;
+  return Math.min(cursor - 1, 3);
+};
+
+const toCursorPosition = (digitIndex: number) => {
+  if (digitIndex <= 1) return digitIndex;
+  return digitIndex + 1;
+};
+
+const replaceTimeDigit = (value: string, digitIndex: number, nextDigit: string) => {
+  const chars = value.split("");
+  const valueIndex = digitIndex >= 2 ? digitIndex + 1 : digitIndex;
+  chars[valueIndex] = nextDigit;
+  return chars.join("");
+};
+
+const setCaret = (input: HTMLInputElement, digitIndex: number) => {
+  const pos = toCursorPosition(Math.max(0, Math.min(4, digitIndex)));
+  requestAnimationFrame(() => input.setSelectionRange(pos, pos));
+};
+
+const isValidTime = (value: string) => {
+  if (!/^\d{2}:\d{2}$/.test(value)) return false;
+  const [hour, minute] = value.split(":").map(Number);
+  return hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59;
+};
+
+const toMinutes = (value: string) => {
+  const [hour, minute] = value.split(":").map(Number);
+  return hour * 60 + minute;
+};
 
 const ProjectPlaceAddPage = () => {
+  const router = useRouter();
   const params = useParams<{ planId: string | string[] }>();
   const planId = Array.isArray(params.planId) ? params.planId[0] : params.planId;
   const searchParams = useSearchParams();
   const collectionId = searchParams.get("collectionId") ?? "";
   const collectionPlaceId = searchParams.get("placeId") ?? "";
+  const [day, setDay] = useState("");
+  const [startTime, setStartTime] = useState(DEFAULT_TIME);
+  const [endTime, setEndTime] = useState(DEFAULT_TIME);
+  const [memo, setMemo] = useState("");
 
   const { data: placeDetail, isLoading, isError } = usePlanCollectionPlaceDetail({
     planId,
@@ -31,10 +78,97 @@ const ProjectPlaceAddPage = () => {
   const sourceUrl = placeDetail?.sourceUrl;
   const externalUrl = placeDetail?.externalUrl;
   const coverImageUrl = placeDetail?.photoUrls?.[0];
+  const dayNumber = useMemo(() => Number(day.replace(/[^\d]/g, "")), [day]);
+  const isStartTimeValid = isValidTime(startTime);
+  const isEndTimeValid = isValidTime(endTime);
+  const isStartNotAfterEnd =
+    isStartTimeValid && isEndTimeValid
+      ? toMinutes(startTime) <= toMinutes(endTime)
+      : false;
+  const canSubmit =
+    !!planId &&
+    !!collectionPlaceId &&
+    Number.isInteger(dayNumber) &&
+    dayNumber > 0 &&
+    isStartTimeValid &&
+    isEndTimeValid &&
+    isStartNotAfterEnd &&
+    memo.trim().length > 0;
+
+  const { mutate: createBlock, isPending: isCreatingBlock } = useCreatePlanBlock({
+    onSuccess: () => {
+      router.back();
+    },
+  });
 
   const openInNewTab = (url?: string) => {
     if (!url) return;
     window.open(url, "_blank", "noopener,noreferrer");
+  };
+
+  const handleTimeKeyDown = (
+    e: KeyboardEvent<HTMLInputElement>,
+    value: string,
+    setValue: (next: string) => void,
+  ) => {
+    const input = e.currentTarget;
+    const key = e.key;
+
+    if (key === "Tab" || key === "ArrowLeft" || key === "ArrowRight" || key === "Home" || key === "End") {
+      return;
+    }
+
+    const cursor = input.selectionStart ?? 0;
+    const digitIndex = toDigitIndex(cursor);
+
+    if (/^\d$/.test(key)) {
+      e.preventDefault();
+      const next = replaceTimeDigit(value, digitIndex, key);
+      setValue(next);
+      setCaret(input, digitIndex + 1);
+      return;
+    }
+
+    if (key === "Backspace") {
+      e.preventDefault();
+      const prevDigitIndex = Math.max(0, digitIndex - (cursor > 0 ? 1 : 0));
+      const next = replaceTimeDigit(value, prevDigitIndex, "0");
+      setValue(next);
+      setCaret(input, prevDigitIndex);
+      return;
+    }
+
+    if (key === "Delete") {
+      e.preventDefault();
+      const next = replaceTimeDigit(value, digitIndex, "0");
+      setValue(next);
+      setCaret(input, digitIndex);
+      return;
+    }
+
+    if (key === ":") {
+      e.preventDefault();
+      setCaret(input, 2);
+      return;
+    }
+
+    e.preventDefault();
+  };
+
+  const handleComplete = () => {
+    if (!canSubmit || !planId || !collectionPlaceId) return;
+
+    createBlock({
+      planId,
+      body: {
+        type: "PLACE",
+        collection_place_id: collectionPlaceId,
+        day: dayNumber,
+        start_time: startTime,
+        end_time: endTime,
+        memo: memo.trim(),
+      },
+    });
   };
 
   return (
@@ -58,7 +192,7 @@ const ProjectPlaceAddPage = () => {
       </div>
 
       <div className="relative pt-[calc(60%-17px)]">
-        <div className="flex flex-col gap-8 pt-7 px-5 pb-10 rounded-t-2xl bg-background min-w-0">
+        <div className="flex flex-col gap-8 pt-7 px-5 pb-30 rounded-t-2xl bg-background min-w-0">
           <div className="flex flex-col w-full min-w-0">
             <h2 className="flex justify-between items-center w-full h-8 py-0.5 px-1">
               <span className="typography-title-lg-sb text-foreground">{placeName}</span>
@@ -81,6 +215,70 @@ const ProjectPlaceAddPage = () => {
                   />
                 </div>
                 <hr className="border-border" />
+              </div>
+
+              <div className="flex flex-col gap-8">
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="day" required>
+                    <span className="typography-label-sm-sb text-foreground">날짜</span>
+                  </Label>
+                  <InputForm
+                    id="day"
+                    hideIcon
+                    placeholder="예) 1일차"
+                    value={day}
+                    onChange={(e) => setDay(e.target.value)}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="start-time" required>
+                    <span className="typography-label-sm-sb text-foreground">시작 시간</span>
+                  </Label>
+                  <InputForm
+                    id="start-time"
+                    hideIcon
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={5}
+                    value={startTime}
+                    onKeyDown={(e) => handleTimeKeyDown(e, startTime, setStartTime)}
+                    onFocus={(e) => setCaret(e.currentTarget, 0)}
+                    onChange={() => {}}
+                    error={!isStartTimeValid || !isStartNotAfterEnd}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="end-time" required>
+                    <span className="typography-label-sm-sb text-foreground">종료 시간</span>
+                  </Label>
+                  <InputForm
+                    id="end-time"
+                    hideIcon
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={5}
+                    value={endTime}
+                    onKeyDown={(e) => handleTimeKeyDown(e, endTime, setEndTime)}
+                    onFocus={(e) => setCaret(e.currentTarget, 0)}
+                    onChange={() => {}}
+                    error={!isEndTimeValid || !isStartNotAfterEnd}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="memo" required>
+                    <span className="typography-label-sm-sb text-foreground">메모</span>
+                  </Label>
+                  <Textarea
+                    id="memo"
+                    placeholder="메모를 입력해 주세요"
+                    value={memo}
+                    onChange={(e) => setMemo(e.target.value)}
+                    className="min-w-0 bg-muted"
+                  />
+                </div>
               </div>
 
               <AISummarySection
@@ -109,7 +307,11 @@ const ProjectPlaceAddPage = () => {
           className="pointer-events-none absolute -top-12 inset-x-0 h-12 bg-gradient-bottom-fade"
         />
         <div className="px-5 pt-4">
-          <Button className="h-11 w-full rounded-2xl bg-primary px-8 py-0 text-primary-foreground">
+          <Button
+            className="h-11 w-full rounded-2xl bg-primary px-8 py-0 text-primary-foreground"
+            onClick={handleComplete}
+            disabled={!canSubmit || isCreatingBlock}
+          >
             작성완료
           </Button>
         </div>
