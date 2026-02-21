@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react"
 import { cn } from "@/lib/utils/utils"
+import newMarkerIconUrl from "@/public/icons/new_marker.svg?url"
 
 type LatLngLiteral = {
   lat: number
@@ -9,7 +10,7 @@ type LatLngLiteral = {
 }
 
 type MarkerIconOption = {
-  url: string
+  url: unknown
 }
 
 type GoogleMapInstance = {
@@ -76,10 +77,10 @@ declare global {
 
 const GOOGLE_MAP_SCRIPT_ID = "google-maps-sdk"
 const GOOGLE_MAP_API_VERSION = "weekly"
-const FIXED_MARKER_WIDTH = 35
-const FIXED_MARKER_HEIGHT = 35
-const FIXED_MARKER_ANCHOR_X = 17.5
-const FIXED_MARKER_ANCHOR_Y = 35
+const FIXED_MARKER_WIDTH = 41
+const FIXED_MARKER_HEIGHT = 50
+const FIXED_MARKER_ANCHOR_X = 20.5
+const FIXED_MARKER_ANCHOR_Y = 50
 
 function loadGoogleMapsApi(apiKey: string): Promise<void> {
   if (typeof window === "undefined") {
@@ -176,8 +177,9 @@ async function createMapInstance(
 }
 
 function buildMarkerIcon(markerIcon: MarkerIconOption): GoogleMarkerIcon {
+  const resolvedUrl = resolveIconUrl(markerIcon.url)
   const icon: GoogleMarkerIcon = {
-    url: markerIcon.url,
+    url: resolvedUrl,
   }
 
   if (window.google?.maps?.Size) {
@@ -191,12 +193,33 @@ function buildMarkerIcon(markerIcon: MarkerIconOption): GoogleMarkerIcon {
   return icon
 }
 
+function resolveIconUrl(value: unknown): string {
+  if (typeof value === "string") {
+    return value
+  }
+
+  if (value && typeof value === "object") {
+    const record = value as Record<string, unknown>
+
+    if (typeof record.src === "string") {
+      return record.src
+    }
+
+    if ("default" in record) {
+      return resolveIconUrl(record.default)
+    }
+  }
+
+  // Fallback keeps marker rendering even if SVG import shape changes by bundler.
+  return "/icons/new_marker.svg"
+}
+
 export default function GoogleMap({
   center,
   zoom = 14,
   markerPosition,
   markerTitle,
-  markerIcon = { url: "/icons/map-pin.svg" },
+  markerIcon = { url: newMarkerIconUrl },
   className,
   apiKey,
   mapOptions,
