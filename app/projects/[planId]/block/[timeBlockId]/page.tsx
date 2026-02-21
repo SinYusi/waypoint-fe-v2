@@ -24,7 +24,7 @@ import {
   useDeleteBlockOpinion,
   useUpdateBlockOpinion,
 } from "@/lib/hooks/use-block-opinion";
-import { useBlockDetail } from "@/lib/hooks/use-block-detail";
+import { useBlockDetail, useUpdateBlock } from "@/lib/hooks/use-block-detail";
 
 const MEMO_MAX_LENGTH = 300;
 const CUSTOM_INPUT_REASON_ID = 0;
@@ -82,6 +82,7 @@ const BlockDetailPage = () => {
     blockId,
     enabled: Boolean(planId && blockId),
   });
+  const updateBlockMutation = useUpdateBlock({ planId, blockId });
   const updateBlockOpinionMutation = useUpdateBlockOpinion({ planId, blockId });
   const deleteBlockOpinionMutation = useDeleteBlockOpinion({ planId, blockId });
 
@@ -134,8 +135,22 @@ const BlockDetailPage = () => {
   };
 
   const handleSaveMemo = () => {
-    setMemoDraft((prev) => prev.slice(0, MEMO_MAX_LENGTH));
-    setIsEditingMemo(false);
+    if (updateBlockMutation.isPending) return;
+
+    const nextMemo = memoDraft.slice(0, MEMO_MAX_LENGTH);
+    if (nextMemo === memo) {
+      setIsEditingMemo(false);
+      return;
+    }
+
+    updateBlockMutation.mutate(
+      { memo: nextMemo },
+      {
+        onSuccess: () => {
+          setIsEditingMemo(false);
+        },
+      },
+    );
   };
 
   const handleOpenOpinionEditor = (opinion: BlockOpinion) => {
@@ -275,6 +290,7 @@ const BlockDetailPage = () => {
                       onChange={(e) => setMemoDraft(e.target.value.slice(0, MEMO_MAX_LENGTH))}
                       maxLength={MEMO_MAX_LENGTH}
                       className="typography-body-base! text-foreground!"
+                      disabled={updateBlockMutation.isPending}
                     />
                   ) : (
                     <div className="flex items-start gap-2.5 py-2.5">
