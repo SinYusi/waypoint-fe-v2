@@ -4,6 +4,7 @@ import AISummarySection from "@/components/common/AISummarySection";
 import Header from "@/components/layout/Header";
 import HeaderBtn from "@/components/layout/HeaderBtn";
 import { Button } from "@/components/ui/button";
+import { FieldDescription } from "@/components/ui/field-description";
 import { InputForm } from "@/components/ui/input-form";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -51,6 +52,12 @@ const toMinutes = (value: string) => {
   return hour * 60 + minute;
 };
 
+const MEMO_POLICY_REGEX =
+  /^[\p{Script=Hangul}\p{L}\p{N}\p{Extended_Pictographic}\p{Emoji_Modifier}\u200D\uFE0F !@#$%^&*()\-_+=\[\]{}.,?\/\n]*$/u;
+
+const normalizeMemo = (value: string) =>
+  value.normalize("NFC").replace(/\u00A0/g, " ").replace(/\r\n?/g, "\n");
+
 const ProjectPlaceAddPage = () => {
   const router = useRouter();
   const params = useParams<{ planId: string | string[] }>();
@@ -62,6 +69,7 @@ const ProjectPlaceAddPage = () => {
   const [startTime, setStartTime] = useState(DEFAULT_TIME);
   const [endTime, setEndTime] = useState(DEFAULT_TIME);
   const [memo, setMemo] = useState("");
+  const [submitError, setSubmitError] = useState("");
 
   const { data: placeDetail, isLoading, isError } = usePlanCollectionPlaceDetail({
     planId,
@@ -79,12 +87,14 @@ const ProjectPlaceAddPage = () => {
   const externalUrl = placeDetail?.externalUrl;
   const coverImageUrl = placeDetail?.photoUrls?.[0];
   const dayNumber = useMemo(() => Number(day.replace(/[^\d]/g, "")), [day]);
+  const normalizedMemo = useMemo(() => normalizeMemo(memo), [memo]);
   const isStartTimeValid = isValidTime(startTime);
   const isEndTimeValid = isValidTime(endTime);
   const isStartNotAfterEnd =
     isStartTimeValid && isEndTimeValid
       ? toMinutes(startTime) <= toMinutes(endTime)
       : false;
+  const isMemoPolicyValid = MEMO_POLICY_REGEX.test(normalizedMemo);
   const canSubmit =
     !!planId &&
     !!collectionPlaceId &&
@@ -93,11 +103,21 @@ const ProjectPlaceAddPage = () => {
     isStartTimeValid &&
     isEndTimeValid &&
     isStartNotAfterEnd &&
-    memo.trim().length > 0;
+    normalizedMemo.trim().length > 0 &&
+    isMemoPolicyValid;
 
   const { mutate: createBlock, isPending: isCreatingBlock } = useCreatePlanBlock({
     onSuccess: () => {
+      setSubmitError("");
       router.back();
+    },
+    onError: (err) => {
+      const message =
+        err.response?.data?.errors?.[0]?.reason ??
+        err.response?.data?.detail ??
+        "블록 추가에 실패했어요. 잠시 후 다시 시도해 주세요.";
+
+      setSubmitError(message);
     },
   });
 
@@ -157,6 +177,7 @@ const ProjectPlaceAddPage = () => {
 
   const handleComplete = () => {
     if (!canSubmit || !planId || !collectionPlaceId) return;
+    setSubmitError("");
 
     createBlock({
       planId,
@@ -166,7 +187,7 @@ const ProjectPlaceAddPage = () => {
         day: dayNumber,
         start_time: startTime,
         end_time: endTime,
-        memo: memo.trim(),
+        memo: normalizedMemo.trim(),
       },
     });
   };
@@ -275,9 +296,18 @@ const ProjectPlaceAddPage = () => {
                     id="memo"
                     placeholder="메모를 입력해 주세요"
                     value={memo}
-                    onChange={(e) => setMemo(e.target.value)}
+                    onChange={(e) => {
+                      setMemo(e.target.value);
+                      if (submitError) setSubmitError("");
+                    }}
+                    error={memo.length > 0 && !isMemoPolicyValid}
                     className="min-w-0 bg-muted"
                   />
+                  {memo.length > 0 && !isMemoPolicyValid && (
+                    <FieldDescription error>
+                      한글, 영문, 숫자, 이모지, 특수문자(!@#$%^&*()-_+=[]{} ,.?/) 및 줄바꿈만 사용할 수 있습니다.
+                    </FieldDescription>
+                  )}
                 </div>
               </div>
 
@@ -295,6 +325,9 @@ const ProjectPlaceAddPage = () => {
                 <p className="px-1 typography-caption-xs-reg text-destructive">
                   장소 정보를 불러오지 못했습니다.
                 </p>
+              )}
+              {submitError && (
+                <p className="px-1 typography-caption-xs-reg text-destructive">{submitError}</p>
               )}
             </div>
           </div>
