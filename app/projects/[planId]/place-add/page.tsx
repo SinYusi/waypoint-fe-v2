@@ -3,6 +3,7 @@
 import AISummarySection from "@/components/common/AISummarySection";
 import Header from "@/components/layout/Header";
 import HeaderBtn from "@/components/layout/HeaderBtn";
+import { Button } from "@/components/ui/button";
 import { usePlanCollectionPlaceDetail } from "@/lib/hooks/plan/use-plan-collection-place-detail";
 import { MapPin, Sparkles, SquareArrowOutUpRight } from "lucide-react";
 import Image from "next/image";
@@ -99,6 +100,18 @@ const ProjectPlaceAddPage = () => {
               )}
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className="fixed inset-x-0 bottom-0 z-50 h-22.75 border-t border-border bg-background">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-12 inset-x-0 h-12 bg-gradient-bottom-fade"
+        />
+        <div className="px-5 pt-4">
+          <Button className="h-11 w-full rounded-2xl bg-primary px-8 py-0 text-primary-foreground">
+            작성완료
+          </Button>
         </div>
       </div>
     </div>
