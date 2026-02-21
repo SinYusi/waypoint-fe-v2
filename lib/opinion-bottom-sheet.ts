@@ -250,6 +250,37 @@ export const OPINION_REASON_MAP: Record<
   },
 };
 
+/** API BlockOpinion 스펙 타입 */
+export type PlanAddedBy = {
+  plan_member_id: string;
+  nickname: string;
+  picture: string;
+};
+
+export type BlockOpinion = {
+  opinion_Id: string;
+  type: OpinionState;
+  comment: string;
+  tag_ids: string[];
+  added_by: PlanAddedBy;
+};
+
+/** tag_id(숫자 문자열) → reason text 역조회 맵 (카테고리/상태 무관, 같은 id면 동일 의미로 취급) */
+const buildTagTextMap = (): Map<string, string> => {
+  const map = new Map<string, string>();
+  Object.values(OPINION_REASON_MAP).forEach((byState) => {
+    Object.values(byState).forEach((reasons) => {
+      reasons.forEach((r) => map.set(String(r.id), r.text));
+    });
+  });
+  return map;
+};
+
+export const TAG_TEXT_MAP = buildTagTextMap();
+
+export const getTagText = (tagId: string): string =>
+  TAG_TEXT_MAP.get(tagId) ?? tagId;
+
 export const OPINION_BOTTOM_SHEET_VARIANTS = OPINION_CATEGORIES.flatMap(
   (category) =>
     OPINION_STATES.map((state) => ({
