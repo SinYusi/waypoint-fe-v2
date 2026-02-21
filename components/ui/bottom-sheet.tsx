@@ -44,6 +44,7 @@ type BottomSheetProps = {
   onConfirm?: () => void
   closeOnConfirm?: boolean
   confirmDisabled?: boolean
+  showDivider?: boolean
   className?: string
 }
 
@@ -70,6 +71,7 @@ function BottomSheet({
   onConfirm,
   closeOnConfirm = true,
   confirmDisabled = false,
+  showDivider = true,
   className,
 }: BottomSheetProps) {
   const handleCancel = () => {
@@ -162,7 +164,7 @@ function BottomSheet({
           )}
         </div>
 
-        <div className="mx-5 h-px bg-border" />
+        {showDivider && <div className="mx-5 h-px bg-border" />}
 
         <div className="h-22.75 bg-background px-5 pt-4">
           <div className={cn("flex", confirmLabel ? "gap-2" : "") }>
