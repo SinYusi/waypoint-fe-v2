@@ -8,11 +8,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCollectionPlacePreference } from "@/lib/hooks/collection/use-collection-place-preference";
 import { usePlanCollectionPlaces } from "@/lib/hooks/plan/use-plan-collection-places";
 import { usePlanCollections } from "@/lib/hooks/plan/use-plan-collections";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
 const AddPlanPage = () => {
 	const params = useParams<{ planId: string | string[] }>();
+	const router = useRouter();
 	const planId = Array.isArray(params.planId) ? params.planId[0] : params.planId;
 	const { data: planCollections = [] } = usePlanCollections(planId ?? "");
 
@@ -51,7 +52,10 @@ const AddPlanPage = () => {
 	const { mutate: postPreference } = useCollectionPlacePreference();
 
 	const handleAddToPlan = () => {
-		if (!selectedPlaceId) return;
+		if (!planId || !selectedDay || !selectedPlaceId) return;
+		router.push(
+			`/projects/${planId}/place-add?collectionId=${selectedDay}&placeId=${selectedPlaceId}`,
+		);
 	};
 
 	const handlePreference = (
