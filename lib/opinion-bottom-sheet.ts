@@ -265,21 +265,20 @@ export type BlockOpinion = {
   added_by: PlanAddedBy;
 };
 
-/** tag_id(숫자 문자열) → reason text 역조회 맵 (카테고리/상태 무관, 같은 id면 동일 의미로 취급) */
-const buildTagTextMap = (): Map<string, string> => {
-  const map = new Map<string, string>();
-  Object.values(OPINION_REASON_MAP).forEach((byState) => {
-    Object.values(byState).forEach((reasons) => {
-      reasons.forEach((r) => map.set(String(r.id), r.text));
-    });
-  });
-  return map;
+/**
+ * categoryKey + state + tagId 조합으로 태그 텍스트 조회
+ * (카테고리×상태별로 같은 id가 다른 의미를 가질 수 있으므로 세 값 모두 필요)
+ */
+export const getTagText = (
+  categoryKey: OpinionCategoryKey,
+  state: OpinionState,
+  tagId: string,
+): string => {
+  const reason = OPINION_REASON_MAP[categoryKey][state].find(
+    (r) => String(r.id) === tagId,
+  );
+  return reason?.text ?? tagId;
 };
-
-export const TAG_TEXT_MAP = buildTagTextMap();
-
-export const getTagText = (tagId: string): string =>
-  TAG_TEXT_MAP.get(tagId) ?? tagId;
 
 export const OPINION_BOTTOM_SHEET_VARIANTS = OPINION_CATEGORIES.flatMap(
   (category) =>
