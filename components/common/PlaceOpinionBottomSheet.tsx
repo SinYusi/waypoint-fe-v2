@@ -9,12 +9,19 @@ import { cn } from "@/lib/utils/utils";
 /* --------------------------------------------------------
    의견 아이템
 -------------------------------------------------------- */
-function OpinionItem({ opinion }: { opinion: BlockOpinion }) {
+function OpinionItem({
+  opinion,
+  myMemberId,
+}: {
+  opinion: BlockOpinion;
+  myMemberId?: string;
+}) {
   return (
     <div className="flex w-full flex-col gap-2.25">
       <OpinionProfile
         nickname={opinion.added_by.nickname}
         picture={opinion.added_by.picture}
+        isOwn={myMemberId === opinion.added_by.plan_member_id}
       />
       <OpinionCard opinion={opinion} />
     </div>
@@ -28,6 +35,7 @@ type PlaceOpinionBottomSheetProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   opinions?: BlockOpinion[];
+  myMemberId?: string;
   className?: string;
 };
 
@@ -35,6 +43,7 @@ function PlaceOpinionBottomSheet({
   open,
   onOpenChange,
   opinions = [],
+  myMemberId,
   className,
 }: PlaceOpinionBottomSheetProps) {
   return (
@@ -54,7 +63,7 @@ function PlaceOpinionBottomSheet({
             </div>
           ) : (
             opinions.map((opinion) => (
-              <OpinionItem key={opinion.opinion_Id} opinion={opinion} />
+              <OpinionItem key={opinion.opinion_Id} opinion={opinion} myMemberId={myMemberId} />
             ))
           )}
         </div>
