@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { CircleCheck, ChevronRight } from "lucide-react";
+import { CircleCheck, ChevronRight, Ellipsis } from "lucide-react";
 import PlaceTypeIcon, { type PlaceType } from "@/components/card/PlaceTypeIcon";
 import Writer from "@/components/card/Writer";
 import PlaceReactionItem, {
@@ -30,6 +30,12 @@ interface CandidateCardFixedProps {
   onReselect?: () => void;
 }
 
+interface CandidateCardEditProps {
+  mode: "edit";
+  placeType: PlaceType;
+  placeName: string;
+}
+
 interface CandidateCardViewProps {
   mode: "view";
   placeType: PlaceType;
@@ -44,14 +50,46 @@ interface CandidateCardViewProps {
   onOpinionClick?: () => void;
 }
 
-type CandidateCardProps = CandidateCardFixedProps | CandidateCardViewProps;
+type CandidateCardProps =
+  | CandidateCardEditProps
+  | CandidateCardViewProps
+  | CandidateCardFixedProps;
 
 const REACTION_TYPES: ReactionType[] = ["good", "normal", "bad"];
 
 const CandidateCard = (props: CandidateCardProps) => {
-  const { mode, placeType, placeName, writerNickname, writerProfileImageUrl, memo, reactions, activeReaction, opinionCount, onReactionClick, onOpinionClick } = props;
+  if (props.mode === "edit") {
+    const { placeType, placeName } = props;
+    return (
+      <div className="flex items-center justify-between gap-2 px-4 pt-3.5 pb-4 rounded-2xl border border-[#e2e2e2] bg-white overflow-hidden">
+        <div className="flex items-center gap-2 pr-1.5">
+          <div className="shrink-0 mt-0.5">
+            <PlaceTypeIcon type={placeType} />
+          </div>
+          <span className="typography-display-lg-bold line-clamp-2 text-foreground">
+            {placeName}
+          </span>
+        </div>
+        <button type="button" className="shrink-0">
+          <Ellipsis className="size-6" strokeWidth={2} />
+        </button>
+      </div>
+    );
+  }
 
-  if (mode === "view") {
+  if (props.mode === "view") {
+    const {
+      placeType,
+      placeName,
+      writerNickname,
+      writerProfileImageUrl,
+      memo,
+      reactions,
+      activeReaction,
+      opinionCount,
+      onReactionClick,
+      onOpinionClick,
+    } = props;
     return (
       <div className="flex flex-col rounded-2xl border border-[#e2e2e2] bg-white overflow-hidden">
         {/* Header */}
@@ -65,7 +103,10 @@ const CandidateCard = (props: CandidateCardProps) => {
             </span>
           </div>
           <div className="shrink-0">
-            <Writer nickname={writerNickname} profileImageUrl={writerProfileImageUrl} />
+            <Writer
+              nickname={writerNickname}
+              profileImageUrl={writerProfileImageUrl}
+            />
           </div>
         </div>
 
@@ -95,8 +136,22 @@ const CandidateCard = (props: CandidateCardProps) => {
     );
   }
 
-  if (mode === "fixed") {
-    const { imageUrl, candidateCount, onReselect } = props;
+  if (props.mode === "fixed") {
+    const {
+      placeType,
+      placeName,
+      writerNickname,
+      writerProfileImageUrl,
+      imageUrl,
+      memo,
+      reactions,
+      activeReaction,
+      opinionCount,
+      candidateCount,
+      onReactionClick,
+      onOpinionClick,
+      onReselect,
+    } = props;
     return (
       <div className="flex flex-col rounded-2xl border border-[#e2e2e2] bg-white overflow-hidden">
         {/* Header */}
