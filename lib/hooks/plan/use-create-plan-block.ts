@@ -1,7 +1,12 @@
 "use client";
 
-import { createPlanBlock, createPlanBlockByPlace } from "@/lib/api/plan";
+import {
+  addPlanBlockCandidates,
+  createPlanBlock,
+  createPlanBlockByPlace,
+} from "@/lib/api/plan";
 import type {
+  AddPlanBlockCandidatesRequest,
   BlockResponse,
   CreatePlanBlockByPlaceRequest,
   CreatePlanBlockRequest,
@@ -40,6 +45,25 @@ type ByPlaceOptions = Omit<
 export const useCreatePlanBlockByPlace = (options?: ByPlaceOptions) => {
   return useMutation<BlockResponse, AxiosError<ProblemDetail>, ByPlaceVariables>({
     mutationFn: ({ planId, body }) => createPlanBlockByPlace(planId, body),
+    ...options,
+  });
+};
+
+type AddCandidatesVariables = {
+  planId: string;
+  timeBlockId: string;
+  body: AddPlanBlockCandidatesRequest;
+};
+
+type AddCandidatesOptions = Omit<
+  UseMutationOptions<BlockResponse, AxiosError<ProblemDetail>, AddCandidatesVariables>,
+  "mutationFn"
+>;
+
+export const useAddPlanBlockCandidates = (options?: AddCandidatesOptions) => {
+  return useMutation<BlockResponse, AxiosError<ProblemDetail>, AddCandidatesVariables>({
+    mutationFn: ({ planId, timeBlockId, body }) =>
+      addPlanBlockCandidates(planId, timeBlockId, body),
     ...options,
   });
 };

@@ -6,9 +6,11 @@ import PlanCardSelection from "@/components/card/PlanCardSelection";
 import { Button } from "@/components/ui/button";
 import { InputForm } from "@/components/ui/input-form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAddCollectionPlace } from "@/lib/hooks/collection/use-add-collection-place";
 import { useCollectionPlacePreference } from "@/lib/hooks/collection/use-collection-place-preference";
 import { useIntersectionObserver } from "@/lib/hooks/use-intersection-observer";
 import { usePlaceSearch } from "@/lib/hooks/use-place-search";
+import { useAddPlanBlockCandidates } from "@/lib/hooks/plan/use-create-plan-block";
 import { usePlanCollectionPlaces } from "@/lib/hooks/plan/use-plan-collection-places";
 import { usePlanCollections } from "@/lib/hooks/plan/use-plan-collections";
 import { MapPin } from "lucide-react";
@@ -16,6 +18,8 @@ import { useParams, useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 
 const AddPlanPage = () => {
+	// TODO: 타겟 time_block_id 연결 필요
+	const TARGET_TIME_BLOCK_ID = "";
 	const params = useParams<{ planId: string | string[] }>();
 	const router = useRouter();
 	const planId = Array.isArray(params.planId) ? params.planId[0] : params.planId;
@@ -63,6 +67,22 @@ const AddPlanPage = () => {
 	const places = placesData?.pages.flatMap((page) => page.contents) ?? [];
 	const { data: searchedPlaces = [] } = usePlaceSearch(query);
 	const { mutate: postPreference } = useCollectionPlacePreference();
+	const { mutate: addCollectionPlace, isPending: isAddingCollectionPlace } =
+		useAddCollectionPlace({
+			onSuccess: (data) => {
+				if (!planId || !TARGET_TIME_BLOCK_ID) return;
+				addCandidatesToBlock({
+					planId,
+					timeBlockId: TARGET_TIME_BLOCK_ID,
+					body: {
+						collection_place_ids: [data.collection_place_id],
+					},
+				});
+				setSelectedSearchPlaceId(null);
+			},
+		});
+	const { mutate: addCandidatesToBlock, isPending: isAddingCandidates } =
+		useAddPlanBlockCandidates();
 	const handleIntersect = useCallback(() => {
 		if (!hasNextPage || isFetchingNextPage) return;
 		fetchNextPage();
@@ -74,9 +94,15 @@ const AddPlanPage = () => {
 
 	const handleAddToPlan = () => {
 		if (!planId || !selectedDay || !selectedPlaceId) return;
-		router.push(
-			`/projects/${planId}/place-add?collectionId=${selectedDay}&placeId=${selectedPlaceId}`,
-		);
+		if (!TARGET_TIME_BLOCK_ID) return;
+
+		addCandidatesToBlock({
+			planId,
+			timeBlockId: TARGET_TIME_BLOCK_ID,
+			body: {
+				collection_place_ids: [selectedPlaceId],
+			},
+		});
 	};
 
 	const handlePreference = (
@@ -94,20 +120,24 @@ const AddPlanPage = () => {
 
 	const handleOpenPlaceAddFromSearch = () => {
 		if (!planId || !selectedDay || !selectedSearchPlaceId) return;
-		const selectedPlace = searchedPlaces.find(
-			(place) => place.place_id === selectedSearchPlaceId,
-		);
-		if (!selectedPlace) return;
-		window.sessionStorage.setItem(
-			"project:selected-search-place",
-			JSON.stringify(selectedPlace),
-		);
-		router.push(`/projects/${planId}/place-add?collectionId=${selectedDay}&source=search`);
+		if (!TARGET_TIME_BLOCK_ID) return;
+		addCollectionPlace({
+			collectionId: selectedDay,
+			place_id: selectedSearchPlaceId,
+		});
 	};
 
 	const handleOpenManualAdd = () => {
-		if (!planId) return;
-		router.push(`/projects/${planId}/add-place/manual`);
+		if (!planId || !selectedDay) return;
+		const search = new URLSearchParams({
+			mode: "candidate",
+			collectionId: selectedDay,
+		});
+		// TODO: manual 후보지 추가에서도 time_block_id 연결 필요
+		if (TARGET_TIME_BLOCK_ID) {
+			search.set("timeBlockId", TARGET_TIME_BLOCK_ID);
+		}
+		router.push(`/projects/${planId}/add-place/manual?${search.toString()}`);
 	};
 
 	return (
@@ -223,6 +253,7 @@ const AddPlanPage = () => {
 										variant="ghost"
 										className="w-full typography-action-sm-reg text-muted-foreground"
 										onClick={handleOpenManualAdd}
+										disabled={!selectedDay}
 									>
 										장소를 찾지 못하시겠나요?
 									</Button>
@@ -243,7 +274,7 @@ const AddPlanPage = () => {
 						<Button
 							onClick={handleAddToPlan}
 							className="h-11 w-full rounded-2xl bg-primary px-8 py-0 text-primary-foreground"
-							disabled={!selectedPlaceId}
+							disabled={!selectedPlaceId || !TARGET_TIME_BLOCK_ID || isAddingCandidates}
 						>
 							후보지 추가하기
 						</Button>
@@ -261,7 +292,13 @@ const AddPlanPage = () => {
 						<Button
 							onClick={handleOpenPlaceAddFromSearch}
 							className="h-11 w-full rounded-2xl bg-primary px-8 py-0 text-primary-foreground"
-							disabled={!selectedSearchPlaceId || !selectedDay}
+							disabled={
+								!selectedSearchPlaceId ||
+								!selectedDay ||
+								!TARGET_TIME_BLOCK_ID ||
+								isAddingCollectionPlace ||
+								isAddingCandidates
+							}
 						>
 							후보지 추가하기
 						</Button>
