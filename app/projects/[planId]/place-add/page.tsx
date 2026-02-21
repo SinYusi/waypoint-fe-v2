@@ -70,6 +70,7 @@ const ProjectPlaceAddPage = () => {
   const collectionPlaceId = searchParams.get("placeId") ?? "";
   const source = searchParams.get("source") ?? "";
   const isSearchSource = source === "search";
+  const isManualSource = source === "manual";
   const [day, setDay] = useState("");
   const [startTime, setStartTime] = useState(DEFAULT_TIME);
   const [endTime, setEndTime] = useState(DEFAULT_TIME);
@@ -120,7 +121,7 @@ const ProjectPlaceAddPage = () => {
   const isMemoPolicyValid = MEMO_POLICY_REGEX.test(normalizedMemo);
   const canSubmit =
     !!planId &&
-    (!!collectionPlaceId || !!searchPlace?.place_id) &&
+    (!!collectionPlaceId || !!searchPlace?.place_id || isManualSource) &&
     Number.isInteger(dayNumber) &&
     dayNumber > 0 &&
     isStartTimeValid &&
@@ -217,11 +218,11 @@ const ProjectPlaceAddPage = () => {
     if (!canSubmit || !planId) return;
     setSubmitError("");
 
-    if (isSearchSource && searchPlace?.place_id) {
+    if (isSearchSource || isManualSource) {
       createBlockByPlace({
         planId,
         body: {
-          place_id: searchPlace.place_id,
+          place_id: searchPlace?.place_id,
           day: dayNumber,
           start_time: startTime,
           end_time: endTime,
