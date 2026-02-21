@@ -37,6 +37,7 @@ type BottomSheetProps = {
   itemVariant?: "default" | "member"
   closeOnSelect?: boolean
   cancelLabel?: React.ReactNode
+  cancelVariant?: "default" | "outline"
   confirmLabel?: React.ReactNode
   showCloseIcon?: boolean
   onCancel?: () => void
@@ -62,6 +63,7 @@ function BottomSheet({
   itemVariant = "default",
   closeOnSelect = true,
   cancelLabel = "취소",
+  cancelVariant = "outline",
   confirmLabel,
   showCloseIcon = false,
   onCancel,
@@ -167,11 +169,13 @@ function BottomSheet({
             <DrawerClose asChild>
               <Button
                 type="button"
-                variant="outline"
+                variant={cancelVariant}
                 size="L"
                 onClick={handleCancel}
                 className={cn(
-                  "h-11 rounded-2xl border-border typography-label-base-sb text-foreground hover:bg-transparent",
+                  "rounded-2xl",
+                  cancelVariant === "outline" && "border-border typography-label-base-sb text-foreground hover:bg-transparent",
+                  cancelVariant === "default" && "typography-label-base-sb",
                   confirmLabel ? "flex-1" : "w-full",
                 )}
               >
@@ -180,7 +184,10 @@ function BottomSheet({
                     <X className="size-6 text-[#1C2024]" strokeWidth={2} />
                   </span>
                 )}
-                <span className="typography-label-base-sb text-[#1C2024]">
+                <span className={cn(
+                  "typography-label-base-sb",
+                  cancelVariant === "outline" ? "text-[#1C2024]" : "text-white",
+                )}>
                   {cancelLabel}
                 </span>
               </Button>
