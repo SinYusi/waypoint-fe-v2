@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { useUpdateMe } from "@/lib/hooks/use-update-me";
 const OnboardPage = () => {
   const router = useRouter();
   const [step, setStep] = useState(1);
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
   // step 1
   const [allChecked, setAllChecked] = useState(false);
@@ -37,6 +38,16 @@ const OnboardPage = () => {
       }
     },
   });
+
+  useEffect(() => {
+    if (!localStorage.getItem("accessToken")) {
+      router.replace("/login");
+    } else {
+      setIsAuthorized(true);
+    }
+  }, [router]);
+
+  if (!isAuthorized) return null;
 
   const handleAllChange = (checked: boolean) => {
     setAllChecked(checked);
@@ -203,7 +214,11 @@ const OnboardPage = () => {
                     ? "border-sky-500"
                     : "border-[#e2e2e2]"
                 }`}
-                onClick={() => setSelectedCard(selectedCard === "collection" ? null : "collection")}
+                onClick={() =>
+                  setSelectedCard(
+                    selectedCard === "collection" ? null : "collection",
+                  )
+                }
               >
                 <span className="typography-label-base-sb">보관함</span>
                 <span className="typography-body-sm-reg text-muted-foreground">
@@ -219,7 +234,9 @@ const OnboardPage = () => {
                     ? "border-sky-500"
                     : "border-[#e2e2e2]"
                 }`}
-                onClick={() => setSelectedCard(selectedCard === "plan" ? null : "plan")}
+                onClick={() =>
+                  setSelectedCard(selectedCard === "plan" ? null : "plan")
+                }
               >
                 <span className="typography-label-base-sb">여행 계획</span>
                 <span className="typography-body-sm-reg text-muted-foreground">
