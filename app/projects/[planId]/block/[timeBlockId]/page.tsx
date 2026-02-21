@@ -6,14 +6,34 @@ import Header from "@/components/layout/Header";
 import HeaderBtn from "@/components/layout/HeaderBtn";
 import NavigationBar from "@/components/layout/NavigationBar";
 import AISummarySection from "@/components/common/AISummarySection";
+import OpinionCard from "@/components/common/OpinionCard";
+import OpinionProfile from "@/components/common/OpinionProfile";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import GoogleMap from "@/components/common/GoogleMap";
 import { Calendar, MapPin, Sparkles, SquareArrowOutUpRight } from "lucide-react";
 import { useParams } from "next/navigation";
+import type { OpinionCategoryKey } from "@/lib/opinion-bottom-sheet";
 import { useBlockDetail } from "@/lib/hooks/use-block-detail";
 
 const MEMO_MAX_LENGTH = 300;
+
+const resolveOpinionCategoryKey = (category: string): OpinionCategoryKey => {
+  if (category.includes("식당") || category.includes("주점")) return "FNB";
+  if (category.includes("카페") || category.includes("디저트")) return "DESSERT";
+  if (category.includes("숙소")) return "STAY";
+  if (category.includes("쇼핑")) return "SHOPPING";
+  if (
+    category.includes("관광") ||
+    category.includes("문화") ||
+    category.includes("공원") ||
+    category.includes("자연")
+  ) {
+    return "TOUR";
+  }
+
+  return "GENERAL";
+};
 
 const BlockDetailPage = () => {
   const params = useParams<{ planId: string | string[]; timeBlockId: string | string[] }>();
@@ -44,6 +64,9 @@ const BlockDetailPage = () => {
   const longitude = blockDetail?.longitude;
   const coverImageUrl = blockDetail?.photoUrls?.[0];
   const memo = blockDetail?.memo ?? "";
+  const myPlanMemberId = blockDetail?.myPlanMemberId;
+  const opinions = blockDetail?.opinions ?? [];
+  const opinionCategoryKey = resolveOpinionCategoryKey(category);
   const dayText = `${blockDetail?.day ?? 0}일차`;
   const dateText = (() => {
     if (!blockDetail?.date) return "";
@@ -193,6 +216,42 @@ const BlockDetailPage = () => {
                 sourceUrl={sourceUrl}
                 onOpenLink={openInNewTab}
               />
+              <div className="w-full flex flex-col gap-4">
+                <div className="w-full h-6 flex items-center justify-between">
+                  <div className="w-full h-6 flex items-center">
+                    <span className="typography-label-base-sb text-black align-middle">
+                      팀원들의 의견
+                    </span>
+                  </div>
+                </div>
+                <div className="w-full flex flex-col gap-6">
+                  {opinions.length === 0 ? (
+                    <div className="flex h-20 items-center justify-center rounded-xl bg-card typography-body-sm-reg text-muted-foreground">
+                      아직 등록된 의견이 없어요.
+                    </div>
+                  ) : (
+                    opinions.map((opinion) => (
+                      <div
+                        key={opinion.opinion_Id}
+                        className="flex w-full flex-col gap-2.25"
+                      >
+                        <OpinionProfile
+                          nickname={opinion.added_by.nickname}
+                          picture={opinion.added_by.picture}
+                          isOwn={myPlanMemberId === opinion.added_by.plan_member_id}
+                          onEdit={() => {}}
+                          onDelete={() => {}}
+                        />
+                        <OpinionCard
+                          opinion={opinion}
+                          categoryKey={opinionCategoryKey}
+                          showDividerBetweenTagsAndComment
+                        />
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
             </div>
             {isError && (
               <p className="px-1 typography-caption-xs-reg text-destructive">
