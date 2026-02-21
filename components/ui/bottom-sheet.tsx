@@ -45,6 +45,7 @@ type BottomSheetProps = {
   closeOnConfirm?: boolean
   confirmDisabled?: boolean
   showDivider?: boolean
+  showBottomGradient?: boolean
   className?: string
 }
 
@@ -72,6 +73,7 @@ function BottomSheet({
   closeOnConfirm = true,
   confirmDisabled = false,
   showDivider = true,
+  showBottomGradient = false,
   className,
 }: BottomSheetProps) {
   const handleCancel = () => {
@@ -105,6 +107,7 @@ function BottomSheet({
       >
         <DrawerTitle className="sr-only">{title}</DrawerTitle>
 
+        <div className="relative flex min-h-0 flex-1 flex-col">
         <div className="min-h-0 flex-1 overflow-y-auto px-6 pt-6 pb-2">
           {header}
           {showTitle && (
@@ -166,6 +169,16 @@ function BottomSheet({
 
         {showDivider && <div className="mx-5 h-px bg-border" />}
 
+        {showBottomGradient && (
+          <div
+            className="pointer-events-none absolute bottom-22.75 left-0 right-0 h-35"
+            style={{
+              background:
+                "linear-gradient(180deg, rgba(252, 252, 252, 0) 0%, #FCFCFC 60%)",
+            }}
+          />
+        )}
+
         <div className="h-22.75 bg-background px-5 pt-4">
           <div className={cn("flex", confirmLabel ? "gap-2" : "") }>
             <DrawerClose asChild>
@@ -208,6 +221,7 @@ function BottomSheet({
               </Button>
             )}
           </div>
+        </div>
         </div>
       </DrawerContent>
     </Drawer>
