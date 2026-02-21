@@ -48,6 +48,14 @@ const AddPlanPage = () => {
 			? selectedCollectionId
 			: (dayItems[0]?.value ?? "");
 	const selectedPlaceId = selectedPlaceByCollection[selectedDay] ?? null;
+	const moveToSavedFirst = () => {
+		setActiveTab("saved");
+		setSelectedCollectionId(null);
+		setSelectedSearchPlaceId(null);
+		setQuery("");
+		window.scrollTo({ top: 0, behavior: "auto" });
+		router.refresh();
+	};
 
 	const handlePlaceSelected = (collectionPlaceId: string, selected: boolean) => {
 		if (!selectedDay) return;
@@ -83,9 +91,29 @@ const AddPlanPage = () => {
 				});
 				setSelectedSearchPlaceId(null);
 			},
+			onError: (err) => {
+				const detail = err.response?.data?.detail?.toLowerCase() ?? "";
+				const code = err.response?.data?.code?.toLowerCase() ?? "";
+				const reason = err.response?.data?.errors?.[0]?.reason?.toLowerCase() ?? "";
+				const isAlreadyExistsError =
+					detail.includes("이미") ||
+					reason.includes("이미") ||
+					detail.includes("already") ||
+					reason.includes("already") ||
+					code.includes("already") ||
+					code.includes("duplicate");
+
+				if (isAlreadyExistsError) {
+					moveToSavedFirst();
+				}
+			},
 		});
 	const { mutate: addCandidatesToBlock, isPending: isAddingCandidates } =
-		useAddPlanBlockCandidates();
+		useAddPlanBlockCandidates({
+			onSuccess: () => {
+				moveToSavedFirst();
+			},
+		});
 	const handleIntersect = useCallback(() => {
 		if (!hasNextPage || isFetchingNextPage) return;
 		fetchNextPage();
