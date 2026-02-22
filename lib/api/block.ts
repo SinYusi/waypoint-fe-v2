@@ -95,6 +95,7 @@ export type BlockDetail = {
   aiSummary: string;
   sourceTitle: string;
   sourceUrl: string;
+  myOpinionId: string | null;
   myPlanMemberId: string;
   opinions: OpinionItem[];
   positiveCount: number;
@@ -130,6 +131,17 @@ const dedupeMembers = (members: PlanMember[]) => {
 
 const normalizeBlockDetail = (data: BlockDetailApiResponse): BlockDetail => {
   const place = data.block.place;
+  const opinions: OpinionItem[] = data.opinions.map((opinion) => ({
+    opinion_Id: opinion.opinion_id,
+    type: opinion.type,
+    comment: opinion.comment,
+    tag_ids: opinion.tag_ids,
+    added_by: opinion.added_by,
+  }));
+  const myOpinionId = data.block.opinion_summary.my?.opinion_id ?? null;
+  const myOpinionItem = myOpinionId
+    ? opinions.find((opinion) => opinion.opinion_Id === myOpinionId)
+    : null;
 
   const positiveMembers = dedupeMembers(
     data.opinions
@@ -164,14 +176,9 @@ const normalizeBlockDetail = (data: BlockDetailApiResponse): BlockDetail => {
       ? `${data.social_media.author_name} - ${data.social_media.title}`
       : "",
     sourceUrl: data.social_media?.url ?? "",
-    myPlanMemberId: data.block.added_by.plan_member_id,
-    opinions: data.opinions.map((opinion) => ({
-      opinion_Id: opinion.opinion_id,
-      type: opinion.type,
-      comment: opinion.comment,
-      tag_ids: opinion.tag_ids,
-      added_by: opinion.added_by,
-    })),
+    myOpinionId,
+    myPlanMemberId: myOpinionItem?.added_by.plan_member_id ?? "",
+    opinions,
     positiveCount: data.block.opinion_summary.distribution.positive,
     neutralCount: data.block.opinion_summary.distribution.neutral,
     negativeCount: data.block.opinion_summary.distribution.negative,
