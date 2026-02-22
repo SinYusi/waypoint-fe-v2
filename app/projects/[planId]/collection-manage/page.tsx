@@ -24,23 +24,19 @@ const CollectionManagePage = () => {
   const { data, isLoading, isError, error } = usePlanCollections(planId);
 
   // 플랜에 연결된 컬렉션 삭제
-  const {
-    mutate: deleteMutate,
-    isPending: isDeleting,
-    reset: resetDelete,
-  } = useDeletePlanCollection({
-    onSuccess: () => {
-      closeDeleteDialog();
-    },
-    onError: (err) => {
-      toast.error(
-        err.response?.data?.detail ?? err?.message ?? "삭제에 실패했어요.",
-      );
-    },
-  });
+  const { mutate: deleteMutate, isPending: isDeleting } =
+    useDeletePlanCollection({
+      onSuccess: () => {
+        closeDeleteDialog();
+      },
+      onError: (err) => {
+        toast.error(
+          err.response?.data?.detail ?? err?.message ?? "삭제에 실패했어요.",
+        );
+      },
+    });
 
   const openDeleteDialog = (collectionId: string) => {
-    resetDelete();
     setDeleteTargetId(collectionId);
     setIsDeleteOpen(true);
   };
@@ -48,7 +44,6 @@ const CollectionManagePage = () => {
   const closeDeleteDialog = () => {
     setIsDeleteOpen(false);
     setDeleteTargetId(null);
-    resetDelete();
   };
 
   const handleConfirmDelete = () => {
@@ -124,7 +119,6 @@ const CollectionManagePage = () => {
           setIsDeleteOpen(open);
           if (!open) {
             setDeleteTargetId(null);
-            resetDelete();
           }
         }}
         title="보관함을 삭제하시겠어요?"
