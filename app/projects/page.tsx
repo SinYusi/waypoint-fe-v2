@@ -14,6 +14,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useIntersectionObserver } from "@/lib/hooks/use-intersection-observer";
 import { formatDateRange } from "@/lib/utils/date";
 import { useDeletePlan } from "@/lib/hooks/project/plan/use-delete-plan";
+import { toast } from "sonner";
 
 const ProjectPage = () => {
   const router = useRouter();
@@ -61,20 +62,16 @@ const ProjectPage = () => {
     setDeleteTargetId(null);
   };
 
-  const {
-    mutate: deleteMutate,
-    isPending: isDeleting,
-    error: deleteError,
-  } = useDeletePlan({
+  const { mutate: deleteMutate, isPending: isDeleting } = useDeletePlan({
     onSuccess: () => {
       closeDeleteDialog();
     },
+    onError: (err) => {
+      toast.error(
+        err.response?.data?.detail ?? err?.message ?? "삭제에 실패했어요.",
+      );
+    },
   });
-
-  const deleteErrorMessage =
-    deleteError?.response?.data?.detail ??
-    deleteError?.message ??
-    "삭제에 실패했어요.";
 
   const handleConfirmDelete = () => {
     if (!deleteTargetId || isDeleting) return;
@@ -192,11 +189,7 @@ const ProjectPage = () => {
           if (!open) setDeleteTargetId(null);
         }}
         title="정말 이 여행 계획을 삭제하시겠어요?"
-        description={
-          deleteError
-            ? `삭제에 실패했어요.\n${deleteErrorMessage}`
-            : "삭제한 여행 계획은 다시 복구가 불가능합니다.\n그래도 정말 여행 계획을 삭제하시겠어요?"
-        }
+        description="삭제한 여행 계획은 다시 복구가 불가능합니다.\n그래도 정말 여행 계획을 삭제하시겠어요?"
         cancelLabel="취소"
         actionLabel="삭제하기"
         onCancel={closeDeleteDialog}
