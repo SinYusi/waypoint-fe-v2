@@ -18,18 +18,27 @@ const AddCollectionsPage = () => {
   const { planId } = useParams<{ planId: string }>();
 
   // 플랜에 이미 연결된 컬렉션 조회
-  const { data: planCollections } = usePlanCollections(planId);
+  const {
+    data: planCollections,
+    isLoading: isPlanCollectionsLoading,
+    isError: isPlanCollectionsError,
+    error: planCollectionsError,
+  } = usePlanCollections(planId);
 
   // 컬렉션 목록 조회
   const {
     data,
-    isLoading,
-    isError,
-    error,
+    isLoading: isCollectionsLoading,
+    isError: isCollectionsError,
+    error: collectionsError,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
   } = useCollections({ size: 10 });
+
+  const isLoading = isCollectionsLoading || isPlanCollectionsLoading;
+  const isError = isCollectionsError || isPlanCollectionsError;
+  const error = collectionsError ?? planCollectionsError;
 
   // 플랜에 컬렉션 추가
   const { mutate: addPlanCollections, isPending: isAdding } =
@@ -76,6 +85,8 @@ const AddCollectionsPage = () => {
   });
 
   const handleAdd = () => {
+    if (isLoading || isError || isAdding || selectedIds.length === 0) return;
+
     addPlanCollections({
       planId,
       body: { collection_ids: selectedIds },
@@ -99,7 +110,7 @@ const AddCollectionsPage = () => {
           </div>
         ) : isError ? (
           <div className="fixed inset-0 flex items-center justify-center text-destructive">
-            {error.response?.data.detail ?? "알 수 없는 오류"}
+            {error?.response?.data.detail ?? "알 수 없는 오류"}
           </div>
         ) : collections.length === 0 ? (
           <div className="fixed inset-0 flex flex-col gap-5 items-center justify-center">
