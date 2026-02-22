@@ -35,12 +35,12 @@ export const useAddCollectionPlace = (options?: Options) => {
     mutationFn: ({ collectionId, place_id }) =>
       addCollectionPlace(collectionId, { place_id }),
     ...options,
-    onSuccess: (data, variables, context) => {
+    onSuccess: (data, variables, onMutateResult, context) => {
       queryClient.invalidateQueries({
         queryKey: ["collectionPlaces", variables.collectionId],
       });
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, onMutateResult, context);
     },
   });
 };
