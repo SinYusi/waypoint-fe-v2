@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils/utils";
 import Radio from "@/components/common/Radio";
 
 const BASE_WIDTH = 335;
+const SCALE_EPSILON = 0.01;
 
 interface PlanCardSelectionProps {
   title: string;
@@ -50,8 +51,13 @@ const PlanCardSelection = ({
     if (!el) return;
 
     const observer = new ResizeObserver(([entry]) => {
-      setScale(entry.contentRect.width / BASE_WIDTH);
+      const rawScale = entry.contentRect.width / BASE_WIDTH;
+      const nextScale = Number(rawScale.toFixed(3));
+      setScale((prevScale) =>
+        Math.abs(prevScale - nextScale) > SCALE_EPSILON ? nextScale : prevScale,
+      );
     });
+
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
