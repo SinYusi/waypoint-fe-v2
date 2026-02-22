@@ -189,7 +189,9 @@ const ProjectPage = () => {
           if (!open) setDeleteTargetId(null);
         }}
         title="정말 이 여행 계획을 삭제하시겠어요?"
-        description="삭제한 여행 계획은 다시 복구가 불가능합니다.\n그래도 정말 여행 계획을 삭제하시겠어요?"
+        description={
+          "삭제한 여행 계획은 다시 복구가 불가능합니다.\n그래도 정말 여행 계획을 삭제하시겠어요?"
+        }
         cancelLabel="취소"
         actionLabel="삭제하기"
         onCancel={closeDeleteDialog}
