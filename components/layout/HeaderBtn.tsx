@@ -11,6 +11,7 @@ interface HeaderBtnProps {
   icon: LucideIcon;
   label: string;
   className?: string;
+  iconClassName?: string;
   onClick?: () => void;
 }
 
@@ -18,6 +19,7 @@ const HeaderBtn = ({
   bgVariant = "solid",
   icon: Icon,
   label,
+  iconClassName,
   className,
   onClick,
 }: HeaderBtnProps) => {
@@ -35,7 +37,7 @@ const HeaderBtn = ({
         className,
       )}
     >
-      {Icon && <Icon className="size-6 text-foreground" />}
+      {Icon && <Icon className={cn("size-6 text-foreground", iconClassName)} />}
     </Button>
   );
 };
