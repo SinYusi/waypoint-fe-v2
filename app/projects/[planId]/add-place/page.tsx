@@ -19,7 +19,7 @@ import CollectionEmptyIllust from "@/public/illust/collection-empty.svg";
 import { MapPin } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import type { KeyboardEvent } from "react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 const DEFAULT_TIME = "00:00";
 
@@ -69,6 +69,9 @@ const AddPlanPage = () => {
 	const planId = Array.isArray(params.planId) ? params.planId[0] : params.planId;
 	const { data: planCollectionsData, isLoading: isPlanCollectionsLoading } = usePlanCollections(
 		planId ?? "",
+		{
+			staleTime: 60_000,
+		},
 	);
 	const planCollections = useMemo(() => planCollectionsData ?? [], [planCollectionsData]);
 	const isPlanCollectionsReady = !isPlanCollectionsLoading;
@@ -95,6 +98,7 @@ const AddPlanPage = () => {
 	const [freeEndTime, setFreeEndTime] = useState(DEFAULT_TIME);
 	const [freeMemo, setFreeMemo] = useState("");
 	const [freeSubmitError, setFreeSubmitError] = useState("");
+	const [debouncedQuery, setDebouncedQuery] = useState("");
 	const selectedDay =
 		selectedCollectionId && dayItems.some((item) => item.value === selectedCollectionId)
 			? selectedCollectionId
@@ -118,6 +122,15 @@ const AddPlanPage = () => {
 		isFreeStartNotAfterEnd &&
 		normalizedFreeMemo.trim().length > 0 &&
 		isFreeMemoPolicyValid;
+	const searchableQuery = activeTab === "search" ? debouncedQuery : "";
+
+	useEffect(() => {
+		const timer = window.setTimeout(() => {
+			setDebouncedQuery(query.trim());
+		}, 300);
+
+		return () => window.clearTimeout(timer);
+	}, [query]);
 
 	const handlePlaceSelected = (collectionPlaceId: string, selected: boolean) => {
 		if (!selectedDay) return;
@@ -136,9 +149,13 @@ const AddPlanPage = () => {
 		isFetchingNextPage,
 	} = usePlanCollectionPlaces(planId ?? "", selectedDay, {
 		size: 20,
+	}, {
+		staleTime: 60_000,
 	});
 	const places = placesData?.pages.flatMap((page) => page.contents) ?? [];
-	const { data: searchedPlaces = [] } = usePlaceSearch(query);
+	const { data: searchedPlaces = [] } = usePlaceSearch(searchableQuery, {
+		staleTime: 60_000,
+	});
 	const { mutate: postPreference } = useCollectionPlacePreference();
 	const { mutate: createBlock, isPending: isCreatingBlock } = useCreatePlanBlock({
 		onSuccess: () => {
