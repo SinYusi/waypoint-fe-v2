@@ -23,6 +23,8 @@ const PlanHeader = ({
 }: PlanHeaderProps) => {
   const router = useRouter();
 
+  const safeDay = Math.max(day, 1);
+
   const handleToggleMode = () => {
     router.replace(href);
   };
@@ -44,7 +46,9 @@ const PlanHeader = ({
           {title}
         </h2>
         <p className="text-muted-foreground typography-body-sm-sb">
-          {day === 1 ? "당일치기 여행" : `${day - 1}박 ${day}일 여행`}
+          {safeDay === 1
+            ? "당일치기 여행"
+            : `${safeDay - 1}박 ${safeDay}일 여행`}
         </p>
       </div>
       {isEditing ? (
