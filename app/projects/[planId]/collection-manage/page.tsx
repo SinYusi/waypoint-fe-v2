@@ -10,6 +10,7 @@ import CollectionManageItem from "@/components/common/CollectionManageItem";
 import AppAlertDialog from "@/components/common/AppAlertDialog";
 import { useState } from "react";
 import { useDeletePlanCollection } from "@/lib/hooks/plan-collection/use-delete-plan-collection";
+import { toast } from "sonner";
 
 const CollectionManagePage = () => {
   const router = useRouter();
@@ -26,11 +27,15 @@ const CollectionManagePage = () => {
   const {
     mutate: deleteMutate,
     isPending: isDeleting,
-    error: deleteError,
     reset: resetDelete,
   } = useDeletePlanCollection({
     onSuccess: () => {
       closeDeleteDialog();
+    },
+    onError: (err) => {
+      toast.error(
+        err.response?.data?.detail ?? err?.message ?? "삭제에 실패했어요.",
+      );
     },
   });
 
@@ -45,11 +50,6 @@ const CollectionManagePage = () => {
     setDeleteTargetId(null);
     resetDelete();
   };
-
-  const deleteErrorMessage =
-    deleteError?.response?.data?.detail ??
-    deleteError?.message ??
-    "삭제에 실패했어요.";
 
   const handleConfirmDelete = () => {
     if (!deleteTargetId || isDeleting) return;
@@ -129,9 +129,7 @@ const CollectionManagePage = () => {
         }}
         title="보관함을 삭제하시겠어요?"
         description={
-          deleteError
-            ? `삭제에 실패했어요.\n${deleteErrorMessage}`
-            : "보관함에서 추가한 장소들이 사라질 수 있어요.\n그래도 정말 삭제하시겠어요?"
+          "보관함에서 추가한 장소들이 사라질 수 있어요.\n그래도 정말 삭제하시겠어요?"
         }
         cancelLabel="취소"
         actionLabel="삭제"
