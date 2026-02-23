@@ -1,10 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { DateRange } from "react-day-picker";
 import { ko } from "date-fns/locale";
 import { validatePlanTitle } from "@/lib/utils/validate-plan-title";
-import { formatDateRangeText, getToday } from "@/lib/utils/date";
+import {
+  formatDateRangeText,
+  getToday,
+  isSameDateRange,
+} from "@/lib/utils/date";
 
 type UseProjectFormParams = {
   initialTitle?: string;
@@ -17,6 +21,12 @@ export const useProjectForm = ({
   initialRange,
   dateTextPattern = "yyyy.MM.dd",
 }: UseProjectFormParams = {}) => {
+  // 초기값(비교 기준)
+  const [initial] = useState<{ title: string; range?: DateRange }>({
+    title: initialTitle,
+    range: initialRange,
+  });
+
   // values
   const [title, setTitle] = useState(initialTitle);
   const [range, setRange] = useState<DateRange | undefined>(initialRange);
@@ -35,6 +45,13 @@ export const useProjectForm = ({
   );
 
   const dateText = formatDateRangeText(range, dateTextPattern, " ~ ", ko);
+
+  // 변경 여부(버튼 활성화 기준)
+  const isChange = useMemo(() => {
+    const titleChanged = title.trim() !== initial.title.trim();
+    const rangeChanged = !isSameDateRange(range, initial.range);
+    return titleChanged || rangeChanged;
+  }, [title, range, initial]);
 
   const onTitleChange = (value: string) => {
     setTitle(value);
@@ -118,6 +135,7 @@ export const useProjectForm = ({
     dateErrorMessage,
 
     dateText,
+    isChange,
 
     // handlers
     onTitleChange,

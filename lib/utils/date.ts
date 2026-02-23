@@ -1,4 +1,4 @@
-import { format, type Locale } from "date-fns";
+import { format, parse, type Locale } from "date-fns";
 import { DateRange } from "react-day-picker";
 
 /**
@@ -21,6 +21,13 @@ export const toApiDate = (date: Date): string => {
 };
 
 /**
+ * yyyy-MM-dd 문자열 → Date 객체 변환
+ */
+export const fromApiDate = (dateString: string): Date => {
+  return parse(dateString, "yyyy-MM-dd", new Date());
+};
+
+/**
  * DateRange → API 전송용 날짜 범위 객체 변환
  *
  * - from, to 둘 다 존재할 때만 변환
@@ -34,6 +41,19 @@ export const toApiDateRange = (
   return {
     start_date: toApiDate(range.from),
     end_date: toApiDate(range.to),
+  };
+};
+
+/**
+ * start_date, end_date → DateRange 변환
+ */
+export const fromApiDateRange = (
+  startDate: string,
+  endDate: string,
+): DateRange => {
+  return {
+    from: fromApiDate(startDate),
+    to: fromApiDate(endDate),
   };
 };
 
@@ -86,4 +106,25 @@ export const formatDateRange = (startDate: string, endDate: string): string => {
   if (!formattedStart || !formattedEnd) return "";
 
   return `${formattedStart} ~ ${formattedEnd}`;
+};
+
+/**
+ * 두 Date가 같은 날짜인지 비교 (연/월/일 기준)
+ */
+export const isSameDay = (a?: Date, b?: Date): boolean => {
+  if (!a && !b) return true;
+  if (!a || !b) return false;
+
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+};
+
+/**
+ * 두 DateRange가 같은 범위인지 비교
+ */
+export const isSameDateRange = (a?: DateRange, b?: DateRange): boolean => {
+  return isSameDay(a?.from, b?.from) && isSameDay(a?.to, b?.to);
 };
