@@ -21,7 +21,6 @@ const HeaderBtn = ({
   label,
   iconClassName,
   className,
-  iconClassName,
   onClick,
 }: HeaderBtnProps) => {
   return (
