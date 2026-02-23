@@ -77,9 +77,9 @@ const PlanPage = () => {
         )}
       </div>
 
-      {/* 지도 + PlanHeader + DayNav - sticky (헤더 아래) */}
-      <div id="sticky-bar" className="sticky top-16 z-10 flex flex-col bg-background">
-        {activeMode === "planMode" && isMapVisible && (
+      {/* 지도 - sticky */}
+      {activeMode === "planMode" && isMapVisible && (
+        <div className="sticky top-16 z-10">
           <GoogleMap
             showZoomControls
             center={{ lat: 37.566535, lng: 126.977969 }}
@@ -87,11 +87,20 @@ const PlanPage = () => {
             markerPosition={{ lat: 37.566535, lng: 126.977969 }}
             className="w-full h-45 rounded-none"
           />
-        )}
-        <div className="px-5 py-4">
-          <PlanHeader title="제주도 여행" day={15} href="" />
         </div>
-        {isCalendarVisible && (
+      )}
+
+      {/* PlanHeader - 스크롤 */}
+      <div className="px-5 py-4">
+        <PlanHeader title="제주도 여행" day={15} href="" />
+      </div>
+
+      {/* DayNav - sticky (지도 아래) */}
+      {isCalendarVisible && (
+        <div
+          className="sticky z-10 bg-background"
+          style={{ top: `${64 + (activeMode === "planMode" && isMapVisible ? 180 : 0)}px` }}
+        >
           <DayNav
             items={items}
             className="gap-2.25 py-3 h-14"
@@ -99,15 +108,14 @@ const PlanPage = () => {
             onValueChange={(value) => {
               const el = document.getElementById(`day-section-${value}`);
               if (!el) return;
-              const headerHeight = 64; // h-16
-              const stickyBar = document.getElementById("sticky-bar");
-              const stickyBarHeight = stickyBar?.getBoundingClientRect().height ?? 0;
-              const top = el.getBoundingClientRect().top + window.scrollY - headerHeight - stickyBarHeight;
+              const mapHeight = activeMode === "planMode" && isMapVisible ? 180 : 0;
+              const offset = 64 + mapHeight + 56; // header + map + DayNav(h-14)
+              const top = el.getBoundingClientRect().top + window.scrollY - offset;
               window.scrollTo({ top, behavior: "smooth" });
             }}
           />
-        )}
-      </div>
+        </div>
+      )}
 
       <main className="flex flex-col pb-18">
         {items.map((item) => (
