@@ -36,11 +36,11 @@ export type PlaceSearchItem = {
   google_place_id: string;
   name: string;
   address: string;
+  primary_type?: string | null;
   category: {
     level1: PlaceCategoryLevel;
     level2: PlaceCategoryLevel;
     level3: PlaceCategoryLevel;
-    primary_type?: string | null;
   };
   google_maps_uri: string;
   photos: string[];
