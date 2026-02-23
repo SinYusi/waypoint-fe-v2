@@ -42,12 +42,16 @@ apiClient.interceptors.response.use(
           { withCredentials: true },
         );
 
-        localStorage.setItem("accessToken", data.access_token);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("accessToken", data.access_token);
+        }
         originalRequest.headers.Authorization = `Bearer ${data.access_token}`;
         return apiClient(originalRequest);
       } catch {
-        localStorage.removeItem("accessToken");
-        window.location.href = "/login";
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("accessToken");
+          window.location.href = "/login";
+        }
       }
     }
 
