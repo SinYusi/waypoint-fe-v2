@@ -214,13 +214,11 @@ const CandidateCard = (props: CandidateCardProps) => {
         {/* Reselect */}
         <button
           type="button"
-          className="flex items-center gap-1 bg-[#f0f0f0] py-2 px-2.5 mb-3.5 mx-4 rounded-lg typography-body-sm-reg text-muted-foreground"
+          className="flex items-center gap-1 bg-[#f0f0f0] py-2 px-2.5 mb-3.5 mx-4 rounded-lg typography-body-sm-reg text-muted-foreground justify-center"
           onClick={onReselect}
         >
           <CircleCheck className="size-4 shrink-0 text-sky-500" />
-          <span className="flex-1 text-left">
-            총 {candidateCount}개의 후보지 중 다시 선택하기
-          </span>
+          <span>총 {candidateCount}개의 후보지 중 다시 선택하기</span>
           <ChevronRight className="size-4 shrink-0 opacity-40" />
         </button>
       </div>
