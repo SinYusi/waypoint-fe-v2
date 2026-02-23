@@ -43,7 +43,7 @@ const MemberItem = ({
         <Image
           width={28}
           height={28}
-          src={member.picture}
+          src={member.picture.replace(/^http:\/\//, "https://")}
           alt={member.nickname ?? ""}
           className="rounded-full shrink-0"
         />

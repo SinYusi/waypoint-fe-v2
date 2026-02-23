@@ -26,7 +26,7 @@ const ProfileImage = ({
         className,
       )}
     >
-      <AvatarImage src={src || undefined} alt={alt} />
+      <AvatarImage src={src ? src.replace(/^http:\/\//, "https://") : undefined} alt={alt} />
       <AvatarFallback className="bg-gray-300 typography-label-sm-sb text-foreground">
         {alt.slice(0, 2)}
       </AvatarFallback>
