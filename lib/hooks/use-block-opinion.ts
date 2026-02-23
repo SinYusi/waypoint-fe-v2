@@ -32,9 +32,9 @@ const patchBlockDetailOpinionDerivedFields = (detail: BlockDetail): BlockDetail 
   const positiveCount = detail.opinions.filter((opinion) => opinion.type === "POSITIVE").length
   const neutralCount = detail.opinions.filter((opinion) => opinion.type === "NEUTRAL").length
   const negativeCount = detail.opinions.filter((opinion) => opinion.type === "NEGATIVE").length
-  const myOpinionItem = detail.opinions.find(
-    (opinion) => opinion.added_by.plan_member_id === detail.myPlanMemberId,
-  )
+  const myOpinionItem = detail.myOpinionId
+    ? detail.opinions.find((opinion) => opinion.opinion_Id === detail.myOpinionId)
+    : undefined
 
   return {
     ...detail,
@@ -43,6 +43,8 @@ const patchBlockDetailOpinionDerivedFields = (detail: BlockDetail): BlockDetail 
     negativeCount,
     positiveMembers: dedupeMembers(detail.opinions, "POSITIVE"),
     negativeMembers: dedupeMembers(detail.opinions, "NEGATIVE"),
+    myOpinionId: myOpinionItem?.opinion_Id ?? null,
+    myPlanMemberId: myOpinionItem?.added_by.plan_member_id ?? "",
     myOpinion: myOpinionItem?.type ?? null,
   }
 }

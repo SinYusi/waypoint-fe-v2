@@ -97,7 +97,7 @@ const BlockDetailPage = () => {
   const longitude = blockDetail?.longitude;
   const coverImageUrl = blockDetail?.photoUrls?.[0];
   const memo = blockDetail?.memo ?? "";
-  const myPlanMemberId = blockDetail?.myPlanMemberId;
+  const myOpinionId = blockDetail?.myOpinionId;
   const opinions = blockDetail?.opinions ?? [];
   const opinionCategoryKey = resolveOpinionCategoryKey(category);
   const editCurrentReasonIds = editReasonIdsByState[editCurrentState] ?? [];
@@ -343,13 +343,13 @@ const BlockDetailPage = () => {
                         key={opinion.opinion_Id}
                         className="flex w-full flex-col gap-2.25"
                       >
-                        <OpinionProfile
-                          nickname={opinion.added_by.nickname}
-                          picture={opinion.added_by.picture}
-                          isOwn={myPlanMemberId === opinion.added_by.plan_member_id}
-                          onEdit={() => handleOpenOpinionEditor(opinion)}
-                          onDelete={() => handleOpenOpinionEditor(opinion)}
-                        />
+                          <OpinionProfile
+                            nickname={opinion.added_by.nickname}
+                            picture={opinion.added_by.picture}
+                            isOwn={myOpinionId === opinion.opinion_Id}
+                            onEdit={() => handleOpenOpinionEditor(opinion)}
+                            onDelete={() => handleOpenOpinionEditor(opinion)}
+                          />
                         <OpinionCard
                           opinion={opinion}
                           categoryKey={opinionCategoryKey}
