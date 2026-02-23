@@ -40,7 +40,7 @@ const AddPlacePage = () => {
         leftBtnBgVariant="ghost"
         variant="center"
         title="장소 찾기"
-        className="fixed top-0 z-10 bg-white"
+        className="fixed top-0 z-10"
       />
       <Tabs
         defaultValue="search"

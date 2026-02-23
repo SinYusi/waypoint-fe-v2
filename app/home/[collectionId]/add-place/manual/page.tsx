@@ -22,7 +22,7 @@ const ManualAddPlacePage = () => {
         leftBtnBgVariant="ghost"
         variant="center"
         title="직접 입력"
-        className="fixed top-0 z-10 bg-white"
+        className="fixed top-0 z-10"
       />
       <div className="flex flex-col gap-5 mt-15 pt-7 px-5 pb-20 overflow-y-auto">
         <div className="flex flex-col gap-2">
@@ -94,7 +94,9 @@ const ManualAddPlacePage = () => {
       <div className="fixed bottom-0 inset-x-0 px-5 py-4 bg-white">
         <Button
           className="w-full bg-sky-500 typography-action-base-bold disabled:opacity-40"
-          disabled={!name.trim() || !location.trim() || !tag.trim() || !memo.trim()}
+          disabled={
+            !name.trim() || !location.trim() || !tag.trim() || !memo.trim()
+          }
         >
           장소 추가하기
         </Button>
