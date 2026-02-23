@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import Image from "next/image";
 import { Heart, MapPin, SquareX } from "lucide-react";
 import { cn } from "@/lib/utils/utils";
+import { normalizePickPassPreference } from "@/lib/utils/pick-pass-preference";
 import Radio from "@/components/common/Radio";
 
 const BASE_WIDTH = 335;
@@ -16,7 +17,7 @@ interface PlanCardSelectionProps {
   imageAlt?: string;
   pickCount?: number;
   passCount?: number;
-  myPreference?: "PICK" | "PASS" | null;
+  myPreference?: "PICK" | "PASS" | "NOTHING" | null;
   onPickClick?: () => void;
   onPassClick?: () => void;
   name?: string;
@@ -42,9 +43,10 @@ const PlanCardSelection = ({
 }: PlanCardSelectionProps) => {
   const radioId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
+  const normalizedPreference = normalizePickPassPreference(myPreference);
   const [scale, setScale] = useState(1);
-  const [isLiked, setIsLiked] = useState(myPreference === "PICK");
-  const [isRejected, setIsRejected] = useState(myPreference === "PASS");
+  const [isLiked, setIsLiked] = useState(normalizedPreference === "PICK");
+  const [isRejected, setIsRejected] = useState(normalizedPreference === "PASS");
 
   useEffect(() => {
     const el = containerRef.current;
@@ -63,9 +65,9 @@ const PlanCardSelection = ({
   }, []);
 
   useEffect(() => {
-    setIsLiked(myPreference === "PICK");
-    setIsRejected(myPreference === "PASS");
-  }, [myPreference]);
+    setIsLiked(normalizedPreference === "PICK");
+    setIsRejected(normalizedPreference === "PASS");
+  }, [normalizedPreference]);
 
   return (
     <div ref={containerRef} className={cn("w-full", className)}>
