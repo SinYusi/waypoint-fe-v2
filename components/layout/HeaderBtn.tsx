@@ -19,6 +19,7 @@ const HeaderBtn = ({
   bgVariant = "solid",
   icon: Icon,
   label,
+  iconClassName,
   className,
   iconClassName,
   onClick,
