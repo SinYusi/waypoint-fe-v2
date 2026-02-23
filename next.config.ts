@@ -19,6 +19,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "k.kakaocdn.net",
       },
+      {
+        protocol: "https",
+        hostname: "way-point-bucket.s3.ap-northeast-2.amazonaws.com",
+      },
     ],
   },
   turbopack: {
