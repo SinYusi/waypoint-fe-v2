@@ -54,12 +54,18 @@ const CollectionDetailPage = () => {
 
   const title = collection?.title ?? "";
   const places = placesData?.pages.flatMap((page) => page.contents) ?? [];
-  const members = membersData
-    ? [membersData.me, ...membersData.members].map((m) => ({
-        id: m.collection_member_id,
-        name: m.nickname ?? "",
-      }))
+  const allMembers = membersData
+    ? [
+        membersData.me,
+        ...membersData.members.filter(
+          (m) => m.collection_member_id !== membersData.me.collection_member_id,
+        ),
+      ]
     : [];
+  const members = allMembers.map((m) => ({
+    id: m.collection_member_id,
+    name: m.nickname ?? "",
+  }));
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -101,9 +107,7 @@ const CollectionDetailPage = () => {
             onChange={(next) => setListHeader((prev) => ({ ...prev, ...next }))}
             title={title}
             placeCount={collection?.place_count}
-            collectionMembers={
-              membersData ? [membersData.me, ...membersData.members] : undefined
-            }
+            collectionMembers={membersData ? allMembers : undefined}
             meRole={membersData?.me.role}
             className={cn(
               "sticky top-[60px] z-9 bg-white transition-transform duration-300 ease-in-out bg-background",
