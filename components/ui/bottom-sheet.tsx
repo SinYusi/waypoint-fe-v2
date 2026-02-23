@@ -20,19 +20,33 @@ export type BottomSheetItem = {
   description?: Description;
   icon?: React.ReactNode;
   disabled?: boolean;
+  selected?: boolean;
+  className?: string;
   onSelect?: () => void;
 };
 
 type BottomSheetProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
-  items: BottomSheetItem[]
+  items?: BottomSheetItem[]
+  /** items 대신 자유롭게 콘텐츠를 렌더링할 슬롯 */
+  content?: React.ReactNode
+  header?: React.ReactNode
   title?: React.ReactNode
   showTitle?: boolean
   itemVariant?: "default" | "member"
+  closeOnSelect?: boolean
   cancelLabel?: React.ReactNode
+  cancelVariant?: "default" | "outline"
+  confirmLabel?: React.ReactNode
+  closeOnCancel?: boolean
   showCloseIcon?: boolean
   onCancel?: () => void
+  onConfirm?: () => void
+  closeOnConfirm?: boolean
+  confirmDisabled?: boolean
+  showDivider?: boolean
+  showBottomGradient?: boolean
   className?: string
 }
 
@@ -44,13 +58,24 @@ function normalizeDescription(description?: Description) {
 function BottomSheet({
   open,
   onOpenChange,
-  items,
+  items = [],
+  content,
+  header,
   title = "작업 메뉴",
   showTitle = false,
   itemVariant = "default",
+  closeOnSelect = true,
   cancelLabel = "취소",
+  cancelVariant = "outline",
+  confirmLabel,
+  closeOnCancel = true,
   showCloseIcon = false,
   onCancel,
+  onConfirm,
+  closeOnConfirm = true,
+  confirmDisabled = false,
+  showDivider = true,
+  showBottomGradient = false,
   className,
 }: BottomSheetProps) {
   const handleCancel = () => {
@@ -58,9 +83,18 @@ function BottomSheet({
     onOpenChange(false);
   };
 
+  const handleConfirm = () => {
+    onConfirm?.();
+    if (closeOnConfirm) {
+      onOpenChange(false);
+    }
+  };
+
   const handleSelect = (onSelect?: () => void) => {
     onSelect?.();
-    onOpenChange(false);
+    if (closeOnSelect) {
+      onOpenChange(false);
+    }
   };
 
   return (
@@ -75,12 +109,15 @@ function BottomSheet({
       >
         <DrawerTitle className="sr-only">{title}</DrawerTitle>
 
-        <div className="px-6 pt-6 pb-2">
+        <div className="relative flex min-h-0 flex-1 flex-col">
+        <div className="min-h-0 flex-1 overflow-y-auto px-6 pt-6 pb-2">
+          {header}
           {showTitle && (
             <h2 className="mb-2 h-7 w-fit whitespace-nowrap typography-title-lg-sb text-black">
               {title}
             </h2>
           )}
+          {content ?? (
           <div className="flex flex-col gap-2.5 pb-3.5">
             {items.map((item) => {
               const descriptionLines = normalizeDescription(item.description);
@@ -109,7 +146,8 @@ function BottomSheet({
                     itemVariant === "default" &&
                       (hasDescription
                         ? "h-auto min-h-11 py-2 typography-label-base-reg"
-                        : "h-11 typography-label-base-sb")
+                        : "h-11 typography-label-base-sb"),
+                    item.className,
                   )}
                 >
                   <span className={cn("min-w-0 text-left", itemVariant === "member" && "w-fit")}>
@@ -128,29 +166,91 @@ function BottomSheet({
               );
             })}
           </div>
+          )}
         </div>
 
-        <div className="mx-5 h-px bg-border" />
+        {showDivider && <div className="mx-5 h-px bg-border" />}
 
-        <div className="h-22.75 bg-background px-5 pt-4">
-          <DrawerClose asChild>
-            <Button
-              type="button"
-              variant="outline"
-              size="L"
-              onClick={handleCancel}
-              className="h-11 w-full rounded-2xl border-border typography-label-base-sb text-foreground hover:bg-transparent"
-            >
-              {showCloseIcon && (
-                <span className="inline-flex size-6 items-center justify-center">
-                  <X className="size-6 text-[#1C2024]" strokeWidth={2} />
+        {showBottomGradient && (
+          <div
+            className="pointer-events-none absolute bottom-0 left-0 right-0 h-35"
+            style={{
+              background:
+                "linear-gradient(180deg, rgba(252, 252, 252, 0) 0%, #FCFCFC 60%)",
+            }}
+          />
+        )}
+
+        <div className="relative z-10 h-22.75 px-5 pt-4">
+          <div className={cn("flex", confirmLabel ? "gap-2" : "") }>
+            {closeOnCancel ? (
+              <DrawerClose asChild>
+                <Button
+                  type="button"
+                  variant={cancelVariant}
+                  size="L"
+                  onClick={handleCancel}
+                  className={cn(
+                    "rounded-2xl",
+                    cancelVariant === "outline" && "border-border typography-label-base-sb text-foreground hover:bg-transparent",
+                    cancelVariant === "default" && "typography-label-base-sb",
+                    confirmLabel ? "flex-1" : "w-full",
+                  )}
+                >
+                  {showCloseIcon && (
+                    <span className="inline-flex size-6 items-center justify-center">
+                      <X className="size-6 text-[#1C2024]" strokeWidth={2} />
+                    </span>
+                  )}
+                  <span className={cn(
+                    "typography-label-base-sb",
+                    cancelVariant === "outline" ? "text-[#1C2024]" : "text-white",
+                  )}>
+                    {cancelLabel}
+                  </span>
+                </Button>
+              </DrawerClose>
+            ) : (
+              <Button
+                type="button"
+                variant={cancelVariant}
+                size="L"
+                onClick={handleCancel}
+                className={cn(
+                  "rounded-2xl",
+                  cancelVariant === "outline" && "border-border typography-label-base-sb text-foreground hover:bg-transparent",
+                  cancelVariant === "default" && "typography-label-base-sb",
+                  confirmLabel ? "flex-1" : "w-full",
+                )}
+              >
+                {showCloseIcon && (
+                  <span className="inline-flex size-6 items-center justify-center">
+                    <X className="size-6 text-[#1C2024]" strokeWidth={2} />
+                  </span>
+                )}
+                <span className={cn(
+                  "typography-label-base-sb",
+                  cancelVariant === "outline" ? "text-[#1C2024]" : "text-white",
+                )}>
+                  {cancelLabel}
                 </span>
-              )}
-              <span className="typography-label-base-sb text-[#1C2024]">
-                {cancelLabel}
-              </span>
-            </Button>
-          </DrawerClose>
+              </Button>
+            )}
+
+            {confirmLabel && (
+              <Button
+                type="button"
+                variant="default"
+                size="L"
+                disabled={confirmDisabled}
+                onClick={handleConfirm}
+                className="h-11 flex-1 rounded-2xl"
+              >
+                {confirmLabel}
+              </Button>
+            )}
+          </div>
+        </div>
         </div>
       </DrawerContent>
     </Drawer>
