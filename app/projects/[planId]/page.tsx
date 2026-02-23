@@ -21,7 +21,7 @@ const formatDayDate = (startDate: string, dayIndex: number) => {
 
 const PlanPage = () => {
   const [activeMode, setActiveMode] = useState<"planMode" | "budget">("planMode");
-  const [isCalendarVisible, setIsCalendarVisible] = useState(false);
+  const [isCalendarVisible, setIsCalendarVisible] = useState(true);
   const startDate = "2026-02-24";
   const items = [
     {
@@ -84,17 +84,19 @@ const PlanPage = () => {
         <div className="px-5 py-4">
           <PlanHeader title="제주도 여행" day={15} href="" />
         </div>
-        <DayNav
-          items={items}
-          className="gap-2.25 py-3 h-14"
-          itemClassName="h-8 py-1.5"
-          onValueChange={(value) => {
-            document.getElementById(`day-section-${value}`)?.scrollIntoView({
-              behavior: "smooth",
-              block: "start",
-            });
-          }}
-        />
+        {isCalendarVisible && (
+          <DayNav
+            items={items}
+            className="gap-2.25 py-3 h-14"
+            itemClassName="h-8 py-1.5"
+            onValueChange={(value) => {
+              document.getElementById(`day-section-${value}`)?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }}
+          />
+        )}
       </div>
       <main className="flex flex-col">
         {items.map((item) => (
