@@ -52,29 +52,33 @@ const PlanPage = () => {
   ];
   return (
     <div className="flex flex-col min-h-screen">
-      {activeMode === "budget" ? (
-        <ProjectHeader
-          variant="view"
-          showCalendarButton
-          isCalendarVisible={isCalendarVisible}
-          onCalendar={() => setIsCalendarVisible((prev) => !prev)}
-          showMenuButton
-          className="backdrop-blur-md"
-        />
-      ) : (
-        <ProjectHeader
-          showMapButton
-          isMapVisible={isMapVisible}
-          onMap={() => setIsMapVisible((prev) => !prev)}
-          showCalendarButton
-          isCalendarVisible={isCalendarVisible}
-          onCalendar={() => setIsCalendarVisible((prev) => !prev)}
-          showMenuButton
-          className="backdrop-blur-md"
-        />
-      )}
+      {/* 헤더 - sticky */}
+      <div className="sticky top-0 z-20">
+        {activeMode === "budget" ? (
+          <ProjectHeader
+            variant="view"
+            showCalendarButton
+            isCalendarVisible={isCalendarVisible}
+            onCalendar={() => setIsCalendarVisible((prev) => !prev)}
+            showMenuButton
+            className="backdrop-blur-md"
+          />
+        ) : (
+          <ProjectHeader
+            showMapButton
+            isMapVisible={isMapVisible}
+            onMap={() => setIsMapVisible((prev) => !prev)}
+            showCalendarButton
+            isCalendarVisible={isCalendarVisible}
+            onCalendar={() => setIsCalendarVisible((prev) => !prev)}
+            showMenuButton
+            className="backdrop-blur-md"
+          />
+        )}
+      </div>
 
-      <div className="flex flex-col">
+      {/* 지도 + DayNav - sticky (헤더 아래) */}
+      <div className="sticky top-16 z-10 flex flex-col bg-background">
         {activeMode === "planMode" && isMapVisible && (
           <GoogleMap
             showZoomControls
@@ -84,9 +88,6 @@ const PlanPage = () => {
             className="w-full h-45 rounded-none"
           />
         )}
-        <div className="px-5 py-4">
-          <PlanHeader title="제주도 여행" day={15} href="" />
-        </div>
         {isCalendarVisible && (
           <DayNav
             items={items}
@@ -101,7 +102,12 @@ const PlanPage = () => {
           />
         )}
       </div>
-      <main className="flex flex-col">
+
+      {/* 스크롤 영역 */}
+      <div className="px-5 py-4">
+        <PlanHeader title="제주도 여행" day={15} href="" />
+      </div>
+      <main className="flex flex-col pb-18">
         {items.map((item) => (
           <div key={item.value} id={`day-section-${item.value}`}>
             <DayHeader
@@ -112,6 +118,7 @@ const PlanPage = () => {
           </div>
         ))}
       </main>
+
       <div className="fixed bottom-0 left-0 w-full">
         <NavigationBar
           variant="variant3"
