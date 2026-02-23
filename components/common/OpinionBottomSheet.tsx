@@ -36,6 +36,7 @@ type OpinionBottomSheetProps = {
   confirmDisabled?: boolean;
   closeOnCancel?: boolean;
   onCancel?: () => void;
+  onConfirm?: () => void;
   /** 외부에서 제어할 때 사용 (생략 시 내부 상태로 관리) */
   state?: OpinionState;
   onStateChange?: (state: OpinionState) => void;
@@ -56,6 +57,7 @@ function OpinionBottomSheet({
   confirmDisabled: confirmDisabledProp,
   closeOnCancel = true,
   onCancel,
+  onConfirm,
   state: stateProp,
   onStateChange,
   selectedReasonIds: selectedReasonIdsProp,
@@ -119,6 +121,7 @@ function OpinionBottomSheet({
       confirmDisabled={isConfirmDisabled}
       closeOnCancel={closeOnCancel}
       onCancel={onCancel}
+      onConfirm={onConfirm}
       className={cn("h-165.5 w-full gap-0.5 rounded-t-3xl", className)}
       content={
         <Chips className="max-w-full items-start gap-2.5 pb-0">

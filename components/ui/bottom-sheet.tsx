@@ -80,7 +80,9 @@ function BottomSheet({
 }: BottomSheetProps) {
   const handleCancel = () => {
     onCancel?.();
-    onOpenChange(false);
+    if (closeOnCancel) {
+      onOpenChange(false);
+    }
   };
 
   const handleConfirm = () => {
