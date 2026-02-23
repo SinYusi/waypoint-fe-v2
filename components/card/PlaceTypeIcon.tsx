@@ -13,6 +13,7 @@ import {
   Church,
   Leaf,
   Bird,
+  Trees,
   Palette,
   Camera,
   Store,
@@ -36,6 +37,7 @@ export type PlaceType =
   | "종교시설"
   | "자연"
   | "공원"
+  | "자유시간"
   | "문화예술"
   | "관광명소"
   | "관람"
@@ -108,7 +110,8 @@ const typeConfigMap: Record<PlaceType, TypeConfig> = {
     iconColor: "#78716c",
   },
   자연: { icon: Leaf, bg: "#f0fdf4", border: "#bbf7d0", iconColor: "#22c55e" },
-  공원: { icon: Bird, bg: "#edfce7", border: "#b9efc1", iconColor: "#6adb60" },
+  공원: { icon: Trees, bg: "#edfce7", border: "#b9efc1", iconColor: "#6adb60" },
+  자유시간: { icon: Bird, bg: "#edfce7", border: "#b9efc1", iconColor: "#6adb60" },
   문화예술: {
     icon: Palette,
     bg: "#fdf4ff",
