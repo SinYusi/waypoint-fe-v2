@@ -3,6 +3,7 @@
 import DayNav from "@/components/common/DayNav";
 import GoogleMap from "@/components/common/GoogleMap";
 import { DayHeader } from "@/components/layout/DayHeader";
+import NavigationBar from "@/components/layout/NavigationBar";
 import PlanHeader from "@/components/layout/PlanHeader";
 import ProjectHeader from "@/components/layout/ProjectHeader";
 
@@ -81,6 +82,9 @@ const PlanPage = () => {
           />
         ))}
       </main>
+      <div className="fixed bottom-0 left-0 w-full">
+        <NavigationBar variant="variant3" />
+      </div>
     </div>
   );
 };
