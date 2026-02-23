@@ -14,6 +14,9 @@ import {
   DeletePlanCollectionParams,
   GetPlanCollectionParams,
   GetPlanCollectionsResponse,
+  PostPlanCollectionsParams,
+  PostPlanCollectionsRequest,
+  PostPlanCollectionsResponse,
 } from "@/types/plan-collection";
 import { apiClient } from "./client";
 
@@ -28,6 +31,24 @@ export const getPlanCollections = async (
 ) => {
   const res = await apiClient.get<GetPlanCollectionsResponse>(
     `/plans/${planId}/collections`,
+  );
+  return res.data;
+};
+
+/**
+ * 플랜에 컬렉션 추가 API
+ *
+ * @param planId - 플랜 ID
+ * @param body - 추가할 컬렉션 id 배열
+ * @returns 추가된 컬렉션 목록(added_by 포함)
+ */
+export const postPlanCollections = async (
+  { planId }: PostPlanCollectionsParams,
+  body: PostPlanCollectionsRequest,
+) => {
+  const res = await apiClient.post<PostPlanCollectionsResponse>(
+    `/plans/${planId}/collections`,
+    body,
   );
   return res.data;
 };
