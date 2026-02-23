@@ -84,7 +84,7 @@ const AddPlacePage = () => {
                   </button>
                 );
               })}
-              {query.length > 0 && (
+              {query.trim().length > 0 && (
                 <Button
                   variant="ghost"
                   className="w-full typography-action-sm-reg text-neutral-500"
