@@ -1,123 +1,134 @@
-import { apiClient } from "@/lib/api/client"
-import { resolveMiddleCategory } from "@/lib/place-category"
+import { apiClient } from "@/lib/api/client";
+import { resolveMiddleCategory } from "@/lib/place-category";
+import type { PlaceSearchItem } from "@/types/place";
+export type { PlaceSearchItem } from "@/types/place";
+
+export const searchPlaces = async (
+  query: string,
+): Promise<PlaceSearchItem[]> => {
+  const { data } = await apiClient.get<PlaceSearchItem[]>("/places/search", {
+    params: { query },
+  });
+  return data;
+};
 
 type PlaceCategoryLevelApiResponse = {
-  category_id: string
-  name: string
-}
+  category_id: string;
+  name: string;
+};
 
 type CollectionMemberApiResponse = {
-  collection_member_id: string
-  nickname?: string
-  picture?: string
-  role?: "OWNER" | "MEMBER"
-}
+  collection_member_id: string;
+  nickname?: string;
+  picture?: string;
+  role?: "OWNER" | "MEMBER";
+};
 
 type PlaceDetailApiResponse = {
-  collection_place_id: string
-  memo: string | null
+  collection_place_id: string;
+  memo: string | null;
   place: {
-    place_id: string
-    google_place_id: string
-    name: string
-    address: string
+    place_id: string;
+    google_place_id: string;
+    name: string;
+    address: string;
     category:
       | string
       | {
-          level1?: PlaceCategoryLevelApiResponse
-          level2?: PlaceCategoryLevelApiResponse
-          level3?: PlaceCategoryLevelApiResponse
-        }
-    primary_type?: string | null
-    google_maps_uri: string
-    photos: string[]
+          level1?: PlaceCategoryLevelApiResponse;
+          level2?: PlaceCategoryLevelApiResponse;
+          level3?: PlaceCategoryLevelApiResponse;
+        };
+    primary_type?: string | null;
+    google_maps_uri: string;
+    photos: string[];
     point: {
-      latitude: number | string
-      longitude: number | string
-    }
-  }
+      latitude: number | string;
+      longitude: number | string;
+    };
+  };
   social_media?: {
-    social_media_id: string
-    media_type: "YOUTUBE" | "YOUTUBE_SHORTS"
-    url: string
-    author_name: string
-    title: string
-    summary: string
-  } | null
+    social_media_id: string;
+    media_type: "YOUTUBE" | "YOUTUBE_SHORTS";
+    url: string;
+    author_name: string;
+    title: string;
+    summary: string;
+  } | null;
   pick_pass?: {
     picked: {
-      members?: CollectionMemberApiResponse[]
-      count: number
-    }
+      members?: CollectionMemberApiResponse[];
+      count: number;
+    };
     passed: {
-      members?: CollectionMemberApiResponse[]
-      count: number
-    }
-    my_preference?: string | null
-  } | null
-}
+      members?: CollectionMemberApiResponse[];
+      count: number;
+    };
+    my_preference?: string | null;
+  } | null;
+};
 
 export type PlaceDetail = {
-  collectionPlaceId: string
-  placeId: string
-  googlePlaceId: string
-  name: string
-  category: string
-  address: string
-  googleMapsUri: string
-  photoUrls: string[]
-  latitude: number
-  longitude: number
-  memo: string
-  aiSummary: string
-  externalUrl: string
-  sourceTitle: string
-  sourceUrl: string
-  pickCount: number
-  passCount: number
-  pickedMembers: CollectionMemberApiResponse[]
-  passedMembers: CollectionMemberApiResponse[]
-  myPreference: MyPreference
-}
+  collectionPlaceId: string;
+  placeId: string;
+  googlePlaceId: string;
+  name: string;
+  category: string;
+  address: string;
+  googleMapsUri: string;
+  photoUrls: string[];
+  latitude: number;
+  longitude: number;
+  memo: string;
+  aiSummary: string;
+  externalUrl: string;
+  sourceTitle: string;
+  sourceUrl: string;
+  pickCount: number;
+  passCount: number;
+  pickedMembers: CollectionMemberApiResponse[];
+  passedMembers: CollectionMemberApiResponse[];
+  myPreference: MyPreference;
+};
 
 export type UpdatePlaceMemoRequest = {
-  memo: string
-}
+  memo: string;
+};
 
 type PickPassApiResponse = {
   picked: {
-    members: CollectionMemberApiResponse[]
-    count: number
-  }
+    members: CollectionMemberApiResponse[];
+    count: number;
+  };
   passed: {
-    members: CollectionMemberApiResponse[]
-    count: number
-  }
-  my_preference?: string | null
-}
+    members: CollectionMemberApiResponse[];
+    count: number;
+  };
+  my_preference?: string | null;
+};
 
-export type PlacePreferenceType = "PICK" | "PASS"
-export type MyPreference = PlacePreferenceType | null
+export type PlacePreferenceType = "PICK" | "PASS";
+export type MyPreference = PlacePreferenceType | null;
 
 export type UpdatePlacePreferenceRequest = {
-  type: PlacePreferenceType
-}
+  type: PlacePreferenceType;
+};
 
 export type PickPassResponse = {
-  pickCount: number
-  passCount: number
-  pickedMembers: CollectionMemberApiResponse[]
-  passedMembers: CollectionMemberApiResponse[]
-  myPreference: MyPreference
-}
+  pickCount: number;
+  passCount: number;
+  pickedMembers: CollectionMemberApiResponse[];
+  passedMembers: CollectionMemberApiResponse[];
+  myPreference: MyPreference;
+};
 
 const normalizeMyPreference = (value?: string | null): MyPreference => {
-  const trimmedValue = typeof value === "string" ? value.trim() : value
+  const trimmedValue = typeof value === "string" ? value.trim() : value;
   if (trimmedValue === "PICK" || trimmedValue === "PASS") {
-    return trimmedValue
+    return trimmedValue;
   }
-  return null
-}
+  return null;
+};
 
 const normalizePlaceDetail = (data: PlaceDetailApiResponse): PlaceDetail => {
   const category =
@@ -126,11 +137,11 @@ const normalizePlaceDetail = (data: PlaceDetailApiResponse): PlaceDetail => {
       : data.place.category?.level2?.name ||
         data.place.category?.level3?.name ||
         data.place.category?.level1?.name ||
-        ""
+        "";
 
   const sourceTitle = data.social_media
     ? `${data.social_media.author_name} - ${data.social_media.title}`
-    : ""
+    : "";
 
   return {
     collectionPlaceId: data.collection_place_id,
@@ -153,18 +164,20 @@ const normalizePlaceDetail = (data: PlaceDetailApiResponse): PlaceDetail => {
     pickedMembers: data.pick_pass?.picked.members ?? [],
     passedMembers: data.pick_pass?.passed.members ?? [],
     myPreference: normalizeMyPreference(data.pick_pass?.my_preference),
-  }
-}
+  };
+};
 
-const normalizePickPassResponse = (data: PickPassApiResponse): PickPassResponse => {
+const normalizePickPassResponse = (
+  data: PickPassApiResponse,
+): PickPassResponse => {
   return {
     pickCount: data.picked.count,
     passCount: data.passed.count,
     pickedMembers: data.picked.members ?? [],
     passedMembers: data.passed.members ?? [],
     myPreference: normalizeMyPreference(data.my_preference),
-  }
-}
+  };
+};
 
 export const getPlaceDetail = async (
   collectionId: string,
@@ -172,17 +185,20 @@ export const getPlaceDetail = async (
 ) => {
   const { data } = await apiClient.get<PlaceDetailApiResponse>(
     `/collections/${collectionId}/places/${collectionPlaceId}`,
-  )
-  return normalizePlaceDetail(data)
-}
+  );
+  return normalizePlaceDetail(data);
+};
 
 export const updatePlaceMemo = async (
   collectionId: string,
   collectionPlaceId: string,
   payload: UpdatePlaceMemoRequest,
 ) => {
-  await apiClient.patch<void>(`/collections/${collectionId}/places/${collectionPlaceId}/memo`, payload)
-}
+  await apiClient.patch<void>(
+    `/collections/${collectionId}/places/${collectionPlaceId}/memo`,
+    payload,
+  );
+};
 
 export const updatePlacePreference = async (
   collectionId: string,
@@ -197,7 +213,7 @@ export const updatePlacePreference = async (
         type: payload.type,
       },
     },
-  )
+  );
 
-  return normalizePickPassResponse(data)
-}
+  return normalizePickPassResponse(data);
+};
