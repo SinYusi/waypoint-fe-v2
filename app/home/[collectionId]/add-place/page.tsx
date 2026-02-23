@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, usePathname, useParams } from "next/navigation";
 import Header from "@/components/layout/Header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -32,6 +32,12 @@ const AddPlacePage = () => {
   });
 
   const places = data ?? [];
+
+  useEffect(() => {
+    if (selectedPlaceId && !places.some((p) => p.place_id === selectedPlaceId)) {
+      setSelectedPlaceId(null);
+    }
+  }, [places]);
 
   return (
     <div className="flex flex-col min-h-screen">
