@@ -4,9 +4,11 @@ import { useEffect, useId, useRef, useState } from "react";
 import Image from "next/image";
 import { Heart, MapPin, SquareX } from "lucide-react";
 import { cn } from "@/lib/utils/utils";
+import { normalizePickPassPreference } from "@/lib/utils/pick-pass-preference";
 import Radio from "@/components/common/Radio";
 
 const BASE_WIDTH = 335;
+const SCALE_EPSILON = 0.01;
 
 interface PlanCardSelectionProps {
   title: string;
@@ -15,7 +17,7 @@ interface PlanCardSelectionProps {
   imageAlt?: string;
   pickCount?: number;
   passCount?: number;
-  myPreference?: "PICK" | "PASS" | null;
+  myPreference?: "PICK" | "PASS" | "NOTHING" | null;
   onPickClick?: () => void;
   onPassClick?: () => void;
   name?: string;
@@ -41,20 +43,31 @@ const PlanCardSelection = ({
 }: PlanCardSelectionProps) => {
   const radioId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
+  const normalizedPreference = normalizePickPassPreference(myPreference);
   const [scale, setScale] = useState(1);
-  const [isLiked, setIsLiked] = useState(myPreference === "PICK");
-  const [isRejected, setIsRejected] = useState(myPreference === "PASS");
+  const [isLiked, setIsLiked] = useState(normalizedPreference === "PICK");
+  const [isRejected, setIsRejected] = useState(normalizedPreference === "PASS");
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
 
     const observer = new ResizeObserver(([entry]) => {
-      setScale(entry.contentRect.width / BASE_WIDTH);
+      const rawScale = entry.contentRect.width / BASE_WIDTH;
+      const nextScale = Number(rawScale.toFixed(3));
+      setScale((prevScale) =>
+        Math.abs(prevScale - nextScale) > SCALE_EPSILON ? nextScale : prevScale,
+      );
     });
+
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    setIsLiked(normalizedPreference === "PICK");
+    setIsRejected(normalizedPreference === "PASS");
+  }, [normalizedPreference]);
 
   return (
     <div ref={containerRef} className={cn("w-full", className)}>
@@ -94,7 +107,11 @@ const PlanCardSelection = ({
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setIsRejected((prev) => !prev);
+                    setIsRejected((prev) => {
+                      const next = !prev;
+                      if (next) setIsLiked(false);
+                      return next;
+                    });
                     onPassClick?.();
                   }}
                   className="flex h-5 w-8.75 shrink-0 cursor-pointer items-center gap-1.5"
@@ -124,7 +141,11 @@ const PlanCardSelection = ({
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setIsLiked((prev) => !prev);
+                    setIsLiked((prev) => {
+                      const next = !prev;
+                      if (next) setIsRejected(false);
+                      return next;
+                    });
                     onPickClick?.();
                   }}
                   className="flex h-5 w-8.75 shrink-0 cursor-pointer items-center gap-1.5"

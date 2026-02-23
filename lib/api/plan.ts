@@ -11,16 +11,26 @@
  */
 
 import {
+  AddPlanBlockCandidatesRequest,
+  BlockResponse,
+  CreatePlanBlockByPlaceRequest,
+  CreatePlanBlockRequest,
   CreatePlanRequest,
   DeletePlanParams,
   GetPlanParams,
   GetPlansParams,
+  PlanCollectionResponse,
   PlanListResponse,
   PlanResponse,
   UpdatePlanParams,
   UpdatePlanRequest,
   UpdatePlanResponse,
 } from "@/types/plan";
+import { CollectionPlacesResponse } from "@/types/collection";
+import {
+  normalizePlaceDetail,
+  type PlaceDetailApiResponse,
+} from "@/lib/api/place";
 import { apiClient } from "./client";
 
 /**
@@ -80,5 +90,69 @@ export const updatePlan = async (
   body: UpdatePlanRequest,
 ) => {
   const res = await apiClient.put<UpdatePlanResponse>(`/plans/${planId}`, body);
+  return res.data;
+};
+
+export const getPlanCollections = async (planId: string) => {
+  const res = await apiClient.get<PlanCollectionResponse[]>(
+    `/plans/${planId}/collections`,
+  );
+  return res.data;
+};
+
+export const getPlanCollectionPlaces = async (
+  planId: string,
+  collectionId: string,
+  params?: {
+    page?: number;
+    size?: number;
+  },
+) => {
+  const res = await apiClient.get<CollectionPlacesResponse>(
+    `/plans/${planId}/collections/${collectionId}/places`,
+    { params },
+  );
+  return res.data;
+};
+
+export const getPlanCollectionPlaceDetail = async (
+  planId: string,
+  collectionId: string,
+  collectionPlaceId: string,
+) => {
+  const res = await apiClient.get<PlaceDetailApiResponse>(
+    `/plans/${planId}/collections/${collectionId}/places/${collectionPlaceId}`,
+  );
+  return normalizePlaceDetail(res.data);
+};
+
+export const createPlanBlock = async (
+  planId: string,
+  body: CreatePlanBlockRequest,
+) => {
+  const res = await apiClient.post<BlockResponse>(`/plans/${planId}/blocks`, body);
+  return res.data;
+};
+
+export const createPlanBlockByPlace = async (
+  planId: string,
+  body: CreatePlanBlockByPlaceRequest,
+) => {
+  const res = await apiClient.post<BlockResponse>(
+    `/plans/${planId}/blocks/by-place`,
+    body,
+  );
+  return res.data;
+};
+
+export const addPlanBlockCandidates = async (
+  planId: string,
+  timeBlockId: string,
+  body: AddPlanBlockCandidatesRequest,
+) => {
+  const res = await apiClient.post<BlockResponse>(
+    `/plans/${planId}/blocks/${timeBlockId}/candidates`,
+    body,
+  );
   return res.data;
 };

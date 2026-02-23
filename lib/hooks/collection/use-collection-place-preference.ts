@@ -33,6 +33,9 @@ export const useCollectionPlacePreference = (options?: Options) => {
       queryClient.invalidateQueries({
         queryKey: ["collectionPlaces"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["planCollectionPlaces"],
+      });
 
       options?.onSuccess?.(data, variables, context, mutation);
     },
