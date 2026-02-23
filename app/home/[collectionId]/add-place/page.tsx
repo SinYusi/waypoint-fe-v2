@@ -55,7 +55,11 @@ const AddPlacePage = () => {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="search" className="flex flex-col flex-1 mt-0">
-          <InputForm value={query} onChange={(e) => setQuery(e.target.value)} />
+          <InputForm
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="장소를 검색해주세요"
+          />
           <div className="fixed inset-x-5 top-[188px] bottom-24 overflow-y-auto border-b border-[#e2e2e2]">
             <div className="flex flex-col gap-4 pb-5">
               {places.map((place) => {

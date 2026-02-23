@@ -32,7 +32,7 @@ const ManualAddPlacePage = () => {
           <InputForm
             id="name"
             hideIcon
-            placeholder="장소 이름을 입력해 주세요"
+            placeholder="예) 제주도 카페"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
@@ -45,7 +45,7 @@ const ManualAddPlacePage = () => {
           <InputForm
             id="location"
             hideIcon
-            placeholder="장소 위치를 입력해 주세요"
+            placeholder="예) 제주시 특별자치도"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
           />
@@ -58,7 +58,7 @@ const ManualAddPlacePage = () => {
           <InputForm
             id="tag"
             hideIcon
-            placeholder="장소 태그를 입력해 주세요"
+            placeholder="장소 태그를 선택하세요"
             value={tag}
             onChange={(e) => setTag(e.target.value)}
           />
@@ -70,7 +70,7 @@ const ManualAddPlacePage = () => {
           </Label>
           <Textarea
             id="memo"
-            placeholder="메모를 입력해 주세요"
+            placeholder="예) 여기 카페 분위기 좋대!"
             value={memo}
             onChange={(e) => setMemo(e.target.value)}
           />
@@ -81,7 +81,7 @@ const ManualAddPlacePage = () => {
           <InputForm
             id="link"
             hideIcon
-            placeholder="링크를 입력해 주세요"
+            placeholder="http://..."
             value={link}
             onChange={(e) => setLink(e.target.value)}
           />
