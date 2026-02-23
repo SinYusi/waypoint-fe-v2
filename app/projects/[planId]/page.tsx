@@ -2,10 +2,23 @@
 
 import DayNav from "@/components/common/DayNav";
 import GoogleMap from "@/components/common/GoogleMap";
+import { DayHeader } from "@/components/layout/DayHeader";
 import PlanHeader from "@/components/layout/PlanHeader";
 import ProjectHeader from "@/components/layout/ProjectHeader";
 
+const DAYS_KO = ["일", "월", "화", "수", "목", "금", "토"];
+
+const formatDayDate = (startDate: string, dayIndex: number) => {
+  const date = new Date(startDate);
+  date.setDate(date.getDate() + dayIndex);
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const dd = String(date.getDate()).padStart(2, "0");
+  const dow = DAYS_KO[date.getDay()];
+  return `${date.getFullYear()}.${mm}.${dd} (${dow})`;
+};
+
 const PlanPage = () => {
+  const startDate = "2026-02-24";
   const items = [
     {
       value: "1",
@@ -58,7 +71,16 @@ const PlanPage = () => {
           itemClassName="h-8 py-1.5"
         />
       </div>
-      <main className="flex flex-col"></main>
+      <main className="flex flex-col">
+        {items.map((item) => (
+          <DayHeader
+            key={item.value}
+            day={Number(item.value)}
+            date={formatDayDate(startDate, Number(item.value) - 1)}
+            defaultOpen
+          />
+        ))}
+      </main>
     </div>
   );
 };
