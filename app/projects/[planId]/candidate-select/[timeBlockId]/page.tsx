@@ -13,6 +13,7 @@ import { usePlaceSearch } from "@/lib/hooks/use-place-search";
 import { useAddPlanBlockCandidates } from "@/lib/hooks/plan/use-create-plan-block";
 import { usePlanCollectionPlaces } from "@/lib/hooks/plan/use-plan-collection-places";
 import { usePlanCollections } from "@/lib/hooks/plan/use-plan-collections";
+import { normalizePickPassPreference } from "@/lib/utils/pick-pass-preference";
 import CollectionEmptyIllust from "@/public/illust/collection-empty.svg";
 import { MapPin } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -254,11 +255,7 @@ const AddPlanPage = () => {
 											imageSrc={item.place.photos[0]}
 											pickCount={item.pick_pass.picked.count}
 											passCount={item.pick_pass.passed.count}
-											myPreference={
-												item.pick_pass.my_preference === "NOTHING"
-													? null
-													: item.pick_pass.my_preference
-											}
+											myPreference={normalizePickPassPreference(item.pick_pass.my_preference)}
 											onPickClick={() =>
 												handlePreference(item.collection_place_id, "PICK")
 											}
