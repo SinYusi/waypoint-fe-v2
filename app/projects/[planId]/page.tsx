@@ -78,7 +78,7 @@ const PlanPage = () => {
       </div>
 
       {/* 지도 + DayNav - sticky (헤더 아래) */}
-      <div className="sticky top-16 z-10 flex flex-col bg-background">
+      <div id="sticky-bar" className="sticky top-16 z-10 flex flex-col bg-background">
         {activeMode === "planMode" && isMapVisible && (
           <GoogleMap
             showZoomControls
@@ -94,10 +94,13 @@ const PlanPage = () => {
             className="gap-2.25 py-3 h-14"
             itemClassName="h-8 py-1.5"
             onValueChange={(value) => {
-              document.getElementById(`day-section-${value}`)?.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-              });
+              const el = document.getElementById(`day-section-${value}`);
+              if (!el) return;
+              const headerHeight = 64; // h-16
+              const stickyBar = document.getElementById("sticky-bar");
+              const stickyBarHeight = stickyBar?.getBoundingClientRect().height ?? 0;
+              const top = el.getBoundingClientRect().top + window.scrollY - headerHeight - stickyBarHeight;
+              window.scrollTo({ top, behavior: "smooth" });
             }}
           />
         )}
