@@ -22,6 +22,7 @@ const formatDayDate = (startDate: string, dayIndex: number) => {
 const PlanPage = () => {
   const [activeMode, setActiveMode] = useState<"planMode" | "budget">("planMode");
   const [isCalendarVisible, setIsCalendarVisible] = useState(true);
+  const [isMapVisible, setIsMapVisible] = useState(true);
   const startDate = "2026-02-24";
   const items = [
     {
@@ -63,6 +64,8 @@ const PlanPage = () => {
       ) : (
         <ProjectHeader
           showMapButton
+          isMapVisible={isMapVisible}
+          onMap={() => setIsMapVisible((prev) => !prev)}
           showCalendarButton
           isCalendarVisible={isCalendarVisible}
           onCalendar={() => setIsCalendarVisible((prev) => !prev)}
@@ -72,7 +75,7 @@ const PlanPage = () => {
       )}
 
       <div className="flex flex-col">
-        {activeMode === "planMode" && (
+        {activeMode === "planMode" && isMapVisible && (
           <GoogleMap
             showZoomControls
             center={{ lat: 37.566535, lng: 126.977969 }}
