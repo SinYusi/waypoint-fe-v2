@@ -88,16 +88,23 @@ const PlanPage = () => {
           items={items}
           className="gap-2.25 py-3 h-14"
           itemClassName="h-8 py-1.5"
+          onValueChange={(value) => {
+            document.getElementById(`day-section-${value}`)?.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }}
         />
       </div>
       <main className="flex flex-col">
         {items.map((item) => (
-          <DayHeader
-            key={item.value}
-            day={Number(item.value)}
-            date={formatDayDate(startDate, Number(item.value) - 1)}
-            defaultOpen
-          />
+          <div key={item.value} id={`day-section-${item.value}`}>
+            <DayHeader
+              day={Number(item.value)}
+              date={formatDayDate(startDate, Number(item.value) - 1)}
+              defaultOpen
+            />
+          </div>
         ))}
       </main>
       <div className="fixed bottom-0 left-0 w-full">
