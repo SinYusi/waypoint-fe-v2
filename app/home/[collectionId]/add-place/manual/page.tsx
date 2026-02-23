@@ -98,7 +98,7 @@ const ManualAddPlacePage = () => {
             !name.trim() || !location.trim() || !tag.trim() || !memo.trim()
           }
         >
-          장소 추가하기
+          입력 완료
         </Button>
       </div>
     </div>
