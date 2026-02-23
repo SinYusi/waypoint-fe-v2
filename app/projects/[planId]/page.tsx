@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import DayNav from "@/components/common/DayNav";
 import GoogleMap from "@/components/common/GoogleMap";
 import { DayHeader } from "@/components/layout/DayHeader";
@@ -19,6 +20,8 @@ const formatDayDate = (startDate: string, dayIndex: number) => {
 };
 
 const PlanPage = () => {
+  const [activeMode, setActiveMode] = useState<"planMode" | "budget">("planMode");
+  const [isCalendarVisible, setIsCalendarVisible] = useState(false);
   const startDate = "2026-02-24";
   const items = [
     {
@@ -48,21 +51,36 @@ const PlanPage = () => {
   ];
   return (
     <div className="flex flex-col min-h-screen">
-      <ProjectHeader
-        showMapButton
-        showCalendarButton
-        showMenuButton
-        className="backdrop-blur-md"
-      />
+      {activeMode === "budget" ? (
+        <ProjectHeader
+          variant="view"
+          showCalendarButton
+          isCalendarVisible={isCalendarVisible}
+          onCalendar={() => setIsCalendarVisible((prev) => !prev)}
+          showMenuButton
+          className="backdrop-blur-md"
+        />
+      ) : (
+        <ProjectHeader
+          showMapButton
+          showCalendarButton
+          isCalendarVisible={isCalendarVisible}
+          onCalendar={() => setIsCalendarVisible((prev) => !prev)}
+          showMenuButton
+          className="backdrop-blur-md"
+        />
+      )}
 
       <div className="flex flex-col">
-        <GoogleMap
-          showZoomControls
-          center={{ lat: 37.566535, lng: 126.977969 }}
-          zoom={15}
-          markerPosition={{ lat: 37.566535, lng: 126.977969 }}
-          className="w-full h-45 rounded-none"
-        />
+        {activeMode === "planMode" && (
+          <GoogleMap
+            showZoomControls
+            center={{ lat: 37.566535, lng: 126.977969 }}
+            zoom={15}
+            markerPosition={{ lat: 37.566535, lng: 126.977969 }}
+            className="w-full h-45 rounded-none"
+          />
+        )}
         <div className="px-5 py-4">
           <PlanHeader title="제주도 여행" day={15} href="" />
         </div>
@@ -83,7 +101,11 @@ const PlanPage = () => {
         ))}
       </main>
       <div className="fixed bottom-0 left-0 w-full">
-        <NavigationBar variant="variant3" />
+        <NavigationBar
+          variant="variant3"
+          onPlanModeClick={() => setActiveMode("planMode")}
+          onBudgetClick={() => setActiveMode("budget")}
+        />
       </div>
     </div>
   );
