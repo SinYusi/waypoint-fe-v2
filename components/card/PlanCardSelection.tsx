@@ -105,8 +105,11 @@ const PlanCardSelection = ({
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setIsRejected(true);
-                    setIsLiked(false);
+                    setIsRejected((prev) => {
+                      const next = !prev;
+                      if (next) setIsLiked(false);
+                      return next;
+                    });
                     onPassClick?.();
                   }}
                   className="flex h-5 w-8.75 shrink-0 cursor-pointer items-center gap-1.5"
@@ -136,8 +139,11 @@ const PlanCardSelection = ({
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setIsLiked(true);
-                    setIsRejected(false);
+                    setIsLiked((prev) => {
+                      const next = !prev;
+                      if (next) setIsRejected(false);
+                      return next;
+                    });
                     onPickClick?.();
                   }}
                   className="flex h-5 w-8.75 shrink-0 cursor-pointer items-center gap-1.5"
