@@ -25,8 +25,13 @@ const AddPlanPage = () => {
 	const timeBlockId = Array.isArray(params.timeBlockId)
 		? params.timeBlockId[0]
 		: params.timeBlockId;
-	const { data: planCollections = [] } = usePlanCollections(planId ?? "");
-	const isPlanCollectionsEmpty = planCollections.length === 0;
+	const { data: planCollectionsData, isLoading: isPlanCollectionsLoading } = usePlanCollections(
+		planId ?? "",
+	);
+	const planCollections = useMemo(() => planCollectionsData ?? [], [planCollectionsData]);
+	const isPlanCollectionsReady = !isPlanCollectionsLoading;
+	const isPlanCollectionsEmpty = isPlanCollectionsReady && planCollections.length === 0;
+	const hasPlanCollections = isPlanCollectionsReady && planCollections.length > 0;
 
 	const dayItems = useMemo(
 		() =>
@@ -218,7 +223,11 @@ const AddPlanPage = () => {
 
 
 					<TabsContent value="saved">
-						{isPlanCollectionsEmpty ? (
+						{isPlanCollectionsLoading ? (
+							<div className="px-5 py-8 typography-body-sm-md text-muted-foreground">
+								보관함을 불러오는 중...
+							</div>
+						) : isPlanCollectionsEmpty ? (
 							renderEmptyCollections()
 						) : (
 							<div className="flex w-full flex-col px-5 py-5">
@@ -320,7 +329,7 @@ const AddPlanPage = () => {
 				</Tabs>
 			</main>
 
-			{!isPlanCollectionsEmpty && activeTab === "saved" && (
+			{hasPlanCollections && activeTab === "saved" && (
 				<div className="fixed inset-x-0 bottom-0 z-50 h-22.75 border-t border-border bg-background">
 					<div
 						aria-hidden
@@ -338,7 +347,7 @@ const AddPlanPage = () => {
 				</div>
 			)}
 
-			{!isPlanCollectionsEmpty && activeTab === "search" && (
+			{hasPlanCollections && activeTab === "search" && (
 				<div className="fixed inset-x-0 bottom-0 z-50 h-22.75 border-t border-border bg-background">
 					<div
 						aria-hidden
