@@ -198,7 +198,7 @@ const AddPlanPage = () => {
 	);
 
 	return (
-		<div className="flex min-h-screen flex-col bg-background">
+		<div className="scrollbar-hide flex min-h-screen flex-col overflow-y-auto bg-background">
 			<Header
 				variant="center"
 				title="후보지 선택"
