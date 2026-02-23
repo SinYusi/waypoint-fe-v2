@@ -77,7 +77,7 @@ const PlanPage = () => {
         )}
       </div>
 
-      {/* 지도 + DayNav - sticky (헤더 아래) */}
+      {/* 지도 + PlanHeader + DayNav - sticky (헤더 아래) */}
       <div id="sticky-bar" className="sticky top-16 z-10 flex flex-col bg-background">
         {activeMode === "planMode" && isMapVisible && (
           <GoogleMap
@@ -88,6 +88,9 @@ const PlanPage = () => {
             className="w-full h-45 rounded-none"
           />
         )}
+        <div className="px-5 py-4">
+          <PlanHeader title="제주도 여행" day={15} href="" />
+        </div>
         {isCalendarVisible && (
           <DayNav
             items={items}
@@ -106,10 +109,6 @@ const PlanPage = () => {
         )}
       </div>
 
-      {/* 스크롤 영역 */}
-      <div className="px-5 py-4">
-        <PlanHeader title="제주도 여행" day={15} href="" />
-      </div>
       <main className="flex flex-col pb-18">
         {items.map((item) => (
           <div key={item.value} id={`day-section-${item.value}`}>
