@@ -70,7 +70,7 @@ const CollectionDetailPage = () => {
         showNotificationButton
         leftBtnBgVariant="ghost"
         rightBtnBgVariant="ghost"
-        className="fixed top-0 z-10 inset-x-0 bg-white"
+        className="fixed top-0 z-10 inset-x-0 bg-background"
       />
       {places.length === 0 ? (
         <main className="flex flex-col flex-1 items-center justify-center pb-18 gap-5 mx-5 pt-15">
@@ -106,7 +106,7 @@ const CollectionDetailPage = () => {
             }
             meRole={membersData?.me.role}
             className={cn(
-              "sticky top-[60px] z-9 bg-white transition-transform duration-300 ease-in-out",
+              "sticky top-[60px] z-9 bg-white transition-transform duration-300 ease-in-out bg-background",
               !isOptionsVisible && "-translate-y-full",
             )}
           />
