@@ -214,7 +214,34 @@ const AddPlacePage = () => {
           </div>
         </TabsContent>
         <TabsContent value="ai" className="flex flex-col flex-1 mt-0">
-          {isJobActive && jobData?.status === "COMPLETED" ? (
+          {isJobActive &&
+          jobData?.status === "COMPLETED" &&
+          jobData.result.places.length === 0 ? (
+            <>
+              <div className="flex flex-col flex-1 mt-5 items-center pb-24">
+                <h1 className="typography-display-lg-bold self-center">
+                  AI를 통해 장소를 찾아보세요!
+                </h1>
+                <div className="mt-3 flex flex-col gap-3 rounded-3xl bg-[#f5f5f5] px-5 py-6 items-center w-full">
+                  <p className="typography-action-base-bold text-center">
+                    {FAILURE_LABEL["NO_PLACE_EXTRACTED"]}
+                  </p>
+                  <Button
+                    className="typography-action-sm-reg"
+                    onClick={() => {
+                      if (jobData?.job_id) {
+                        deleteJob({ collectionId, jobId: jobData.job_id });
+                      } else {
+                        setIsJobActive(false);
+                      }
+                    }}
+                  >
+                    다시 요청하기
+                  </Button>
+                </div>
+              </div>
+            </>
+          ) : isJobActive && jobData?.status === "COMPLETED" ? (
             <>
               <div className="fixed inset-x-5 top-[104px] bottom-19 overflow-y-auto">
                 <div className="flex flex-col gap-5 pb-5 pt-5">
