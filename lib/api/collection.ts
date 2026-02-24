@@ -10,6 +10,7 @@
  * - 소유자 변경 (PATCH | `/collections/{collectionId}/owner`)
  * - AI 장소 추출 작업 생성 (POST | `/collections/{collectionId}/extraction-jobs`)
  * - AI 장소 추출 최신 작업 조회 (GET | `/collections/{collectionId}/extraction-jobs/latest`)
+ * - AI 장소 추출 작업 취소 (DELETE | `/collections/{collectionId}/extraction-jobs/{jobId}`)
  */
 
 import {
@@ -215,4 +216,19 @@ export const getLatestExtractionJob = async (collectionId: string) => {
     `/collections/${collectionId}/extraction-jobs/latest`,
   );
   return res.data;
+};
+
+/**
+ * AI 장소 추출 작업 취소 API
+ *
+ * @param collectionId - 컬렉션 ID
+ * @param jobId - 취소할 작업 ID
+ */
+export const deleteExtractionJob = async (
+  collectionId: string,
+  jobId: string,
+) => {
+  await apiClient.delete(
+    `/collections/${collectionId}/extraction-jobs/${jobId}`,
+  );
 };
