@@ -19,26 +19,32 @@ import MemberListSection from "./components/MemberListSection";
 import TravelPlanSection from "./components/TravelPlanSection";
 import HeaderBtn, { HeaderBtnBgVariant } from "@/components/layout/HeaderBtn";
 import type { CollectionMember, MemberRole, PlanMember } from "@/types/member";
+import { ChevronRight } from "lucide-react";
 import AppDialog from "@/components/common/AppDialog";
 import AppAlertDialog from "@/components/common/AppAlertDialog";
 
 interface MemberSideDrawerProps {
   title: string;
   placeCount?: number;
+  dateRange?: string;
   variant: "COLLECTION" | "PLAN";
   rightBtnBgVariant: HeaderBtnBgVariant;
   members?: (CollectionMember | PlanMember)[];
   meRole?: MemberRole;
+  onCollectionManage?: () => void;
 }
 
 const MemberSideDrawer = ({
   title,
   placeCount,
+  dateRange,
   variant,
   rightBtnBgVariant,
   members = [],
   meRole,
+  onCollectionManage,
 }: MemberSideDrawerProps) => {
+  const isOwner = meRole === "OWNER";
   const { handleKickMember, handleAssignOwner } = useMemberManagement({
     variant,
   });
@@ -70,21 +76,38 @@ const MemberSideDrawer = ({
               <p className="typography-display-xl">{title}</p>
             </DrawerTitle>
             <DrawerDescription className="typography-action-sm-bold font-[#757575]">
-              {placeCount}개의 장소
+              {variant === "PLAN" ? dateRange : `${placeCount}개의 장소`}
             </DrawerDescription>
           </DrawerHeader>
           <main className="flex flex-col gap-3 mx-5 mt-10">
             <MemberListSection
               members={members}
+              isOwner={isOwner}
               onKick={handleKickMember}
               onAssignOwner={handleAssignOwner}
             />
-            <TravelPlanSection />
+            {variant === "PLAN" ? (
+              <Button
+                className="w-full flex justify-between py-1.5 px-3 bg-card text-foreground"
+                onClick={onCollectionManage}
+              >
+                <p className="typography-action-sm-reg ">
+                  보관함 추가 혹은 삭제하기
+                </p>
+                <ChevronRight size={20} strokeWidth={2} />
+              </Button>
+            ) : (
+              <TravelPlanSection />
+            )}
           </main>
           <DrawerFooter>
             <Button variant="ghost" onClick={handleLeaveClick}>
               <DoorClosed size={18} className="opacity-40" />
-              <p className="typography-action-sm-reg">이 컬렉션에서 나가기</p>
+              <p className="typography-action-sm-reg">
+                {variant === "PLAN"
+                  ? "이 여행 계획에서 나가기"
+                  : "이 컬렉션에서 나가기"}
+              </p>
             </Button>
           </DrawerFooter>
         </DrawerContent>
