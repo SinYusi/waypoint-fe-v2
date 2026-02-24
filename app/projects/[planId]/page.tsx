@@ -40,7 +40,8 @@ const PlanPage = () => {
   const [isCalendarVisible, setIsCalendarVisible] = useState(true);
   const [isMapVisible, setIsMapVisible] = useState(true);
   const [budgetCardMode, setBudgetCardMode] = useState<"view" | "edit">("view");
-  const { data: budgetData } = useBudget(planId, { placeholderData: mockBudgetData });
+  const { data } = useBudget(planId);
+  const budgetData = data ?? mockBudgetData;
   const startDate = "2026-02-24";
   const items = [
     {
@@ -137,7 +138,7 @@ const PlanPage = () => {
 
       <main className="flex flex-col pb-18">
         {/* 예산 탭: BudgetSummaryCard */}
-        {activeMode === "budget" && budgetData && (
+        {activeMode === "budget" && (
           <BudgetSummaryCard
             variant={budgetData.type === "BUDGET" ? "budget" : "expense"}
             mode={budgetCardMode}
