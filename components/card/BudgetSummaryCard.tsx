@@ -22,6 +22,8 @@ interface BudgetSummaryCardProps {
   perPersonAmount?: number;
   /** 후보지에 지출이 입력된 경우에만 true → 안내 문구 표시 */
   showHint?: boolean;
+  /** 편집 버튼 클릭 핸들러 */
+  onEditClick?: () => void;
   className?: string;
 }
 
@@ -36,6 +38,7 @@ const BudgetSummaryCard = ({
   perDayAmount = 0,
   perPersonAmount = 0,
   showHint = false,
+  onEditClick,
   className,
 }: BudgetSummaryCardProps) => {
   // 예산 설정 안 했을 때 - view 모드는 렌더링 없음
@@ -62,6 +65,7 @@ const BudgetSummaryCard = ({
             size="M"
             className="w-full bg-secondary/30 hover:bg-secondary/40"
             rightIcon={<Pencil className="size-4.5 opacity-40" strokeWidth={2} />}
+            onClick={onEditClick}
           >
             여행 예산 편집
           </Button>
@@ -186,6 +190,7 @@ const BudgetSummaryCard = ({
             size="M"
             className="w-full bg-secondary/30 hover:bg-secondary/40"
             rightIcon={<Pencil className="size-4.5 opacity-40" strokeWidth={2} />}
+            onClick={onEditClick}
           >
             여행 예산 편집
           </Button>
@@ -406,6 +411,7 @@ const BudgetSummaryCard = ({
             size="M"
             className="w-full bg-secondary/30 hover:bg-secondary/40"
             rightIcon={<Pencil className="size-4.5 opacity-40" strokeWidth={2} />}
+            onClick={onEditClick}
           >
             여행 예산 편집
           </Button>
