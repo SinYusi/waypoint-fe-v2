@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import HeaderBtn, { HeaderBtnBgVariant } from "./HeaderBtn";
 import { cn } from "@/lib/utils/utils";
 import { ArrowLeft, Calendar, Map, Menu } from "lucide-react";
@@ -41,12 +41,15 @@ const ProjectHeader = ({
   const router = useRouter();
   const params = useParams<{ planId: string }>();
   const planId = params.planId;
+  const searchParams = useSearchParams();
+  const query = searchParams.toString();
+  const suffix = query ? `?${query}` : "";
 
   // 보기모드 뒤로가기 핸들러
-  const handleViewBack = () => router.replace(`/projects`);
+  const handleViewBack = () => router.push(`/projects`);
 
   // 편집모드 뒤로가기 핸들러
-  const handleEditBack = () => router.replace(`/projects/${planId}`);
+  const handleEditBack = () => router.replace(`/projects/${planId}${suffix}`);
 
   return (
     <header
