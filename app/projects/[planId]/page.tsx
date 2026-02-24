@@ -53,7 +53,6 @@ const mockExpensesByDay: Record<number, ExpenseGroupResponse[]> = {
         block: null,
         items: [
           { expense_item_id: "item-5", name: "렌터카", cost: 80000 },
-          { expense_item_id: "item-6", name: "점심식사", cost: 25000 },
         ],
       },
     },
