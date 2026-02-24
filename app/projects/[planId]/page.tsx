@@ -3,6 +3,7 @@
 import { useState } from "react";
 import DayNav from "@/components/common/DayNav";
 import GoogleMap from "@/components/common/GoogleMap";
+import BudgetSummaryCard from "@/components/card/BudgetSummaryCard";
 import { DayHeader } from "@/components/layout/DayHeader";
 import NavigationBar from "@/components/layout/NavigationBar";
 import PlanHeader from "@/components/layout/PlanHeader";
@@ -118,6 +119,18 @@ const PlanPage = () => {
       )}
 
       <main className="flex flex-col pb-18">
+        {/* 예산 탭: BudgetSummaryCard */}
+        {activeMode === "budget" && (
+          <BudgetSummaryCard
+            variant="budget"
+            mode="view"
+            totalBudget={1500000}
+            usedAmount={564000}
+            perPersonAmount={141000}
+            className="pt-3"
+          />
+        )}
+
         {items.map((item) => (
           <div key={item.value} id={`day-section-${item.value}`}>
             <DayHeader
