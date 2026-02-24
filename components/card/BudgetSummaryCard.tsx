@@ -117,7 +117,7 @@ const BudgetSummaryCard = ({
         </div>
 
         {/* 안내 문구 */}
-        <div className="flex items-center gap-1 px-1">
+        <div className="flex items-center justify-center gap-1 px-4">
           <CircleHelp className="size-4.5 shrink-0 text-muted-foreground" strokeWidth={2} />
           <span className="typography-caption-xs-reg text-muted-foreground">
             후보지 중 가장 비싼 장소를 기준으로 계산되었어요!
@@ -187,7 +187,7 @@ const BudgetSummaryCard = ({
         </div>
 
         {/* 안내 문구 */}
-        <div className="flex items-center gap-1 px-1">
+        <div className="flex items-center justify-center gap-1 px-4">
           <CircleHelp className="size-4.5 shrink-0 text-muted-foreground" strokeWidth={2} />
           <span className="typography-caption-xs-reg text-muted-foreground">
             후보지 중 가장 비싼 장소를 기준으로 계산되었어요!
@@ -291,7 +291,7 @@ const BudgetSummaryCard = ({
         </div>
 
         {/* 안내 문구 */}
-        <div className="flex items-center gap-1 px-1">
+        <div className="flex items-center justify-center gap-1 px-4">
           <CircleHelp className="size-4.5 shrink-0 text-muted-foreground" strokeWidth={2} />
           <span className="typography-caption-xs-reg text-muted-foreground">
             후보지 중 가장 비싼 장소를 기준으로 계산되었어요!
@@ -403,7 +403,7 @@ const BudgetSummaryCard = ({
         </div>
 
         {/* 안내 문구 */}
-        <div className="flex items-center gap-1 px-1">
+        <div className="flex items-center justify-center gap-1 px-4">
           <CircleHelp className="size-4.5 shrink-0 text-muted-foreground" strokeWidth={2} />
           <span className="typography-caption-xs-reg text-muted-foreground">
             후보지 중 가장 비싼 장소를 기준으로 계산되었어요!
