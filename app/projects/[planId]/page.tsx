@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useParams } from "next/navigation";
 import DayNav from "@/components/common/DayNav";
 import GoogleMap from "@/components/common/GoogleMap";
 import BudgetSummaryCard from "@/components/card/BudgetSummaryCard";
@@ -8,17 +9,10 @@ import { DayHeader } from "@/components/layout/DayHeader";
 import NavigationBar from "@/components/layout/NavigationBar";
 import PlanHeader from "@/components/layout/PlanHeader";
 import ProjectHeader from "@/components/layout/ProjectHeader";
+import { useBudget } from "@/lib/hooks/plan/use-budget";
+import type { BudgetResponse } from "@/types/budget";
 
-type BudgetResponse = {
-  budget_id: number;
-  type: "BUDGET" | "EXPENSE";
-  total_budget: number | null;
-  total_cost: number;
-  remaining_budget: number | null;
-  cost_per_person: number;
-  traveler_count: number;
-};
-
+// TODO: 서버 연결 후 제거
 const mockBudgetData: BudgetResponse = {
   budget_id: 1,
   type: "BUDGET",
@@ -41,10 +35,12 @@ const formatDayDate = (startDate: string, dayIndex: number) => {
 };
 
 const PlanPage = () => {
+  const { planId } = useParams<{ planId: string }>();
   const [activeMode, setActiveMode] = useState<"planMode" | "budget">("planMode");
   const [isCalendarVisible, setIsCalendarVisible] = useState(true);
   const [isMapVisible, setIsMapVisible] = useState(true);
   const [budgetCardMode, setBudgetCardMode] = useState<"view" | "edit">("view");
+  const { data: budgetData } = useBudget(planId, { placeholderData: mockBudgetData });
   const startDate = "2026-02-24";
   const items = [
     {
@@ -141,14 +137,14 @@ const PlanPage = () => {
 
       <main className="flex flex-col pb-18">
         {/* 예산 탭: BudgetSummaryCard */}
-        {activeMode === "budget" && (
+        {activeMode === "budget" && budgetData && (
           <BudgetSummaryCard
-            variant={mockBudgetData.type === "BUDGET" ? "budget" : "expense"}
+            variant={budgetData.type === "BUDGET" ? "budget" : "expense"}
             mode={budgetCardMode}
-            totalBudget={mockBudgetData.total_budget ?? 0}
-            usedAmount={mockBudgetData.total_cost}
-            perDayAmount={Math.round(mockBudgetData.total_cost / items.length)}
-            perPersonAmount={mockBudgetData.cost_per_person}
+            totalBudget={budgetData.total_budget ?? 0}
+            usedAmount={budgetData.total_cost}
+            perDayAmount={Math.round(budgetData.total_cost / items.length)}
+            perPersonAmount={budgetData.cost_per_person}
             onEditClick={() => setBudgetCardMode("edit")}
             className="pt-3"
           />
