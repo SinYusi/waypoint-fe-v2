@@ -10,6 +10,7 @@ interface MemberListSectionProps {
   isOwner?: boolean;
   onKick: (memberId: string) => void;
   onAssignOwner: (memberId: string) => void;
+  onInviteClick?: () => void;
 }
 
 const MemberListSection = ({
@@ -17,6 +18,7 @@ const MemberListSection = ({
   isOwner = false,
   onKick,
   onAssignOwner,
+  onInviteClick,
 }: MemberListSectionProps) => {
   const [isManaging, setIsManaging] = useState(false);
   return (
@@ -59,6 +61,7 @@ const MemberListSection = ({
               icon={<UserPlus size={18} className="opacity-40" />}
               variant="ghost"
               className="rounded-2xl typography-action-sm-reg flex flex-row mb-2"
+              onClick={onInviteClick}
             >
               새로운 멤버 초대하기
             </Button>

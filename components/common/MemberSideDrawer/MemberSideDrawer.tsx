@@ -22,6 +22,7 @@ import type { CollectionMember, MemberRole, PlanMember } from "@/types/member";
 import { ChevronRight } from "lucide-react";
 import AppDialog from "@/components/common/AppDialog";
 import AppAlertDialog from "@/components/common/AppAlertDialog";
+import CollectionInviteDialog from "@/components/common/CollectionInviteDialog";
 
 interface MemberSideDrawerProps {
   title: string;
@@ -31,6 +32,7 @@ interface MemberSideDrawerProps {
   rightBtnBgVariant: HeaderBtnBgVariant;
   members?: (CollectionMember | PlanMember)[];
   meRole?: MemberRole;
+  collectionId?: string;
   onCollectionManage?: () => void;
 }
 
@@ -42,6 +44,7 @@ const MemberSideDrawer = ({
   rightBtnBgVariant,
   members = [],
   meRole,
+  collectionId,
   onCollectionManage,
 }: MemberSideDrawerProps) => {
   const isOwner = meRole === "OWNER";
@@ -51,6 +54,7 @@ const MemberSideDrawer = ({
 
   const [ownerDialogOpen, setOwnerDialogOpen] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
 
   const handleLeaveClick = () => {
     if (meRole === "OWNER") {
@@ -85,6 +89,7 @@ const MemberSideDrawer = ({
               isOwner={isOwner}
               onKick={handleKickMember}
               onAssignOwner={handleAssignOwner}
+              onInviteClick={() => setInviteDialogOpen(true)}
             />
             {variant === "PLAN" ? (
               <Button
@@ -133,6 +138,14 @@ const MemberSideDrawer = ({
           setConfirmDialogOpen(false);
         }}
       />
+
+      {collectionId && (
+        <CollectionInviteDialog
+          collectionId={collectionId}
+          open={inviteDialogOpen}
+          onOpenChange={setInviteDialogOpen}
+        />
+      )}
     </>
   );
 };
