@@ -71,7 +71,7 @@ const BudgetSummaryCard = ({
               </div>
 
               {/* 남은 예산 */}
-              <div className="flex flex-col items-end">
+              <div className="flex flex-col items-start">
                 <span className="typography-nav-xl-bold text-muted-foreground">
                   남은 예산
                 </span>
