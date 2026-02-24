@@ -44,6 +44,7 @@ const BudgetCandidateGroup = (props: BudgetCandidateGroupProps) => {
   const { mode, cards, className } = props;
   const isCollapsible = cards.length >= COLLAPSE_THRESHOLD;
   const [isExpanded, setIsExpanded] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   const visibleCards =
     isCollapsible && !isExpanded ? cards.slice(0, COLLAPSED_SHOW_COUNT) : cards;
@@ -93,6 +94,8 @@ const BudgetCandidateGroup = (props: BudgetCandidateGroupProps) => {
           placeName={card.placeName}
           items={card.items}
           placeType={card.placeType}
+          selected={selectedIndex === index}
+          onClick={() => setSelectedIndex((prev) => (prev === index ? null : index))}
         />
       ))}
 
@@ -122,7 +125,8 @@ const BudgetCandidateGroup = (props: BudgetCandidateGroupProps) => {
           </button>
           <Button
             variant="outline"
-            className="rounded-xl border border-border bg-background px-4 py-2.5 typography-action-sm-bold text-foreground"
+            disabled={selectedIndex === null}
+            className="rounded-xl border border-border bg-background px-4 py-2.5 typography-action-sm-bold text-foreground disabled:opacity-40"
             onClick={onSelectCandidates}
           >
             후보지 선택하기
@@ -131,7 +135,8 @@ const BudgetCandidateGroup = (props: BudgetCandidateGroupProps) => {
       ) : (
         <Button
           variant="outline"
-          className="w-full rounded-xl border border-border bg-background px-4 py-2.5 typography-action-sm-bold text-foreground"
+          disabled={selectedIndex === null}
+          className="w-full rounded-xl border border-border bg-background px-4 py-2.5 typography-action-sm-bold text-foreground disabled:opacity-40"
           onClick={onSelectCandidates}
         >
           후보지 선택하기
