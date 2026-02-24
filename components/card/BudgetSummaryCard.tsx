@@ -35,8 +35,37 @@ const BudgetSummaryCard = ({
   perPersonAmount = 0,
   className,
 }: BudgetSummaryCardProps) => {
-  // 예산 설정 안 했을 때 - 렌더링 없음
-  if (!variant) return null;
+  // 예산 설정 안 했을 때 - view 모드는 렌더링 없음
+  if (!variant && mode === "view") return null;
+
+  // 예산 설정 안 했을 때 - 편집 모드
+  if (!variant && mode === "edit") {
+    return (
+      <div className={cn("px-5 py-1 flex flex-col gap-4", className)}>
+        <div className="rounded-3xl p-4 bg-card flex flex-col gap-3">
+          {/* 안내 메시지 섹션 */}
+          <div className="pb-3 border-b border-dashed border-border">
+            <div className="flex items-center gap-1">
+              <CircleHelp className="size-4.5 shrink-0 text-muted-foreground" strokeWidth={2} />
+              <span className="typography-action-sm-bold text-muted-foreground">
+                아직 여행 예산이 설정되지 않았어요
+              </span>
+            </div>
+          </div>
+
+          {/* 편집 버튼 */}
+          <Button
+            variant="secondary"
+            size="M"
+            className="w-full bg-secondary/30 hover:bg-secondary/40"
+            rightIcon={<Pencil className="size-4.5 opacity-40" strokeWidth={2} />}
+          >
+            여행 예산 편집
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   // 지출 중심 카드 - 보기
   if (variant === "expense" && mode === "view") {
