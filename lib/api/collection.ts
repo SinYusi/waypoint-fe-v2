@@ -8,6 +8,8 @@
  * - 수정 (PUT | `/collections/{collectionId}`)
  * - 삭제 (DELETE | `/collections/{collectionId}`)
  * - 소유자 변경 (PATCH | `/collections/{collectionId}/owner`)
+ * - AI 장소 추출 작업 생성 (POST | `/collections/{collectionId}/extraction-jobs`)
+ * - AI 장소 추출 최신 작업 조회 (GET | `/collections/{collectionId}/extraction-jobs/latest`)
  */
 
 import {
@@ -28,6 +30,10 @@ import {
 } from "@/types/collection";
 import { InvitationResponse } from "@/types/invitation";
 import { CollectionMembersResponse } from "@/types/member";
+import {
+  CreateExtractionJobResponse,
+  ExtractionJobResponse,
+} from "@/types/extraction-job";
 import { apiClient } from "./client";
 
 /**
@@ -176,6 +182,37 @@ export const deleteCollection = async (
 export const createCollectionInvitation = async (collectionId: string) => {
   const res = await apiClient.post<InvitationResponse>(
     `/collections/${collectionId}/invitations`,
+  );
+  return res.data;
+};
+
+/**
+ * AI 장소 추출 작업 생성 API
+ *
+ * @param collectionId - 컬렉션 ID
+ * @param url - 분석할 URL
+ * @returns job_id, status
+ */
+export const createExtractionJob = async (
+  collectionId: string,
+  url: string,
+) => {
+  const res = await apiClient.post<CreateExtractionJobResponse>(
+    `/collections/${collectionId}/extraction-jobs`,
+    { url },
+  );
+  return res.data;
+};
+
+/**
+ * AI 장소 추출 최신 작업 조회 API
+ *
+ * @param collectionId - 컬렉션 ID
+ * @returns 마지막 추출 작업 결과
+ */
+export const getLatestExtractionJob = async (collectionId: string) => {
+  const res = await apiClient.get<ExtractionJobResponse>(
+    `/collections/${collectionId}/extraction-jobs/latest`,
   );
   return res.data;
 };
