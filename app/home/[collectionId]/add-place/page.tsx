@@ -121,6 +121,9 @@ const AddPlacePage = () => {
     return () => {
       if (jobRef.current) {
         deleteExtractionJob(jobRef.current.collectionId, jobRef.current.jobId);
+        queryClient.removeQueries({
+          queryKey: ["extractionJobLatest", jobRef.current.collectionId],
+        });
       }
     };
   }, []);
