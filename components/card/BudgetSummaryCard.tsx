@@ -44,7 +44,7 @@ const BudgetSummaryCard = ({
         {/* 카드 */}
         <div className="rounded-3xl p-4 bg-card flex flex-col gap-3">
           {/* 상단 섹션 */}
-          <div className="pb-1 border-b border-dashed border-border">
+          <div className="pb-4 border-b border-dashed border-border">
             {/* Row: 총 지출 / 1일 평균 지출 */}
             <div className="flex justify-between">
               {/* 총 지출 */}
@@ -106,7 +106,7 @@ const BudgetSummaryCard = ({
         {/* 카드 */}
         <div className="rounded-3xl p-4 bg-card flex flex-col gap-3">
           {/* 상단 섹션 */}
-          <div className="flex flex-col gap-4 pb-1 border-b border-dashed border-border">
+          <div className="flex flex-col gap-4 pb-4 border-b border-dashed border-border">
             {/* Row 1: 총 예산 / 남은 예산 */}
             <div className="flex justify-between">
               {/* 총 예산 */}
