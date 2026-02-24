@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, Fragment } from "react";
-import { useParams } from "next/navigation";
 import DayNav from "@/components/common/DayNav";
 import GoogleMap from "@/components/common/GoogleMap";
 import BudgetSummaryCard from "@/components/card/BudgetSummaryCard";
@@ -10,18 +9,14 @@ import { DayHeader } from "@/components/layout/DayHeader";
 import NavigationBar from "@/components/layout/NavigationBar";
 import PlanHeader from "@/components/layout/PlanHeader";
 import ProjectHeader from "@/components/layout/ProjectHeader";
+import { useParams, useSearchParams } from "next/navigation";
+import useQueryTab from "@/lib/hooks/use-query-tab";
 import { useBudget } from "@/lib/hooks/plan/use-budget";
 import { useExpenses } from "@/lib/hooks/plan/use-expenses";
 import BudgetEmptyState from "@/components/common/BudgetEmptyState";
 
 // day별 지출 항목 — 훅을 루프 밖에서 호출하기 위해 별도 컴포넌트로 분리
-const DayExpenses = ({
-  planId,
-  day,
-}: {
-  planId: string;
-  day: number;
-}) => {
+const DayExpenses = ({ planId, day }: { planId: string; day: number }) => {
   const { data } = useExpenses(planId, day);
   const expenses = data ?? [];
 
@@ -55,8 +50,19 @@ const formatDayDate = (startDate: string, dayIndex: number) => {
 };
 
 const PlanPage = () => {
-  const { planId } = useParams<{ planId: string }>();
-  const [activeMode, setActiveMode] = useState<"planMode" | "budget">("planMode");
+  const params = useParams<{ planId: string }>();
+  const searchParams = useSearchParams();
+  const query = searchParams.toString();
+  const planId = params.planId;
+  const { tab: mode, setTab: setMode } = useQueryTab({
+    defaultValue: "planMode",
+    allowedValues: ["planMode", "budget"] as const,
+    removeWhenDefault: true,
+  });
+  const activeMode = mode;
+  const editHref = query
+    ? `/projects/${planId}/plan-edit?${query}`
+    : `/projects/${planId}/plan-edit`;
   const [isCalendarVisible, setIsCalendarVisible] = useState(true);
   const [isMapVisible, setIsMapVisible] = useState(true);
   const [budgetCardMode, setBudgetCardMode] = useState<"view" | "edit">("view");
@@ -115,14 +121,16 @@ const PlanPage = () => {
 
       {/* PlanHeader - 스크롤 */}
       <div className="px-5 py-4">
-        <PlanHeader title="제주도 여행" day={15} href="" />
+        <PlanHeader title="제주도 여행" day={15} href={editHref} />
       </div>
 
       {/* DayNav - sticky (지도 아래) */}
       {isCalendarVisible && (
         <div
-          className="sticky z-10 bg-background"
-          style={{ top: `${64 + (activeMode === "planMode" && isMapVisible ? 180 : 0)}px` }}
+          className="sticky z-10 bg-background overflow-hidden"
+          style={{
+            top: `${64 + (activeMode === "planMode" && isMapVisible ? 180 : 0)}px`,
+          }}
         >
           <DayNav
             items={items}
@@ -131,12 +139,15 @@ const PlanPage = () => {
             onValueChange={(value) => {
               const el = document.getElementById(`day-section-${value}`);
               if (!el) return;
-              const mapHeight = activeMode === "planMode" && isMapVisible ? 180 : 0;
+              const mapHeight =
+                activeMode === "planMode" && isMapVisible ? 180 : 0;
               const offset = 64 + mapHeight + 56; // header + map + DayNav(h-14)
-              const top = el.getBoundingClientRect().top + window.scrollY - offset;
+              const top =
+                el.getBoundingClientRect().top + window.scrollY - offset;
               window.scrollTo({ top, behavior: "smooth" });
             }}
           />
+          <div className="pointer-events-none absolute top-0 -right-1.25 w-14 h-14 bg-[linear-gradient(90deg,rgba(252,252,252,0)_0%,rgba(252,252,252,1)_100%)]" />
         </div>
       )}
 
@@ -177,8 +188,9 @@ const PlanPage = () => {
       <div className="fixed bottom-0 left-0 w-full">
         <NavigationBar
           variant="variant3"
-          onPlanModeClick={() => setActiveMode("planMode")}
-          onBudgetClick={() => setActiveMode("budget")}
+          activeMode={activeMode}
+          onPlanModeClick={() => setMode("planMode")}
+          onBudgetClick={() => setMode("budget")}
         />
       </div>
     </div>
