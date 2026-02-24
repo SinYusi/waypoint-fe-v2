@@ -203,6 +203,7 @@ const PlanPage = () => {
   const [budgetCardMode, setBudgetCardMode] = useState<"view" | "edit">("view");
   const { data } = useBudget(planId);
   const budgetData = data ?? mockBudgetData;
+  const showHint = Object.values(mockExpensesByDay).flat().length > 0;
   const startDate = "2026-02-24";
   const items = [
     { value: "1", label: "Day 1" },
@@ -290,6 +291,7 @@ const PlanPage = () => {
             usedAmount={budgetData.total_cost}
             perDayAmount={Math.round(budgetData.total_cost / items.length)}
             perPersonAmount={budgetData.cost_per_person}
+            showHint={showHint}
             onEditClick={() => setBudgetCardMode("edit")}
             className="pt-3"
           />
