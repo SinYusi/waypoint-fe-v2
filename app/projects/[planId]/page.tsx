@@ -9,6 +9,26 @@ import NavigationBar from "@/components/layout/NavigationBar";
 import PlanHeader from "@/components/layout/PlanHeader";
 import ProjectHeader from "@/components/layout/ProjectHeader";
 
+type BudgetResponse = {
+  budget_id: number;
+  type: "BUDGET" | "EXPENSE";
+  total_budget: number | null;
+  total_cost: number;
+  remaining_budget: number | null;
+  cost_per_person: number;
+  traveler_count: number;
+};
+
+const mockBudgetData: BudgetResponse = {
+  budget_id: 1,
+  type: "BUDGET",
+  total_budget: 1500000,
+  total_cost: 564000,
+  remaining_budget: 936000,
+  cost_per_person: 141000,
+  traveler_count: 4,
+};
+
 const DAYS_KO = ["일", "월", "화", "수", "목", "금", "토"];
 
 const formatDayDate = (startDate: string, dayIndex: number) => {
@@ -24,6 +44,7 @@ const PlanPage = () => {
   const [activeMode, setActiveMode] = useState<"planMode" | "budget">("planMode");
   const [isCalendarVisible, setIsCalendarVisible] = useState(true);
   const [isMapVisible, setIsMapVisible] = useState(true);
+  const [budgetCardMode, setBudgetCardMode] = useState<"view" | "edit">("view");
   const startDate = "2026-02-24";
   const items = [
     {
@@ -122,11 +143,13 @@ const PlanPage = () => {
         {/* 예산 탭: BudgetSummaryCard */}
         {activeMode === "budget" && (
           <BudgetSummaryCard
-            variant="budget"
-            mode="view"
-            totalBudget={1500000}
-            usedAmount={564000}
-            perPersonAmount={141000}
+            variant={mockBudgetData.type === "BUDGET" ? "budget" : "expense"}
+            mode={budgetCardMode}
+            totalBudget={mockBudgetData.total_budget ?? 0}
+            usedAmount={mockBudgetData.total_cost}
+            perDayAmount={Math.round(mockBudgetData.total_cost / items.length)}
+            perPersonAmount={mockBudgetData.cost_per_person}
+            onEditClick={() => setBudgetCardMode("edit")}
             className="pt-3"
           />
         )}
