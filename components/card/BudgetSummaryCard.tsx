@@ -115,6 +115,14 @@ const BudgetSummaryCard = ({
             </div>
           </div>
         </div>
+
+        {/* 안내 문구 */}
+        <div className="flex items-center gap-1 px-1">
+          <CircleHelp className="size-4.5 shrink-0 text-muted-foreground" strokeWidth={2} />
+          <span className="typography-caption-xs-reg text-muted-foreground">
+            후보지 중 가장 비싼 장소를 기준으로 계산되었어요!
+          </span>
+        </div>
       </div>
     );
   }
@@ -176,6 +184,14 @@ const BudgetSummaryCard = ({
           >
             여행 예산 편집
           </Button>
+        </div>
+
+        {/* 안내 문구 */}
+        <div className="flex items-center gap-1 px-1">
+          <CircleHelp className="size-4.5 shrink-0 text-muted-foreground" strokeWidth={2} />
+          <span className="typography-caption-xs-reg text-muted-foreground">
+            후보지 중 가장 비싼 장소를 기준으로 계산되었어요!
+          </span>
         </div>
       </div>
     );
