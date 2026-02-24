@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, usePathname, useParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import Header from "@/components/layout/Header";
@@ -13,6 +13,7 @@ import { useCreateExtractionJob } from "@/lib/hooks/collection/use-create-extrac
 import { useLatestExtractionJob } from "@/lib/hooks/collection/use-latest-extraction-job";
 import { useDeleteExtractionJob } from "@/lib/hooks/collection/use-delete-extraction-job";
 import { useAddExtractionJobPlaces } from "@/lib/hooks/collection/use-add-extraction-job-places";
+import { deleteExtractionJob } from "@/lib/api/collection";
 import type { FailureCode, FromUrlStatus } from "@/types/extraction-job";
 import SearchAiIllust from "@/public/illust/search-ai.svg";
 import {
@@ -55,6 +56,7 @@ const AddPlacePage = () => {
   const [isJobActive, setIsJobActive] = useState(false);
   const [selectedPlaceIds, setSelectedPlaceIds] = useState<string[]>([]);
   const queryClient = useQueryClient();
+  const jobRef = useRef<{ collectionId: string; jobId: string } | null>(null);
   const { data } = usePlaceSearch(query);
   const { mutate: createJob, isPending: isCreatingJob } =
     useCreateExtractionJob({
@@ -105,6 +107,23 @@ const AddPlacePage = () => {
   });
 
   const places = data ?? [];
+
+  useEffect(() => {
+    if (isJobActive && jobData?.job_id) {
+      jobRef.current = { collectionId, jobId: jobData.job_id };
+    }
+    if (!isJobActive) {
+      jobRef.current = null;
+    }
+  }, [isJobActive, jobData?.job_id]);
+
+  useEffect(() => {
+    return () => {
+      if (jobRef.current) {
+        deleteExtractionJob(jobRef.current.collectionId, jobRef.current.jobId);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (
