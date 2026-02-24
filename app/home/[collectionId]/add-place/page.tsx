@@ -12,6 +12,7 @@ import { useAddCollectionPlace } from "@/lib/hooks/collection/use-add-collection
 import { useCreateExtractionJob } from "@/lib/hooks/collection/use-create-extraction-job";
 import { useLatestExtractionJob } from "@/lib/hooks/collection/use-latest-extraction-job";
 import { useDeleteExtractionJob } from "@/lib/hooks/collection/use-delete-extraction-job";
+import { useAddExtractionJobPlaces } from "@/lib/hooks/collection/use-add-extraction-job-places";
 import type { FailureCode, FromUrlStatus } from "@/types/extraction-job";
 import SearchAiIllust from "@/public/illust/search-ai.svg";
 import {
@@ -78,6 +79,20 @@ const AddPlacePage = () => {
       setSelectedPlaceIds([]);
     },
   });
+  const { mutate: addExtractionPlaces, isPending: isAddingExtractionPlaces } =
+    useAddExtractionJobPlaces({
+      onSuccess: () => {
+        toast("선택한 장소가 보관함에 추가되었습니다.");
+        queryClient.removeQueries({
+          queryKey: ["extractionJobLatest", collectionId],
+        });
+        setIsJobActive(false);
+        setSelectedPlaceIds([]);
+      },
+      onError: () => {
+        toast.error("장소 추가에 실패했어요.");
+      },
+    });
   const { mutate: addPlace, isPending } = useAddCollectionPlace({
     onSuccess: () => {
       toast("선택한 장소가 보관함에 추가되었습니다.");
@@ -244,9 +259,8 @@ const AddPlacePage = () => {
                   {jobData.result.places.map((place) => {
                     const isChecked = selectedPlaceIds.includes(place.place_id);
                     return (
-                      <button
+                      <div
                         key={place.place_id}
-                        type="button"
                         className="w-full text-left rounded-2xl bg-[#f5f5f5] px-5 py-3 flex items-center gap-3"
                         onClick={() =>
                           setSelectedPlaceIds((prev) =>
@@ -275,7 +289,7 @@ const AddPlacePage = () => {
                             {place.address}
                           </p>
                         </div>
-                      </button>
+                      </div>
                     );
                   })}
                 </div>
@@ -296,11 +310,17 @@ const AddPlacePage = () => {
                 </button>
                 <Button
                   className="flex-1 typography-action-base-bold disabled:opacity-40 text-primary-foreground"
-                  disabled={selectedPlaceIds.length === 0 || isPending}
+                  disabled={
+                    selectedPlaceIds.length === 0 || isAddingExtractionPlaces
+                  }
                   onClick={() => {
-                    selectedPlaceIds.forEach((place_id) =>
-                      addPlace({ collectionId, place_id }),
-                    );
+                    if (jobData?.job_id) {
+                      addExtractionPlaces({
+                        collectionId,
+                        jobId: jobData.job_id,
+                        place_ids: selectedPlaceIds,
+                      });
+                    }
                   }}
                 >
                   선택한 장소 추가하기
@@ -314,12 +334,22 @@ const AddPlacePage = () => {
                   AI를 통해 장소를 찾아보세요!
                 </h1>
                 {isJobActive && jobData ? (
-                  <div className="mt-3 flex flex-col gap-2 rounded-3xl bg-[#f5f5f5] px-5 py-6 items-center w-full">
+                  <div className="mt-3 flex flex-col gap-3 rounded-3xl bg-[#f5f5f5] px-5 py-6 items-center w-full">
                     <p className="typography-action-base-bold text-center">
                       {jobData.status === "FAILED" && jobData.failure_code
                         ? FAILURE_LABEL[jobData.failure_code]
                         : STATUS_LABEL[jobData.status]}
                     </p>
+                    {jobData.status === "FAILED" && (
+                      <Button
+                        className="typography-action-sm-reg"
+                        onClick={() =>
+                          deleteJob({ collectionId, jobId: jobData.job_id })
+                        }
+                      >
+                        다시 요청하기
+                      </Button>
+                    )}
                   </div>
                 ) : (
                   <div className="mt-3 flex flex-col gap-4 rounded-3xl bg-[#f5f5f5] px-5 pt-4 pb-5 items-center w-full">
