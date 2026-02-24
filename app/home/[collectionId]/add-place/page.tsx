@@ -8,9 +8,31 @@ import { Button } from "@/components/ui/button";
 import { InputForm } from "@/components/ui/input-form";
 import { usePlaceSearch } from "@/lib/hooks/use-place-search";
 import { useAddCollectionPlace } from "@/lib/hooks/collection/use-add-collection-place";
+import { useCreateExtractionJob } from "@/lib/hooks/collection/use-create-extraction-job";
+import { useLatestExtractionJob } from "@/lib/hooks/collection/use-latest-extraction-job";
+import type { FailureCode, FromUrlStatus } from "@/types/extraction-job";
 import SearchAiIllust from "@/public/illust/search-ai.svg";
 import { SearchIcon, YoutubeIcon } from "lucide-react";
 import { toast } from "sonner";
+
+const STATUS_LABEL: Record<FromUrlStatus, string> = {
+  PENDING: "대기 중이에요...",
+  EXTRACTING: "장소를 추출하는 중이에요...",
+  SEARCHING: "장소를 검색하는 중이에요...",
+  COMPLETED: "장소 추출이 완료됐어요!",
+  FAILED: "장소 추출에 실패했어요.",
+  RETRY_WAITING: "잠시 후 재시도할게요...",
+};
+
+const FAILURE_LABEL: Record<FailureCode, string> = {
+  CONTENT_NOT_FOUND: "콘텐츠를 찾을 수 없어요.",
+  NO_PLACE_EXTRACTED: "분석했지만 장소를 찾지 못했어요.",
+  VIDEO_TOO_SHORT: "분석할 수 없는 영상이에요.",
+  VIDEO_TOO_LONG: "영상 길이가 너무 길어요.",
+  UNEXPECTED_ERROR: "예기치 못한 오류가 발생했어요.",
+  YOUTUBE_API_ERROR: "유튜브 오류가 발생했어요. 잠시 후 재시도할게요.",
+  GENAI_ERROR: "AI 오류가 발생했어요. 잠시 후 재시도할게요.",
+};
 
 const AddPlacePage = () => {
   const router = useRouter();
@@ -19,7 +41,21 @@ const AddPlacePage = () => {
   const [query, setQuery] = useState("");
   const [url, setUrl] = useState("");
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
+  const [isJobActive, setIsJobActive] = useState(false);
   const { data } = usePlaceSearch(query);
+  const { mutate: createJob, isPending: isCreatingJob } = useCreateExtractionJob({
+    onSuccess: () => setIsJobActive(true),
+    onError: (error) => {
+      if (error.response?.data?.code === "JOB_IN_PROGRESS") {
+        setIsJobActive(true);
+      } else {
+        toast.error("장소 추출 요청에 실패했어요.");
+      }
+    },
+  });
+  const { data: jobData } = useLatestExtractionJob(collectionId, {
+    enabled: isJobActive,
+  });
   const { mutate: addPlace, isPending } = useAddCollectionPlace({
     onSuccess: () => {
       toast("선택한 장소가 보관함에 추가되었습니다.");
@@ -120,23 +156,38 @@ const AddPlacePage = () => {
             <h1 className="typography-display-lg-bold">
               AI를 통해 장소를 찾아보세요!
             </h1>
-            <div className="mt-3 flex flex-col gap-4 rounded-3xl bg-[#f5f5f5] px-5 pt-4 pb-5 items-center w-full">
-              <SearchAiIllust />
-              <div className="space-y-2">
-                <div className="space-y-1">
-                  <p className="typography-action-base-bold text-[#757575]">
-                    공유 링크를 붙여넣으면 컨텐츠에 소개된
+            {isJobActive && jobData ? (
+              <div className="mt-3 flex flex-col gap-2 rounded-3xl bg-[#f5f5f5] px-5 py-6 items-center w-full">
+                <p className="typography-action-base-bold text-center">
+                  {jobData.status === "FAILED" && jobData.failure_code
+                    ? FAILURE_LABEL[jobData.failure_code]
+                    : STATUS_LABEL[jobData.status]}
+                </p>
+                {jobData.status === "COMPLETED" && (
+                  <p className="typography-action-sm-reg text-[#757575]">
+                    {jobData.result.matched_count}개의 장소를 찾았어요
                   </p>
-                  <p className="typography-action-base-bold text-[#757575]">
-                    장소를 AI가 일괄적으로 모아올 수 있어요!
-                  </p>
-                </div>
-                <div className="flex flex-row gap-1 text-neutral-500 typography-action-sm-reg items-center">
-                  <YoutubeIcon />
-                  <p>Youtube 롱/숏폼을 통해 분석이 가능해요!</p>
+                )}
+              </div>
+            ) : (
+              <div className="mt-3 flex flex-col gap-4 rounded-3xl bg-[#f5f5f5] px-5 pt-4 pb-5 items-center w-full">
+                <SearchAiIllust />
+                <div className="space-y-2">
+                  <div className="space-y-1">
+                    <p className="typography-action-base-bold text-[#757575]">
+                      공유 링크를 붙여넣으면 컨텐츠에 소개된
+                    </p>
+                    <p className="typography-action-base-bold text-[#757575]">
+                      장소를 AI가 일괄적으로 모아올 수 있어요!
+                    </p>
+                  </div>
+                  <div className="flex flex-row gap-1 text-neutral-500 typography-action-sm-reg items-center">
+                    <YoutubeIcon />
+                    <p>Youtube 롱/숏폼을 통해 분석이 가능해요!</p>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
           <div className="fixed inset-x-5 bottom-24 h-px bg-[#e2e2e2]" />
           <div className="fixed bottom-0 inset-x-0 px-5 py-4 bg-white">
@@ -150,7 +201,9 @@ const AddPlacePage = () => {
               />
               <button
                 type="button"
-                className="size-11 shrink-0 flex items-center justify-center rounded-xl bg-sky-500"
+                disabled={!url.trim() || isCreatingJob}
+                className="size-11 shrink-0 flex items-center justify-center rounded-xl bg-sky-500 disabled:opacity-40"
+                onClick={() => createJob({ collectionId, url })}
               >
                 <SearchIcon size={20} color="#000" />
               </button>
