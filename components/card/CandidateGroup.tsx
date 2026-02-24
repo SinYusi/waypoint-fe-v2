@@ -20,6 +20,7 @@ export interface EditCandidateItem {
   id: string;
   placeType: PlaceType;
   placeName: string;
+  onMenuClick?: () => void;
 }
 
 export interface ViewCandidateItem {
@@ -79,6 +80,7 @@ const CandidateGroup = (props: CandidateGroupProps) => {
             mode="edit"
             placeType={item.placeType}
             placeName={item.placeName}
+            onMenuClick={item.onMenuClick}
           />
         ))}
         {isCollapsible && (
