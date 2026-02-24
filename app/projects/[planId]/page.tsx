@@ -38,7 +38,10 @@ const mockExpensesByDay: Record<number, ExpenseGroupResponse[]> = {
       selected: {
         expense_id: "exp-1",
         block: { block_id: "block-1", name: "성산일출봉" },
-        items: [{ expense_item_id: "item-1", name: "입장료", cost: 5000 }],
+        items: [
+          { expense_item_id: "item-1", name: "입장료", cost: 5000 },
+          { expense_item_id: "item-1b", name: "주차비", cost: 3000 },
+        ],
       },
     },
     // ADDITIONAL + 복수 항목 → BudgetCandidateGroup edit
@@ -83,7 +86,9 @@ const mockExpensesByDay: Record<number, ExpenseGroupResponse[]> = {
         {
           expense_id: "exp-3",
           block: { block_id: "block-3", name: "협재 해수욕장" },
-          items: [{ expense_item_id: "item-3", name: "주차비", cost: 3000 }],
+          items: [{ expense_item_id: "item-3", name: "주차비", cost: 3000 },
+                { expense_item_id: "item-1b", name: "주차비", cost: 3000 },],
+          
         },
         {
           expense_id: "exp-4",
