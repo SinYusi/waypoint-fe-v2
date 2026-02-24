@@ -5,28 +5,25 @@ import { Copy, Loader2, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import AppDialog from "@/components/common/AppDialog";
 import { useCreateCollectionInvitation } from "@/lib/hooks/collection/use-create-collection-invitation";
+import { useCreatePlanInvitation } from "@/lib/hooks/plan/use-create-plan-invitation";
 
-interface CollectionInviteDialogProps {
-  collectionId: string;
+interface InviteDialogProps {
+  variant: "COLLECTION" | "PLAN";
+  id: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const CollectionInviteDialog = ({
-  collectionId,
-  open,
-  onOpenChange,
-}: CollectionInviteDialogProps) => {
-  const {
-    mutate: generateInvitation,
-    data: invitation,
-    isPending,
-    reset,
-  } = useCreateCollectionInvitation();
+const InviteDialog = ({ variant, id, open, onOpenChange }: InviteDialogProps) => {
+  const collectionInvitation = useCreateCollectionInvitation();
+  const planInvitation = useCreatePlanInvitation();
+
+  const { mutate: generateInvitation, data: invitation, isPending, reset } =
+    variant === "COLLECTION" ? collectionInvitation : planInvitation;
 
   useEffect(() => {
     if (open) {
-      generateInvitation(collectionId);
+      generateInvitation(id);
     } else {
       reset();
     }
@@ -50,14 +47,12 @@ const CollectionInviteDialog = ({
       onAction={handleCopy}
     >
       <div className="flex flex-col items-center gap-4">
-        {/* 아이콘 */}
         {isPending ? (
           <Loader2 size={40} className="animate-spin text-[#a1a1aa]" />
         ) : (
           <UserPlus className="text-foreground size-21" strokeWidth={1} />
         )}
 
-        {/* URL */}
         <p className="typography-action-sm-reg text-center text-foreground break-all">
           {isPending
             ? "링크를 생성하는 중이에요..."
@@ -68,4 +63,4 @@ const CollectionInviteDialog = ({
   );
 };
 
-export default CollectionInviteDialog;
+export default InviteDialog;
