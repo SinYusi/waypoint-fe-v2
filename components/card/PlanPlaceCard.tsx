@@ -105,7 +105,7 @@ const PlanPlaceCard = ({
       <div
         className={cn(
           !isView
-            ? "flex pl-4 pr-3 pb-3.5 items-start justify-between"
+            ? "flex pl-4 pr-3 pb-3.5 items-center justify-between"
             : "px-5 pt-3 pb-3 ",
         )}
       >
@@ -120,7 +120,7 @@ const PlanPlaceCard = ({
               label="일정 메뉴"
               bgVariant="ghost"
               onClick={onMenuClick}
-              className="shrink-0"
+              className="shrink-0 self-start"
             />
           </>
         ) : (
