@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { DoorClosed, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,7 +35,6 @@ interface MemberSideDrawerProps {
   meRole?: MemberRole;
   collectionId?: string;
   planId?: string;
-  onCollectionManage?: () => void;
 }
 
 const MemberSideDrawer = ({
@@ -47,8 +47,10 @@ const MemberSideDrawer = ({
   meRole,
   collectionId,
   planId,
-  onCollectionManage,
 }: MemberSideDrawerProps) => {
+  const router = useRouter();
+  const pathname = usePathname();
+
   const isOwner = meRole === "OWNER";
   const { handleKickMember, handleAssignOwner } = useMemberManagement({
     variant,
@@ -96,7 +98,7 @@ const MemberSideDrawer = ({
             {variant === "PLAN" ? (
               <Button
                 className="w-full flex justify-between py-1.5 px-3 bg-card text-foreground"
-                onClick={onCollectionManage}
+                onClick={() => router.push(`${pathname}/collection-manage`)}
               >
                 <p className="typography-action-sm-reg ">
                   보관함 추가 혹은 삭제하기
