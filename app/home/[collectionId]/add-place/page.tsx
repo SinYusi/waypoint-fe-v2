@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, usePathname, useParams } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import Header from "@/components/layout/Header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import { usePlaceSearch } from "@/lib/hooks/use-place-search";
 import { useAddCollectionPlace } from "@/lib/hooks/collection/use-add-collection-place";
 import { useCreateExtractionJob } from "@/lib/hooks/collection/use-create-extraction-job";
 import { useLatestExtractionJob } from "@/lib/hooks/collection/use-latest-extraction-job";
+import { useDeleteExtractionJob } from "@/lib/hooks/collection/use-delete-extraction-job";
 import type { FailureCode, FromUrlStatus } from "@/types/extraction-job";
 import SearchAiIllust from "@/public/illust/search-ai.svg";
 import {
@@ -51,6 +53,7 @@ const AddPlacePage = () => {
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
   const [isJobActive, setIsJobActive] = useState(false);
   const [selectedPlaceIds, setSelectedPlaceIds] = useState<string[]>([]);
+  const queryClient = useQueryClient();
   const { data } = usePlaceSearch(query);
   const { mutate: createJob, isPending: isCreatingJob } =
     useCreateExtractionJob({
@@ -65,6 +68,15 @@ const AddPlacePage = () => {
     });
   const { data: jobData } = useLatestExtractionJob(collectionId, {
     enabled: isJobActive,
+  });
+  const { mutate: deleteJob } = useDeleteExtractionJob({
+    onSuccess: () => {
+      queryClient.removeQueries({
+        queryKey: ["extractionJobLatest", collectionId],
+      });
+      setIsJobActive(false);
+      setSelectedPlaceIds([]);
+    },
   });
   const { mutate: addPlace, isPending } = useAddCollectionPlace({
     onSuccess: () => {
@@ -272,7 +284,13 @@ const AddPlacePage = () => {
                 <button
                   type="button"
                   className="size-11 shrink-0 flex items-center justify-center"
-                  onClick={() => setIsJobActive(false)}
+                  onClick={() => {
+                    if (jobData?.job_id) {
+                      deleteJob({ collectionId, jobId: jobData.job_id });
+                    } else {
+                      setIsJobActive(false);
+                    }
+                  }}
                 >
                   <ArrowLeft size={24} />
                 </button>
