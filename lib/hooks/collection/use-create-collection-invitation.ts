@@ -5,7 +5,7 @@ import {
   type UseMutationOptions,
 } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
-import type { InvitationResponse } from "@/types/collection";
+import type { InvitationResponse } from "@/types/invitation";
 import type { ProblemDetail } from "@/types/problem-detail";
 import { createCollectionInvitation } from "@/lib/api/collection";
 

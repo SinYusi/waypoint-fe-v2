@@ -164,9 +164,4 @@ export type CollectionPlacesResponse = {
   page: number;
 };
 
-export type InvitationResponse = {
-  type: "PLAN" | "COLLECTION";
-  reference_id: string;
-  url: string;
-  ttl: string;
-};
+export type { InvitationResponse } from "@/types/invitation";

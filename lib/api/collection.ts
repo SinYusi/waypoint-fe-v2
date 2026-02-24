@@ -21,12 +21,12 @@ import {
   GetCollectionParams,
   GetCollectionPlacesParams,
   GetCollectionsParams,
-  InvitationResponse,
   PostCollectionPlacePreferenceParams,
   UpdateCollectionParams,
   UpdateCollectionRequest,
   UpdateCollectionResponse,
 } from "@/types/collection";
+import { InvitationResponse } from "@/types/invitation";
 import { CollectionMembersResponse } from "@/types/member";
 import { apiClient } from "./client";
 
