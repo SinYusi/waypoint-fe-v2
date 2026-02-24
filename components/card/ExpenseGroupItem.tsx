@@ -15,8 +15,7 @@ const ExpenseGroupItem = ({ group, onSelectCandidates }: ExpenseGroupItemProps) 
     if (group.block_status === "PENDING" && group.candidates?.length) {
       const cards = group.candidates.map((c) => ({
         placeName: c.block?.name ?? "알 수 없음",
-        feeLabel: c.items[0]?.name,
-        amount: c.items[0]?.cost ?? 0,
+        items: c.items,
         placeType: "기타" as const,
       }));
       return (
@@ -37,8 +36,7 @@ const ExpenseGroupItem = ({ group, onSelectCandidates }: ExpenseGroupItemProps) 
       return (
         <BudgetCandidateCard
           placeName={group.selected.block?.name ?? ""}
-          feeLabel={group.selected.items[0]?.name}
-          amount={group.selected.items[0]?.cost ?? 0}
+          items={group.selected.items}
           placeType="기타"
           candidateCount={group.candidate_count ?? 0}
           onSelectClick={onSelectCandidates}
@@ -51,34 +49,22 @@ const ExpenseGroupItem = ({ group, onSelectCandidates }: ExpenseGroupItemProps) 
       return (
         <BudgetPlaceCard
           placeName={group.selected.block?.name ?? ""}
-          feeLabel={group.selected.items[0]?.name}
-          amount={group.selected.items[0]?.cost ?? 0}
+          items={group.selected.items}
           placeType="기타"
         />
       );
     }
   }
 
-  // ADDITIONAL 타입 (추가 지출)
-  if (group.type === "ADDITIONAL" && group.selected) {
-    const { items } = group.selected;
-
-    if (items.length === 1) {
-      return (
-        <BudgetPlaceCard
-          placeName={items[0].name}
-          amount={items[0].cost}
-          placeType="기타"
-        />
-      );
-    }
-
-    const cards = items.map((item) => ({
-      placeName: item.name,
-      amount: item.cost,
-      placeType: "기타" as const,
-    }));
-    return <BudgetCandidateGroup mode="edit" cards={cards} />;
+  // ADDITIONAL 타입 (추가 지출) — 항목 수에 관계없이 단일 카드로 표시
+  if (group.type === "ADDITIONAL" && group.selected?.items.length) {
+    return (
+      <BudgetPlaceCard
+        placeName="추가 지출"
+        items={group.selected.items}
+        placeType="기타"
+      />
+    );
   }
 
   return null;
