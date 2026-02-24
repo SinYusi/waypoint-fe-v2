@@ -212,8 +212,8 @@ const AddPlacePage = () => {
                         rel="noopener noreferrer"
                         className="flex items-center justify-between py-3 border-t border-border"
                       >
-                        <div className="flex items-center gap-1">
-                          <ColorYoutubeIcon />
+                        <div className="flex items-center gap-1 min-w-0">
+                          <ColorYoutubeIcon className="shrink-0" />
                           <p className="typography-caption-xs-reg text-muted-foreground truncate">
                             {jobData.result.author_name} -{" "}
                             {jobData.result.title}
