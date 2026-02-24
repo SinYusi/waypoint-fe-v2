@@ -59,7 +59,7 @@ const BudgetCandidateCard = ({
           <button
             type="button"
             onClick={onSelectClick}
-            className="flex h-8 w-full items-center justify-center gap-1 rounded-lg bg-[#F0F0F0] px-2.5 py-2"
+            className="flex h-8 w-full cursor-pointer items-center justify-center gap-1 rounded-lg bg-[#F0F0F0] px-2.5 py-2"
           >
             <CircleCheck
               className="size-4 shrink-0 text-primary"
