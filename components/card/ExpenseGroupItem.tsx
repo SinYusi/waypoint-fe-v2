@@ -56,15 +56,9 @@ const ExpenseGroupItem = ({ group, onSelectCandidates }: ExpenseGroupItemProps) 
     }
   }
 
-  // ADDITIONAL 타입 (추가 지출) — 항목 수에 관계없이 단일 카드로 표시
+  // ADDITIONAL 타입 (추가 지출) — 헤더 없이 항목만 표시
   if (group.type === "ADDITIONAL" && group.selected?.items.length) {
-    return (
-      <BudgetPlaceCard
-        placeName="추가 지출"
-        items={group.selected.items}
-        placeType="기타"
-      />
-    );
+    return <BudgetPlaceCard items={group.selected.items} />;
   }
 
   return null;
