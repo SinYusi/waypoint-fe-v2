@@ -5,6 +5,9 @@ import PlaceReactionItem, {
   type ReactionType,
 } from "@/components/card/PlaceReactionItem";
 import OpinionBtn from "@/components/card/OpinionBtn";
+import { cn } from "@/lib/utils/utils";
+import HeaderBtn from "../layout/HeaderBtn";
+import { Ellipsis } from "lucide-react";
 
 interface Reactions {
   good: number;
@@ -19,11 +22,14 @@ interface PlanPlaceCardProps {
   writerProfileImageUrl: string;
   imageUrl?: string;
   memo?: string;
-  reactions: Reactions;
+  reactions?: Reactions;
   activeReaction?: ReactionType;
-  opinionCount: number;
+  opinionCount?: number;
   onReactionClick?: (type: ReactionType) => void;
   onOpinionClick?: () => void;
+  onMenuClick?: () => void;
+  isView?: boolean;
+  className?: string;
 }
 
 const REACTION_TYPES: ReactionType[] = ["good", "normal", "bad"];
@@ -40,16 +46,32 @@ const PlanPlaceCard = ({
   opinionCount,
   onReactionClick,
   onOpinionClick,
+  onMenuClick,
+  isView = true,
+  className,
 }: PlanPlaceCardProps) => {
   return (
-    <div className="flex flex-col rounded-2xl border border-[#e2e2e2] bg-white overflow-hidden">
+    <div
+      className={cn(
+        "w-full flex flex-col rounded-2xl border border-border bg-background shadow-xs",
+        className,
+      )}
+    >
       {/* Header */}
       <div className="flex items-start justify-between gap-2 px-4 pt-3.5 pb-4">
         <div className="flex items-start gap-2 pr-1.5">
-          <div className="shrink-0 mt-0.5">
+          <div className="shrink-0">
             <PlaceTypeIcon type={placeType} />
           </div>
-          <span className="typography-display-lg-bold line-clamp-2 text-foreground">
+          <span
+            className="typography-display-base-bold text-foreground"
+            style={{
+              display: "-webkit-box",
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: 2,
+              overflow: "hidden",
+            }}
+          >
             {placeName}
           </span>
         </div>
@@ -62,38 +84,71 @@ const PlanPlaceCard = ({
       </div>
 
       {/* Image */}
-      <div className="relative w-full aspect-[8/5] bg-[#f0f0f0]">
-        {imageUrl ? (
-          <Image src={imageUrl} alt={placeName} fill className="object-cover" />
+      {isView && (
+        <div className="relative w-full aspect-8/5 bg-[#f0f0f0]">
+          {imageUrl ? (
+            <Image
+              src={imageUrl}
+              alt={placeName}
+              fill
+              className="object-cover"
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center text-muted-foreground typography-body-sm-reg">
+              사진 없음
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Memo / Memo + MenuButton */}
+      <div
+        className={cn(
+          !isView
+            ? "flex pl-4 pr-3 pb-3.5 items-start justify-between"
+            : "px-5 pt-3 pb-3 ",
+        )}
+      >
+        {!isView ? (
+          <>
+            {/* memo가 없어도 자리 차지 */}
+            <p className="typography-body-sm-reg text-muted-foreground flex-1 min-w-0 break-all">
+              {memo ?? ""}
+            </p>
+            <HeaderBtn
+              icon={Ellipsis}
+              label="일정 메뉴"
+              bgVariant="ghost"
+              onClick={onMenuClick}
+              className="shrink-0"
+            />
+          </>
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-muted-foreground typography-body-sm-reg">
-            사진 없음
-          </div>
+          memo && (
+            <p className="typography-body-sm-reg text-muted-foreground min-w-0 break-all">
+              {memo}
+            </p>
+          )
         )}
       </div>
 
-      {/* Memo */}
-      {memo && (
-        <p className="px-5 pt-3 pb-3 typography-body-sm-reg text-muted-foreground">
-          {memo}
-        </p>
-      )}
-
       {/* Footer */}
-      <div className="flex items-center justify-between px-4 py-3 border-t border-dashed border-[#e2e2e2]">
-        <div className="flex items-center">
-          {REACTION_TYPES.map((type) => (
-            <PlaceReactionItem
-              key={type}
-              type={type}
-              count={reactions[type]}
-              active={activeReaction === type}
-              onClick={() => onReactionClick?.(type)}
-            />
-          ))}
+      {isView && (
+        <div className="flex items-center justify-between pl-3 pr-4 pt-3 pb-3.5 border-t border-dashed border-border">
+          <div className="flex items-center">
+            {REACTION_TYPES.map((type) => (
+              <PlaceReactionItem
+                key={type}
+                type={type}
+                count={reactions?.[type] ?? 0}
+                active={activeReaction === type}
+                onClick={() => onReactionClick?.(type)}
+              />
+            ))}
+          </div>
+          <OpinionBtn count={opinionCount ?? 0} onClick={onOpinionClick} />
         </div>
-        <OpinionBtn count={opinionCount} onClick={onOpinionClick} />
-      </div>
+      )}
     </div>
   );
 };
