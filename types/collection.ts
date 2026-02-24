@@ -163,3 +163,10 @@ export type CollectionPlacesResponse = {
   size: number;
   page: number;
 };
+
+export type InvitationResponse = {
+  type: "PLAN" | "COLLECTION";
+  reference_id: string;
+  url: string;
+  ttl: string;
+};

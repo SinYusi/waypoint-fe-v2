@@ -21,6 +21,7 @@ import {
   GetCollectionParams,
   GetCollectionPlacesParams,
   GetCollectionsParams,
+  InvitationResponse,
   PostCollectionPlacePreferenceParams,
   UpdateCollectionParams,
   UpdateCollectionRequest,
@@ -164,4 +165,17 @@ export const deleteCollection = async (
   collectionId: DeleteCollectionParams["collectionId"],
 ) => {
   await apiClient.delete(`/collections/${collectionId}`);
+};
+
+/**
+ * 컬렉션 초대 링크 생성 API
+ *
+ * @param collectionId - 초대할 컬렉션 ID
+ * @returns 초대 링크 정보 (type, reference_id, url, ttl)
+ */
+export const createCollectionInvitation = async (collectionId: string) => {
+  const res = await apiClient.post<InvitationResponse>(
+    `/collections/${collectionId}/invitations`,
+  );
+  return res.data;
 };
