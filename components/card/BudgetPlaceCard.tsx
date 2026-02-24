@@ -9,6 +9,8 @@ interface BudgetPlaceCardProps {
   placeName?: string;
   items: ExpenseItem[];
   placeType?: PlaceType;
+  selected?: boolean;
+  onClick?: () => void;
   className?: string;
 }
 
@@ -16,11 +18,14 @@ const BudgetPlaceCard = ({
   placeName,
   items,
   placeType,
+  selected = false,
+  onClick,
   className,
 }: BudgetPlaceCardProps) => {
   return (
     <article
-      className={`w-full overflow-hidden rounded-2xl border border-border bg-background shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] ${className ?? ""}`}
+      onClick={onClick}
+      className={`w-full overflow-hidden rounded-2xl border bg-background shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] ${selected ? "border-[#0EA5E9]" : "border-border"} ${onClick ? "cursor-pointer" : ""} ${className ?? ""}`}
     >
       {placeName && placeType && (
         <header className="flex items-start justify-between px-4 pt-3.5 pb-3">
