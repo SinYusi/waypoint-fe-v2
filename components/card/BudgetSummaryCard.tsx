@@ -20,6 +20,8 @@ interface BudgetSummaryCardProps {
   perDayAmount?: number;
   /** 1인당 예상 비용 */
   perPersonAmount?: number;
+  /** 후보지에 지출이 입력된 경우에만 true → 안내 문구 표시 */
+  showHint?: boolean;
   className?: string;
 }
 
@@ -33,6 +35,7 @@ const BudgetSummaryCard = ({
   usedAmount = 0,
   perDayAmount = 0,
   perPersonAmount = 0,
+  showHint = false,
   className,
 }: BudgetSummaryCardProps) => {
   // 예산 설정 안 했을 때 - view 모드는 렌더링 없음
@@ -116,13 +119,15 @@ const BudgetSummaryCard = ({
           </div>
         </div>
 
-        {/* 안내 문구 */}
-        <div className="flex items-center justify-center gap-1 px-4">
-          <CircleHelp className="size-4.5 shrink-0 text-muted-foreground" strokeWidth={2} />
-          <span className="typography-caption-xs-reg text-muted-foreground">
-            후보지 중 가장 비싼 장소를 기준으로 계산되었어요!
-          </span>
-        </div>
+        {/* 안내 문구: 후보지에 지출이 입력된 경우에만 표시 */}
+        {showHint && (
+          <div className="flex items-center justify-center gap-1 px-4">
+            <CircleHelp className="size-4.5 shrink-0 text-muted-foreground" strokeWidth={2} />
+            <span className="typography-caption-xs-reg text-muted-foreground">
+              후보지 중 가장 비싼 장소를 기준으로 계산되었어요!
+            </span>
+          </div>
+        )}
       </div>
     );
   }
@@ -186,13 +191,15 @@ const BudgetSummaryCard = ({
           </Button>
         </div>
 
-        {/* 안내 문구 */}
-        <div className="flex items-center justify-center gap-1 px-4">
-          <CircleHelp className="size-4.5 shrink-0 text-muted-foreground" strokeWidth={2} />
-          <span className="typography-caption-xs-reg text-muted-foreground">
-            후보지 중 가장 비싼 장소를 기준으로 계산되었어요!
-          </span>
-        </div>
+        {/* 안내 문구: 후보지에 지출이 입력된 경우에만 표시 */}
+        {showHint && (
+          <div className="flex items-center justify-center gap-1 px-4">
+            <CircleHelp className="size-4.5 shrink-0 text-muted-foreground" strokeWidth={2} />
+            <span className="typography-caption-xs-reg text-muted-foreground">
+              후보지 중 가장 비싼 장소를 기준으로 계산되었어요!
+            </span>
+          </div>
+        )}
       </div>
     );
   }
@@ -290,13 +297,15 @@ const BudgetSummaryCard = ({
           </div>
         </div>
 
-        {/* 안내 문구 */}
-        <div className="flex items-center justify-center gap-1 px-4">
-          <CircleHelp className="size-4.5 shrink-0 text-muted-foreground" strokeWidth={2} />
-          <span className="typography-caption-xs-reg text-muted-foreground">
-            후보지 중 가장 비싼 장소를 기준으로 계산되었어요!
-          </span>
-        </div>
+        {/* 안내 문구: 후보지에 지출이 입력된 경우에만 표시 */}
+        {showHint && (
+          <div className="flex items-center justify-center gap-1 px-4">
+            <CircleHelp className="size-4.5 shrink-0 text-muted-foreground" strokeWidth={2} />
+            <span className="typography-caption-xs-reg text-muted-foreground">
+              후보지 중 가장 비싼 장소를 기준으로 계산되었어요!
+            </span>
+          </div>
+        )}
       </div>
     );
   }
@@ -402,13 +411,15 @@ const BudgetSummaryCard = ({
           </Button>
         </div>
 
-        {/* 안내 문구 */}
-        <div className="flex items-center justify-center gap-1 px-4">
-          <CircleHelp className="size-4.5 shrink-0 text-muted-foreground" strokeWidth={2} />
-          <span className="typography-caption-xs-reg text-muted-foreground">
-            후보지 중 가장 비싼 장소를 기준으로 계산되었어요!
-          </span>
-        </div>
+        {/* 안내 문구: 후보지에 지출이 입력된 경우에만 표시 */}
+        {showHint && (
+          <div className="flex items-center justify-center gap-1 px-4">
+            <CircleHelp className="size-4.5 shrink-0 text-muted-foreground" strokeWidth={2} />
+            <span className="typography-caption-xs-reg text-muted-foreground">
+              후보지 중 가장 비싼 장소를 기준으로 계산되었어요!
+            </span>
+          </div>
+        )}
       </div>
     );
   }
