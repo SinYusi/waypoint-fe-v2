@@ -95,6 +95,32 @@ const mockExpensesByDay: Record<number, ExpenseGroupResponse[]> = {
           block: { block_id: "block-5", name: "해운대 해수욕장" },
           items: [{ expense_item_id: "item-6", name: "주차비", cost: 2000 }],
         },
+      ],
+      selected: null,
+    },
+    {
+      type: "BLOCK",
+      time_block_id: "block-3",
+      block_status: "PENDING",
+      candidate_count: 2,
+      candidates: [
+        {
+          expense_id: "exp-3",
+          block: { block_id: "block-3", name: "협재 해수욕장" },
+          items: [{ expense_item_id: "item-3", name: "주차비", cost: 3000 },
+                { expense_item_id: "item-1b", name: "주차비", cost: 3000 },],
+          
+        },
+        {
+          expense_id: "exp-4",
+          block: { block_id: "block-4", name: "곽지 해수욕장" },
+          items: [{ expense_item_id: "item-4", name: "주차비", cost: 2000 }],
+        },
+        {
+          expense_id: "exp-6",
+          block: { block_id: "block-5", name: "해운대 해수욕장" },
+          items: [{ expense_item_id: "item-6", name: "주차비", cost: 2000 }],
+        },
         {
           expense_id: "exp-7",
           block: { block_id: "block-6", name: "송도 해수욕장" },
