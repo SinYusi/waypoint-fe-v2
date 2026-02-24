@@ -27,7 +27,7 @@ const CollectionDetailPage = () => {
   });
 
   const { data: collection } = useCollection(collectionId);
-  const { data: placesData } = useCollectionPlaces(collectionId, {
+  const { data: placesData, isPending: isPlacesPending } = useCollectionPlaces(collectionId, {
     sort: listHeader.sort,
     added_by: listHeader.addedBy,
   });
@@ -78,7 +78,13 @@ const CollectionDetailPage = () => {
         rightBtnBgVariant="ghost"
         className="fixed top-0 z-10 inset-x-0 bg-background"
       />
-      {places.length === 0 ? (
+      {isPlacesPending ? (
+        <main className="flex flex-col flex-1 items-center justify-center pb-18 pt-15">
+          <p className="typography-action-base-reg text-neutral-400">
+            보관함을 불러오는 중이에요...
+          </p>
+        </main>
+      ) : places.length === 0 ? (
         <main className="flex flex-col flex-1 items-center justify-center pb-18 gap-5 mx-5 pt-15">
           <div className="relative flex items-center justify-center w-40 h-40 rounded-full bg-[#f5f5f5]">
             <PlaceEmptyIllust className="absolute w-54 h-48" />
