@@ -8,6 +8,7 @@
  * - 수정 (PUT | `/plans/{planId}`)
  * - 삭제 (DELETE | `/plans/{planId}`)
  * - 소유자 변경 (PATCH | `/plans/{planId}/owner`)
+ * - 초대 링크 생성 (POST | `/plans/{planId}/invitations`)
  */
 
 import {
@@ -31,6 +32,7 @@ import {
   normalizePlaceDetail,
   type PlaceDetailApiResponse,
 } from "@/lib/api/place";
+import { InvitationResponse } from "@/types/invitation";
 import { apiClient } from "./client";
 
 /**
@@ -153,6 +155,19 @@ export const addPlanBlockCandidates = async (
   const res = await apiClient.post<BlockResponse>(
     `/plans/${planId}/blocks/${timeBlockId}/candidates`,
     body,
+  );
+  return res.data;
+};
+
+/**
+ * 플랜 초대 링크 생성 API
+ *
+ * @param planId - 초대할 플랜 ID
+ * @returns 초대 링크 정보 (type, reference_id, url, ttl)
+ */
+export const createPlanInvitation = async (planId: string) => {
+  const res = await apiClient.post<InvitationResponse>(
+    `/plans/${planId}/invitations`,
   );
   return res.data;
 };
