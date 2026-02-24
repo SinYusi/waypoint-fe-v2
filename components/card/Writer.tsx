@@ -10,13 +10,9 @@ const Writer = ({ nickname, profileImageUrl }: WriterProps) => {
     nickname.length >= 7 ? `${nickname.slice(0, 6)}...` : nickname;
 
   return (
-    <div className="flex items-center gap-1">
-      <ProfileImage
-        src={profileImageUrl}
-        alt={nickname}
-        className="size-4"
-      />
-      <span className="typography-label-sm-reg text-muted-foreground">
+    <div className="flex items-center gap-1 pt-1">
+      <ProfileImage src={profileImageUrl} alt={nickname} className="size-4" />
+      <span className="typography-caption-xs-reg text-foreground">
         {displayName}
       </span>
     </div>
