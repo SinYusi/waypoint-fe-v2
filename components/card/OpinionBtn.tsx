@@ -9,12 +9,14 @@ const OpinionBtn = ({ count, onClick }: OpinionBtnProps) => {
   return (
     <button
       type="button"
-      className="flex items-center gap-1 border border-[#e2e2e2] rounded-lg px-2.5 py-1.5"
+      className="flex items-center gap-1.5 border border-border rounded-lg px-2.5 py-1.5"
       onClick={onClick}
     >
-      <MessageCircle className="size-4" />
-      <span className="typography-body-sm-reg">의견</span>
-      <span className="typography-body-sm-bold">{count}</span>
+      <MessageCircle className="w-4.5 h-4.5 text-muted-foreground" />
+      <div className="flex items-center gap-1">
+        <p className="typography-action-sm-reg">의견</p>
+        <span className="typography-action-sm-bold">{count}</span>
+      </div>
     </button>
   );
 };
