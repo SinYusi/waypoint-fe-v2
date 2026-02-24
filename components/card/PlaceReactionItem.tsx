@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils/utils";
 import { Laugh, Smile, Angry, type LucideProps } from "lucide-react";
 
 type ReactionType = "good" | "normal" | "bad";
@@ -27,18 +28,19 @@ const PlaceReactionItem = ({
   onClick,
 }: PlaceReactionItemProps) => {
   const Icon = reactionIconMap[type];
-  const color = active ? "#1c2024" : "#a3a3a3";
 
   return (
     <button
       type="button"
-      className={`flex items-center gap-1.5 rounded-[8px] px-2 py-1 ${variant === "default" ? "bg-white" : ""}`}
+      className={cn(
+        "flex items-center gap-1.5 rounded-xl px-2 py-1",
+        active ? "text-foreground" : "text-secondary",
+        variant === "default" ? "bg-background" : "",
+      )}
       onClick={onClick}
     >
-      <Icon className="size-4" style={{ color }} />
-      <span className="typography-body-sm-bold" style={{ color }}>
-        {count}
-      </span>
+      <Icon className="size-5" />
+      <span className="typography-body-sm-sb">{count}</span>
     </button>
   );
 };
