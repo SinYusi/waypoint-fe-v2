@@ -1,16 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import { useParams } from "next/navigation";
 import DayNav from "@/components/common/DayNav";
 import GoogleMap from "@/components/common/GoogleMap";
 import BudgetSummaryCard from "@/components/card/BudgetSummaryCard";
+import ExpenseGroupItem from "@/components/card/ExpenseGroupItem";
 import { DayHeader } from "@/components/layout/DayHeader";
 import NavigationBar from "@/components/layout/NavigationBar";
 import PlanHeader from "@/components/layout/PlanHeader";
 import ProjectHeader from "@/components/layout/ProjectHeader";
 import { useBudget } from "@/lib/hooks/plan/use-budget";
-import type { BudgetResponse } from "@/types/budget";
+import { useExpenses } from "@/lib/hooks/plan/use-expenses";
+import type { BudgetResponse, ExpenseGroupResponse } from "@/types/budget";
 
 // TODO: 서버 연결 후 제거
 const mockBudgetData: BudgetResponse = {
@@ -21,6 +23,107 @@ const mockBudgetData: BudgetResponse = {
   remaining_budget: 936000,
   cost_per_person: 141000,
   traveler_count: 4,
+};
+
+// TODO: 서버 연결 후 제거
+const mockExpensesByDay: Record<number, ExpenseGroupResponse[]> = {
+  1: [
+    // BLOCK + FIXED + 단일 후보 → BudgetPlaceCard
+    {
+      type: "BLOCK",
+      time_block_id: "block-1",
+      block_status: "FIXED",
+      candidate_count: 1,
+      candidates: null,
+      selected: {
+        expense_id: "exp-1",
+        block: { block_id: "block-1", name: "성산일출봉" },
+        items: [{ expense_item_id: "item-1", name: "입장료", cost: 5000 }],
+      },
+    },
+    // ADDITIONAL + 복수 항목 → BudgetCandidateGroup edit
+    {
+      type: "ADDITIONAL",
+      time_block_id: null,
+      block_status: null,
+      candidate_count: null,
+      candidates: null,
+      selected: {
+        expense_id: "exp-5",
+        block: null,
+        items: [
+          { expense_item_id: "item-5", name: "렌터카", cost: 80000 },
+          { expense_item_id: "item-6", name: "점심식사", cost: 25000 },
+        ],
+      },
+    },
+  ],
+  2: [
+    // BLOCK + FIXED + 복수 후보 → BudgetCandidateCard
+    {
+      type: "BLOCK",
+      time_block_id: "block-2",
+      block_status: "FIXED",
+      candidate_count: 2,
+      candidates: null,
+      selected: {
+        expense_id: "exp-2",
+        block: { block_id: "block-2", name: "우도" },
+        items: [{ expense_item_id: "item-2", name: "배 왕복", cost: 12000 }],
+      },
+    },
+  ],
+  3: [
+    // BLOCK + PENDING → BudgetCandidateGroup view
+    {
+      type: "BLOCK",
+      time_block_id: "block-3",
+      block_status: "PENDING",
+      candidate_count: 2,
+      candidates: [
+        {
+          expense_id: "exp-3",
+          block: { block_id: "block-3", name: "협재 해수욕장" },
+          items: [{ expense_item_id: "item-3", name: "주차비", cost: 3000 }],
+        },
+        {
+          expense_id: "exp-4",
+          block: { block_id: "block-4", name: "곽지 해수욕장" },
+          items: [{ expense_item_id: "item-4", name: "주차비", cost: 2000 }],
+        },
+      ],
+      selected: null,
+    },
+  ],
+};
+
+// day별 지출 항목 — 훅을 루프 밖에서 호출하기 위해 별도 컴포넌트로 분리
+const DayExpenses = ({
+  planId,
+  day,
+}: {
+  planId: string;
+  day: number;
+}) => {
+  const { data } = useExpenses(planId, day);
+  const expenses = data ?? mockExpensesByDay[day] ?? [];
+
+  if (expenses.length === 0) return null;
+
+  return (
+    <div className="flex flex-col px-5 py-3">
+      {expenses.map((group, idx) => (
+        <Fragment key={idx}>
+          <ExpenseGroupItem group={group} />
+          {idx < expenses.length - 1 && (
+            <div className="flex justify-center">
+              <div className="w-px h-5 bg-border" />
+            </div>
+          )}
+        </Fragment>
+      ))}
+    </div>
+  );
 };
 
 const DAYS_KO = ["일", "월", "화", "수", "목", "금", "토"];
@@ -44,31 +147,14 @@ const PlanPage = () => {
   const budgetData = data ?? mockBudgetData;
   const startDate = "2026-02-24";
   const items = [
-    {
-      value: "1",
-      label: "Day 1",
-    },
-    {
-      value: "2",
-      label: "Day 2",
-    },
-    {
-      value: "3",
-      label: "Day 3",
-    },
-    {
-      value: "4",
-      label: "Day 4",
-    },
-    {
-      value: "5",
-      label: "Day 5",
-    },
-    {
-      value: "6",
-      label: "Day 6",
-    },
+    { value: "1", label: "Day 1" },
+    { value: "2", label: "Day 2" },
+    { value: "3", label: "Day 3" },
+    { value: "4", label: "Day 4" },
+    { value: "5", label: "Day 5" },
+    { value: "6", label: "Day 6" },
   ];
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* 헤더 - sticky */}
@@ -157,7 +243,11 @@ const PlanPage = () => {
               day={Number(item.value)}
               date={formatDayDate(startDate, Number(item.value) - 1)}
               defaultOpen
-            />
+            >
+              {activeMode === "budget" && (
+                <DayExpenses planId={planId} day={Number(item.value)} />
+              )}
+            </DayHeader>
           </div>
         ))}
       </main>
