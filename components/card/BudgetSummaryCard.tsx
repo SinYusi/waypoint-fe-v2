@@ -15,6 +15,8 @@ interface BudgetSummaryCardProps {
   totalBudget?: number;
   /** 지출액 */
   usedAmount?: number;
+  /** 1일 평균 지출 */
+  perDayAmount?: number;
   /** 1인당 예상 비용 */
   perPersonAmount?: number;
   className?: string;
@@ -28,6 +30,7 @@ const BudgetSummaryCard = ({
   mode = "view",
   totalBudget = 0,
   usedAmount = 0,
+  perDayAmount = 0,
   perPersonAmount = 0,
   className,
 }: BudgetSummaryCardProps) => {
@@ -36,7 +39,54 @@ const BudgetSummaryCard = ({
 
   // 지출 중심 카드 - 보기
   if (variant === "expense" && mode === "view") {
-    return <div className={className}>{/* TODO: 지출 중심 카드 */}</div>;
+    return (
+      <div className={cn("px-5 py-1 flex flex-col gap-4", className)}>
+        {/* 카드 */}
+        <div className="rounded-3xl p-4 bg-card flex flex-col gap-3">
+          {/* 상단 섹션 */}
+          <div className="pb-1 border-b border-dashed border-border">
+            {/* Row: 총 지출 / 1일 평균 지출 */}
+            <div className="flex justify-between">
+              {/* 총 지출 */}
+              <div className="flex flex-col">
+                <span className="typography-nav-xl-bold text-muted-foreground">총 지출</span>
+                <div className="flex items-baseline gap-0.5">
+                  <span className="typography-display-lg-bold text-primary">
+                    {formatKRW(usedAmount)}
+                  </span>
+                  <span className="typography-action-base-bold text-primary">원</span>
+                </div>
+              </div>
+
+              {/* 1일 평균 지출 */}
+              <div className="flex flex-col items-start">
+                <span className="typography-nav-xl-bold text-muted-foreground">1일 평균 지출</span>
+                <div className="flex items-baseline gap-0.5">
+                  <span className="typography-display-lg-bold text-muted-foreground">
+                    {formatKRW(perDayAmount)}
+                  </span>
+                  <span className="typography-action-base-bold text-muted-foreground">원</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 하단: 1인당 예상 비용 badge + 금액 */}
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-1 rounded-full bg-background px-2.75 py-0.75">
+              <UsersRound className="size-4 shrink-0 text-primary" strokeWidth={1.5} />
+              <span className="typography-caption-xs-reg text-primary">1인당 예상 비용</span>
+            </div>
+            <div className="flex items-baseline gap-0.5">
+              <span className="typography-display-lg-bold text-foreground">
+                {formatKRW(perPersonAmount)}
+              </span>
+              <span className="typography-action-base-bold text-foreground">원</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   // 지출 중심 카드 - 편집
