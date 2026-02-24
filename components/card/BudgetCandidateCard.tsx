@@ -1,10 +1,10 @@
 import { CircleCheck, ChevronRight } from "lucide-react";
 import PlaceTypeIcon, { type PlaceType } from "@/components/card/PlaceTypeIcon";
+import type { ExpenseItem } from "@/components/card/BudgetPlaceCard";
 
 interface BudgetCandidateCardProps {
   placeName: string;
-  feeLabel?: string;
-  amount: number;
+  items: ExpenseItem[];
   placeType: PlaceType;
   candidateCount: number;
   onSelectClick?: () => void;
@@ -13,8 +13,7 @@ interface BudgetCandidateCardProps {
 
 const BudgetCandidateCard = ({
   placeName,
-  feeLabel = "입장료",
-  amount,
+  items,
   placeType,
   candidateCount,
   onSelectClick,
@@ -24,7 +23,7 @@ const BudgetCandidateCard = ({
     <article
       className={`w-full overflow-hidden rounded-2xl border border-border bg-background shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] ${className ?? ""}`}
     >
-      {/* Header - BudgetPlaceCard와 동일 */}
+      {/* Header */}
       <header className="flex items-start justify-between px-4 pt-3.5 pb-3">
         <div className="flex min-w-0 items-center gap-2 pr-1.5">
           <h3 className="typography-display-lg-bold truncate text-[#020618]">
@@ -38,22 +37,24 @@ const BudgetCandidateCard = ({
 
       {/* Main */}
       <div className="flex flex-col gap-3 pt-1 pb-3.5">
-        {/* 요금 행 */}
-        <div className="pl-4 pr-3">
-          <div className="flex w-full items-center justify-between pr-1">
-            <span className="typography-body-sm-reg text-muted-foreground">
-              {feeLabel}
-            </span>
-            <div className="flex h-6 w-16 items-center justify-end gap-0.5 text-foreground">
-              <span className="typography-body-base h-6 whitespace-nowrap leading-6">
-                {amount.toLocaleString("ko-KR")}
+        {/* 요금 행(들) */}
+        <div className="flex flex-col gap-1 pl-4 pr-3">
+          {items.map((item, idx) => (
+            <div key={idx} className="flex w-full items-center justify-between pr-1">
+              <span className="typography-body-sm-reg text-muted-foreground">
+                {item.name}
               </span>
-              <span className="typography-body-sm-reg h-5 w-3.25 leading-5">원</span>
+              <div className="flex h-6 items-center justify-end gap-0.5 text-foreground">
+                <span className="typography-body-base h-6 whitespace-nowrap leading-6">
+                  {item.cost.toLocaleString("ko-KR")}
+                </span>
+                <span className="typography-body-sm-reg h-5 w-3.25 leading-5">원</span>
+              </div>
             </div>
-          </div>
+          ))}
         </div>
 
-        {/* 버튼 행 */}
+        {/* 다시 선택하기 버튼 */}
         <div className="px-4">
           <button
             type="button"
