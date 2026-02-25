@@ -21,6 +21,14 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "img1.kakaocdn.net",
+      },
+      {
+        protocol: "https",
+        hostname: "t1.kakaocdn.net",
+      },
+      {
+        protocol: "https",
         hostname: "way-point-bucket.s3.ap-northeast-2.amazonaws.com",
       },
     ],
