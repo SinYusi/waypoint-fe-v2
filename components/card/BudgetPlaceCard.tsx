@@ -41,19 +41,25 @@ const BudgetPlaceCard = ({
       )}
 
       <div className={`flex flex-col gap-1 px-4 pb-3.5 ${placeName ? "pt-1" : "pt-3.5"}`}>
-        {items.map((item, idx) => (
-          <div key={idx} className="flex w-full items-center justify-between pr-1">
-            <span className="typography-body-sm-reg text-muted-foreground">
-              {item.name}
-            </span>
-            <div className="flex h-6 items-center justify-end gap-0.5 text-foreground">
-              <span className="typography-body-base h-6 whitespace-nowrap leading-6">
-                {item.cost.toLocaleString("ko-KR")}
-              </span>
-              <span className="typography-body-sm-reg h-5 w-3.25 leading-5">원</span>
-            </div>
+        {items.length === 0 ? (
+          <div className="flex h-6 w-full items-center justify-end gap-2 pr-1">
+            <span className="typography-body-base text-[#757575]">지출없음</span>
           </div>
-        ))}
+        ) : (
+          items.map((item, idx) => (
+            <div key={idx} className="flex w-full items-center justify-between pr-1">
+              <span className="typography-body-sm-reg text-muted-foreground">
+                {item.name}
+              </span>
+              <div className="flex h-6 items-center justify-end gap-0.5 text-foreground">
+                <span className="typography-body-base h-6 whitespace-nowrap leading-6">
+                  {item.cost.toLocaleString("ko-KR")}
+                </span>
+                <span className="typography-body-sm-reg h-5 w-3.25 leading-5">원</span>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </article>
   );
