@@ -455,3 +455,20 @@ export const deleteBlockOpinion = async (
     `/plans/${planId}/blocks/${blockId}/opinions/${opinionId}`,
   );
 };
+
+export const deleteTimeBlock = async (
+  planId: string,
+  timeBlockId: string,
+): Promise<void> => {
+  await apiClient.delete(`/plans/${planId}/blocks/${timeBlockId}`);
+};
+
+export const deleteCandidate = async (
+  planId: string,
+  timeBlockId: string,
+  blockId: string,
+): Promise<void> => {
+  await apiClient.delete(
+    `/plans/${planId}/blocks/${timeBlockId}/candidates/${blockId}`,
+  );
+};
