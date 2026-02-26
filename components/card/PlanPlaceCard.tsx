@@ -7,7 +7,7 @@ import PlaceReactionItem, {
 import OpinionBtn from "@/components/card/OpinionBtn";
 import { cn } from "@/lib/utils/utils";
 import HeaderBtn from "../layout/HeaderBtn";
-import { Ellipsis } from "lucide-react";
+import { ChevronRight, CircleCheck, Ellipsis } from "lucide-react";
 
 interface Reactions {
   good: number;
@@ -29,6 +29,9 @@ interface PlanPlaceCardProps {
   onOpinionClick?: () => void;
   onMenuClick?: () => void;
   isView?: boolean;
+  isFixedCandidate?: boolean;
+  candidateCount?: number;
+  onReselectCandidate?: () => void;
   className?: string;
 }
 
@@ -48,6 +51,9 @@ const PlanPlaceCard = ({
   onOpinionClick,
   onMenuClick,
   isView = true,
+  isFixedCandidate = false,
+  candidateCount,
+  onReselectCandidate,
   className,
 }: PlanPlaceCardProps) => {
   return (
@@ -147,6 +153,21 @@ const PlanPlaceCard = ({
             ))}
           </div>
           <OpinionBtn count={opinionCount ?? 0} onClick={onOpinionClick} />
+        </div>
+      )}
+      {isFixedCandidate && (
+        <div className="flex items-center justify-between pt-3 pb-3.5 px-4 border-t border-dashed border-border">
+          <button
+            type="button"
+            className="flex w-full items-center gap-1 bg-[#f0f0f0] py-2 px-2.5 rounded-lg typography-nav-xl-reg text-muted-foreground justify-center"
+            onClick={onReselectCandidate}
+          >
+            <CircleCheck className="size-4 shrink-0 text-sky-500" />
+            <span className="text-foreground">
+              총 {candidateCount}개의 후보지 중 다시 선택하기
+            </span>
+            <ChevronRight className="size-4 shrink-0 opacity-40 stroke-3" />
+          </button>
         </div>
       )}
     </div>
