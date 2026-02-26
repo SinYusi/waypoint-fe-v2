@@ -20,7 +20,7 @@ export interface EditCandidateItem {
   id: string;
   placeType: PlaceType;
   placeName: string;
-  onMenuClick?: () => void;
+  blockId: string;
 }
 
 export interface ViewCandidateItem {
@@ -42,6 +42,7 @@ export interface ViewCandidateItem {
 interface CandidateGroupEditProps {
   mode: "edit";
   candidates: EditCandidateItem[];
+  onCandidateMenuClick?: (candidateBlockId: string) => void;
 }
 
 interface CandidateGroupViewProps {
@@ -72,6 +73,8 @@ const CandidateGroup = (props: CandidateGroupProps) => {
   const hiddenCount = candidates.length - COLLAPSED_SHOW_COUNT;
 
   if (mode === "edit") {
+    const { onCandidateMenuClick } = props as CandidateGroupEditProps;
+
     return (
       <div className="flex flex-col gap-3 rounded-3xl border border-dashed border-border bg-card p-3">
         {(visibleCandidates as EditCandidateItem[]).map((item) => (
@@ -80,7 +83,7 @@ const CandidateGroup = (props: CandidateGroupProps) => {
             mode="edit"
             placeType={item.placeType}
             placeName={item.placeName}
-            onMenuClick={item.onMenuClick}
+            onMenuClick={() => onCandidateMenuClick?.(item.id)}
           />
         ))}
         {isCollapsible && (
