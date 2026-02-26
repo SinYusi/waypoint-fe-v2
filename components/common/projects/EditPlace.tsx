@@ -6,10 +6,15 @@ import CandidateGroup, {
 import { PlaceType } from "@/components/card/PlaceTypeIcon";
 import PlanPlaceCard from "@/components/card/PlanPlaceCard";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
+import { useDeleteCandidate } from "@/lib/hooks/use-delete-candidate";
+import { useDeleteTimeBlock } from "@/lib/hooks/use-delete-time-block";
 import { cn } from "@/lib/utils/utils";
+import { ProblemDetail } from "@/types/problem-detail";
+import { AxiosError } from "axios";
 import { Pencil, Trash2, Vote } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 type SingleCandidateCard = {
   blockId: string;
@@ -17,32 +22,40 @@ type SingleCandidateCard = {
   placeName: string;
   writerNickname: string;
   writerProfileImageUrl: string;
+  candidateCount?: number;
   memo?: string;
 };
 
 interface EditPlaceProps {
+  planId: string;
   timeBlockId: string;
+  day: number;
+  blockStatus: "FIXED" | "PENDING" | "DIRECT";
   /** 이 블록이 PLACE인지 FREE인지 */
   blockType: "PLACE" | "FREE";
   /** FREE 블록이거나, PLACE 블록에서 단일 후보 카드 */
   singleCard: SingleCandidateCard;
   /** 후보지 목록(PLACE 블록에서만) */
   candidates: EditCandidateItem[];
+  /** 날짜/시간 수정 메뉴 핸들러 */
+  onEditClick?: (blockId: string) => void;
   isLast?: boolean;
   className?: string;
 }
 
 const EditPlace = ({
+  planId,
   timeBlockId,
+  day,
+  blockStatus,
   blockType,
   singleCard,
   candidates,
+  onEditClick,
   isLast = false,
   className,
 }: EditPlaceProps) => {
   const router = useRouter();
-  const params = useParams<{ planId: string }>();
-  const planId = params.planId;
 
   const [sheetOpen, setSheetOpen] = useState(false);
   const [targetBlockId, setTargetBlockId] = useState<string | null>(null);
@@ -54,18 +67,87 @@ const EditPlace = ({
     setSheetOpen(true);
   };
 
+  const onApiError = (err: unknown, fallback: string) => {
+    const axiosErr = err as AxiosError<ProblemDetail>;
+    const message =
+      axiosErr.response?.data?.errors?.[0]?.reason ??
+      axiosErr.response?.data?.detail ??
+      fallback;
+    toast.error(message);
+  };
+
+  // blockStatus === PENDING일 때 후보지 삭제
+  const { mutate: deleteCandidate, isPending: isDeletingCandidate } =
+    useDeleteCandidate({
+      mutationOptions: {
+        onSuccess: () => {
+          setSheetOpen(false);
+          setTargetBlockId(null);
+          toast("후보지를 삭제했어요.");
+        },
+        onError: (e) => onApiError(e, "후보지 삭제에 실패했어요."),
+      },
+    });
+
+  // 그 외에는 타임블록 삭제
+  const { mutate: deleteTimeBlock, isPending: isDeletingTimeBlock } =
+    useDeleteTimeBlock({
+      mutationOptions: {
+        onSuccess: () => {
+          setSheetOpen(false);
+          setTargetBlockId(null);
+          toast("일정을 삭제했어요.");
+        },
+        onError: (e) => onApiError(e, "블록 삭제에 실패했어요."),
+      },
+    });
+
+  const isDeleting = isDeletingCandidate || isDeletingTimeBlock;
+
+  const handleDelete = () => {
+    if (isDeleting) return;
+
+    if (blockStatus === "PENDING") {
+      if (!targetBlockId) return;
+      deleteCandidate({
+        planId,
+        timeBlockId,
+        blockId: targetBlockId,
+        day,
+        page: 0,
+        size: 20,
+      });
+      return;
+    }
+
+    // FIXED / DIRECT
+    deleteTimeBlock({
+      planId,
+      timeBlockId,
+      day,
+      page: 0,
+      size: 20,
+    });
+  };
+
   // 바텀시트 메뉴들
   const menuItems = [
-    {
-      id: "edit",
-      label: "날짜/시간 수정",
-      icon: <Pencil />,
-      onSelect: () => {
-        if (!targetBlockId) return;
-        console.log("날짜/시간 수정", targetBlockId);
-      },
-    },
-    ...(blockType === "PLACE"
+    ...(blockStatus !== "PENDING"
+      ? [
+          {
+            id: "edit",
+            label: "날짜/시간 수정",
+            icon: <Pencil />,
+            onSelect: () => {
+              if (!targetBlockId) return;
+              setSheetOpen(false);
+              onEditClick?.(targetBlockId);
+            },
+          },
+        ]
+      : []),
+    ...(blockType === "PLACE" &&
+    (blockStatus === "DIRECT" || blockStatus === "FIXED")
       ? [
           {
             id: "add-candidate",
@@ -84,10 +166,7 @@ const EditPlace = ({
       id: "delete",
       label: "삭제",
       icon: <Trash2 />,
-      onSelect: () => {
-        if (!targetBlockId) return;
-        console.log("삭제", targetBlockId);
-      },
+      onSelect: handleDelete,
     },
   ];
 
@@ -100,7 +179,23 @@ const EditPlace = ({
       )}
     >
       <div className="pl-6 pt-2 pb-4 flex-1 min-w-0">
-        {isMultiCandidate ? (
+        {blockStatus === "FIXED" ? (
+          // 후보지 확정 상태 전용 카드
+          <PlanPlaceCard
+            placeType={singleCard.placeType}
+            placeName={singleCard.placeName}
+            writerNickname={singleCard.writerNickname}
+            writerProfileImageUrl={singleCard.writerProfileImageUrl}
+            memo={singleCard.memo}
+            isView={false}
+            isFixedCandidate
+            candidateCount={singleCard.candidateCount}
+            onReselectCandidate={() => {
+              // TODO: 추후 후보지 변경 페이지로 이동
+            }}
+            onMenuClick={() => openSheetFor(singleCard.blockId)}
+          />
+        ) : isMultiCandidate ? (
           // 후보 2개 이상이면 CandidateGroup
           <CandidateGroup
             mode="edit"
