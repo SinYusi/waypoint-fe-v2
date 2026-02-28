@@ -17,6 +17,7 @@ interface HeaderProps {
   // 우측 버튼
   showCloseButton?: boolean;
   showNotificationButton?: boolean;
+  showNotificationDot?: boolean;
   showMenuButton?: boolean;
   onClose?: () => void;
   onNotification?: () => void;
@@ -35,6 +36,7 @@ const Header = ({
   showBackButton = false,
   showCloseButton = false,
   showNotificationButton = false,
+  showNotificationDot = false,
   showMenuButton = false,
   onBack,
   onClose,
@@ -100,6 +102,7 @@ const Header = ({
             icon={Bell}
             onClick={handleNotification}
             label="알림"
+            showDot={showNotificationDot}
           />
         )}
 
