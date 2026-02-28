@@ -54,7 +54,12 @@ function BudgetBottomSheet({
   onConfirm,
   onDelete,
 }: BudgetBottomSheetProps) {
+  // add-expense 전용 state
   const [items, setItems] = useState<ExpenseItem[]>([createItem()]);
+
+  // create-expense 전용 state
+  const [createName, setCreateName] = useState("");
+  const [createAmount, setCreateAmount] = useState("0");
 
   const updateItem = (id: number, field: "name" | "amount", value: string) => {
     setItems((prev) =>
@@ -71,11 +76,21 @@ function BudgetBottomSheet({
   const isAddExpenseValid = items.every(
     (item) => item.name.trim() !== "" && Number(item.amount.replace(/,/g, "")) > 0
   );
-  const confirmDisabled = mode === "add-expense" ? !isAddExpenseValid : false;
+  const isCreateExpenseValid =
+    createName.trim() !== "" && Number(createAmount.replace(/,/g, "")) > 0;
+
+  const confirmDisabled =
+    mode === "add-expense" ? !isAddExpenseValid :
+    mode === "create-expense" ? !isCreateExpenseValid :
+    false;
+
+  const sheetHeight =
+    mode === "create-expense" ? "h-139" :
+    items.length === 1 ? "h-168.75" :
+    "h-183.25";
 
   const addExpenseContent = (
     <div className="flex flex-col gap-5">
-      {/* 인풋 그룹 목록 */}
       <div className="flex w-full flex-col">
         {items.map((item, index) => (
           <div
@@ -112,7 +127,6 @@ function BudgetBottomSheet({
         ))}
       </div>
 
-      {/* 추가 버튼 */}
       <div className="flex justify-center">
         <Button
           type="button"
@@ -127,11 +141,29 @@ function BudgetBottomSheet({
     </div>
   );
 
+  const createExpenseContent = (
+    <div className="flex flex-col gap-5">
+      <BudgetInputField
+        label="지출 항목"
+        value={createName}
+        onChange={setCreateName}
+        inputMode="text"
+        unit=""
+        placeholder="지출 항목을 입력해 주세요"
+      />
+      <BudgetInputField
+        label="금액"
+        value={createAmount}
+        onChange={(v) => setCreateAmount(formatAmount(v))}
+      />
+    </div>
+  );
+
   return (
     <BottomSheet
       open={open}
       onOpenChange={onOpenChange}
-      className={items.length === 1 ? "h-168.75" : "h-183.25"}
+      className={sheetHeight}
       header={
         hasTitle ? (
           <h2 className="mb-2 w-full text-center font-sans text-lg font-semibold leading-4 tracking-normal text-black">
@@ -150,9 +182,7 @@ function BudgetBottomSheet({
           {mode === "edit-expense" && (
             <div>{/* TODO: 지출 수정/삭제 */}</div>
           )}
-          {mode === "create-expense" && (
-            <div>{/* TODO: 추가 지출 생성 */}</div>
-          )}
+          {mode === "create-expense" && createExpenseContent}
         </div>
       }
     />
