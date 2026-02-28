@@ -1,6 +1,7 @@
 "use client";
 
 import Header from "@/components/layout/Header";
+import NotiEmptyIllust from "@/public/illust/noti_empty_illust.svg";
 
 const NotificationPage = () => {
   const handleReadAll = () => {};
@@ -22,8 +23,18 @@ const NotificationPage = () => {
         }
       />
 
-      <main className="flex-1 px-4 pb-10">
-        {/* TODO: 알림 목록 UI */}
+      <main className="flex-1 flex flex-col items-center justify-center">
+        <div className="flex flex-col items-center gap-5">
+          <NotiEmptyIllust width={165} height={160} />
+          <div className="flex flex-col items-center gap-2">
+            <p className="text-lg font-bold leading-7 text-center text-[#1C2024]">
+              아직 도착한 알림이 없어요
+            </p>
+            <p className="text-sm font-medium leading-5 text-center text-[#1C2024]">
+              새로운 소식이 도착하면 알려드릴게요
+            </p>
+          </div>
+        </div>
       </main>
     </div>
   );
