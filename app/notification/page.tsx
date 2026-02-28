@@ -156,17 +156,28 @@ const NotificationPage = () => {
           </div>
         </main>
       ) : (
-        <main className="flex-1 flex flex-col px-5 pt-3 pb-10 gap-4">
-          {visibleNotifications.map((n) => (
-            <NotificationItem
-              key={n.id}
-              badgeVariant={getNotificationBadgeVariant(n.category)}
-              message={n.message}
-              onDelete={() => handleDelete(n.id)}
-            />
-          ))}
-          <div ref={loadMoreRef} className="h-10" />
-        </main>
+        <>
+          <main className="flex-1 flex flex-col px-5 pt-3 pb-10 gap-4">
+            {visibleNotifications.map((n) => (
+              <NotificationItem
+                key={n.id}
+                badgeVariant={getNotificationBadgeVariant(n.category)}
+                message={n.message}
+                onDelete={() => handleDelete(n.id)}
+              />
+            ))}
+            <div ref={loadMoreRef} className="h-10" />
+          </main>
+
+          {/* 하단 그라디언트 */}
+          <div
+            className="fixed bottom-0 inset-x-0 h-12 pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(180deg, rgba(250, 250, 250, 0) 0%, #FAFAFA 90%)",
+            }}
+          />
+        </>
       )}
     </div>
   );
