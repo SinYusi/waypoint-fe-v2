@@ -119,8 +119,9 @@ const NotificationPage = () => {
         leftBtnBgVariant="ghost"
         rightContent={
           <button
-            className="h-10 px-1.5 py-2.5 rounded-2xl text-sm font-bold leading-5 text-[#757575]"
+            className="h-10 px-1.5 py-2.5 rounded-2xl text-sm font-bold leading-5 text-[#757575] cursor-pointer disabled:cursor-not-allowed disabled:text-[#c4c4c4]"
             onClick={() => setIsDeleteAllOpen(true)}
+            disabled={isEmpty}
           >
             모두 비우기
           </button>
