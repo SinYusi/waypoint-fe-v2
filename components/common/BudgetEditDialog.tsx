@@ -1,10 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Check, CircleHelp } from "lucide-react";
 import AppDialog from "@/components/common/AppDialog";
 import { Button } from "@/components/ui/button";
-import { FieldDescription } from "@/components/ui/field-description";
+import BudgetInputField from "@/components/common/BudgetInputField";
 import {
   Tabs,
   TabsList,
@@ -158,64 +158,6 @@ const BudgetEditDialog = ({
         </Button>
       </div>
     </AppDialog>
-  );
-};
-
-interface BudgetInputFieldProps {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  unit?: string;
-  placeholder?: string;
-  error?: boolean;
-  errorMessage?: string;
-}
-
-const BudgetInputField = ({
-  label,
-  value,
-  onChange,
-  unit = "원",
-  placeholder = "",
-  error,
-  errorMessage,
-}: BudgetInputFieldProps) => {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const isEmpty = value === "";
-
-  const handleFocus = () => {
-    if (isEmpty) {
-      onChange("0");
-      setTimeout(() => inputRef.current?.select(), 0);
-    } else {
-      inputRef.current?.select();
-    }
-  };
-
-  return (
-    <div className="flex flex-col gap-2">
-      <label className="typography-body-sm-sb text-foreground">{label}</label>
-      <div className={`flex h-11 items-center gap-2 rounded-xl bg-muted px-3 py-2 outline-none border transition-all ${error ? "border-destructive" : "border-transparent has-focus:border-sky-500 has-focus:ring-2 has-focus:ring-sky-500/25"}`}>
-        <input
-          ref={inputRef}
-          type="text"
-          inputMode="numeric"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          onFocus={handleFocus}
-          placeholder={placeholder}
-          className="w-full bg-transparent outline-none typography-body-base text-foreground placeholder:text-muted-foreground"
-        />
-        {!isEmpty && (
-          <span className="typography-action-base-bold shrink-0 text-muted-foreground">
-            {unit}
-          </span>
-        )}
-      </div>
-      {error && errorMessage && (
-        <FieldDescription error>{errorMessage}</FieldDescription>
-      )}
-    </div>
   );
 };
 
