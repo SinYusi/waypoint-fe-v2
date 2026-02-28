@@ -124,6 +124,15 @@ const BudgetEditDialog = ({
                   여행 계획에 등록한 일정과 금액을 기준으로, 설정한 인원 수에 따라 분할 계산합니다.
                 </p>
               </div>
+
+              {/* 여행 인원 수 입력 */}
+              <BudgetInputField
+                label="여행 인원 수"
+                value={personInput}
+                onChange={(v) => setPersonInput(v.replace(/[^0-9]/g, ""))}
+                unit="명"
+                placeholder="4"
+              />
             </div>
           </TabsContent>
         </Tabs>
