@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { Check, CircleHelp } from "lucide-react";
 import AppDialog from "@/components/common/AppDialog";
 import { Button } from "@/components/ui/button";
+import { FieldDescription } from "@/components/ui/field-description";
 import {
   Tabs,
   TabsList,
@@ -46,13 +47,17 @@ const BudgetEditDialog = ({
   const [personInput, setPersonInput] = useState(
     initialPersonCount ? String(initialPersonCount) : "",
   );
-
+  const [personError, setPersonError] = useState(false);
 
   const handleSave = () => {
+    const personCount = personInput ? Number(personInput) : 0;
+    if (personCount === 0) {
+      setPersonError(true);
+      return;
+    }
     const totalBudget = budgetInput
       ? Number(budgetInput.replace(/,/g, ""))
       : undefined;
-    const personCount = personInput ? Number(personInput) : undefined;
     onSave?.({ mode, totalBudget, personCount });
     onOpenChange(false);
   };
@@ -106,9 +111,11 @@ const BudgetEditDialog = ({
               <BudgetInputField
                 label="여행 인원 수"
                 value={personInput}
-                onChange={(v) => setPersonInput(v.replace(/[^0-9]/g, ""))}
+                onChange={(v) => { setPersonError(false); setPersonInput(v.replace(/[^0-9]/g, "")); }}
                 unit="명"
                 placeholder="모두 몇 명이서 떠나나요?"
+                error={personError}
+                errorMessage="한 명 이상의 인원을 입력해 주세요"
               />
             </div>
           </TabsContent>
@@ -131,9 +138,11 @@ const BudgetEditDialog = ({
               <BudgetInputField
                 label="여행 인원 수"
                 value={personInput}
-                onChange={(v) => setPersonInput(v.replace(/[^0-9]/g, ""))}
+                onChange={(v) => { setPersonError(false); setPersonInput(v.replace(/[^0-9]/g, "")); }}
                 unit="명"
                 placeholder="모두 몇 명이서 떠나나요?"
+                error={personError}
+                errorMessage="한 명 이상의 인원을 입력해 주세요"
               />
             </div>
           </TabsContent>
@@ -158,6 +167,8 @@ interface BudgetInputFieldProps {
   onChange: (value: string) => void;
   unit?: string;
   placeholder?: string;
+  error?: boolean;
+  errorMessage?: string;
 }
 
 const BudgetInputField = ({
@@ -166,6 +177,8 @@ const BudgetInputField = ({
   onChange,
   unit = "원",
   placeholder = "",
+  error,
+  errorMessage,
 }: BudgetInputFieldProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const isEmpty = value === "";
@@ -182,7 +195,7 @@ const BudgetInputField = ({
   return (
     <div className="flex flex-col gap-2">
       <label className="typography-body-sm-sb text-foreground">{label}</label>
-      <div className="flex h-11 items-center gap-2 rounded-xl bg-muted px-3 py-2 outline-none border border-transparent has-focus:border-sky-500 has-focus:ring-2 has-focus:ring-sky-500/25 transition-all">
+      <div className={`flex h-11 items-center gap-2 rounded-xl bg-muted px-3 py-2 outline-none border transition-all ${error ? "border-destructive" : "border-transparent has-focus:border-sky-500 has-focus:ring-2 has-focus:ring-sky-500/25"}`}>
         <input
           ref={inputRef}
           type="text"
@@ -199,6 +212,9 @@ const BudgetInputField = ({
           </span>
         )}
       </div>
+      {error && errorMessage && (
+        <FieldDescription error>{errorMessage}</FieldDescription>
+      )}
     </div>
   );
 };
