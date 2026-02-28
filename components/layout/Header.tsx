@@ -21,6 +21,8 @@ interface HeaderProps {
   onClose?: () => void;
   onNotification?: () => void;
   menuDrawerContent?: React.ReactNode;
+  // 우측 커스텀 컨텐츠 (텍스트 버튼 등)
+  rightContent?: React.ReactNode;
   // 스타일
   leftBtnBgVariant?: HeaderBtnBgVariant;
   rightBtnBgVariant?: HeaderBtnBgVariant;
@@ -37,6 +39,7 @@ const Header = ({
   onBack,
   onClose,
   onNotification,
+  rightContent,
   leftBtnBgVariant = "solid",
   rightBtnBgVariant = "solid",
   className = "",
@@ -51,12 +54,12 @@ const Header = ({
 
   // 기본 알림 핸들러
   const handleNotification = () =>
-    onNotification ? onNotification() : console.log("알림 클릭");
+    onNotification ? onNotification() : router.push("/notification");
 
   return (
     <header
       className={cn(
-        "grid grid-cols-[1fr_auto_1fr] gap-2 w-full h-[60px] items-center justify-between px-2.5 pt-3.5 pb-0.5 bg-transparent",
+        "grid grid-cols-[1fr_auto_1fr] gap-2 w-full h-15 items-center justify-between px-2.5 pt-3.5 pb-0.5 bg-transparent",
         className,
       )}
     >
@@ -89,6 +92,8 @@ const Header = ({
 
       {/* 우측 영역 */}
       <div className="flex items-center justify-end">
+        {rightContent}
+
         {showNotificationButton && (
           <HeaderBtn
             bgVariant={rightBtnBgVariant}
