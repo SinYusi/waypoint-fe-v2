@@ -80,8 +80,8 @@ function BudgetBottomSheet({
           <div
             key={item.id}
             className={`flex flex-col gap-5 pb-5 ${
-              index === 0 ? "border-b border-[#E2E2E2]" : "pt-5"
-            }`}
+              index < items.length - 1 ? "border-b border-[#E2E2E2]" : ""
+            } ${index > 0 ? "pt-5" : ""}`}
           >
             <BudgetInputField
               label="지출 항목"
