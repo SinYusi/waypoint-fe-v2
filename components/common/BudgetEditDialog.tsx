@@ -20,8 +20,10 @@ interface BudgetEditDialogProps {
   defaultMode?: BudgetMode;
   /** 초기 총 여행 예산 */
   initialBudget?: number;
+  /** 초기 여행 인원 수 */
+  initialPersonCount?: number;
   /** 저장 클릭 시 콜백 */
-  onSave?: (data: { mode: BudgetMode; totalBudget?: number }) => void;
+  onSave?: (data: { mode: BudgetMode; totalBudget?: number; personCount?: number }) => void;
 }
 
 const formatInput = (raw: string) => {
@@ -34,18 +36,23 @@ const BudgetEditDialog = ({
   onOpenChange,
   defaultMode = "budget",
   initialBudget,
+  initialPersonCount,
   onSave,
 }: BudgetEditDialogProps) => {
   const [mode, setMode] = useState<BudgetMode>(defaultMode);
   const [budgetInput, setBudgetInput] = useState(
     initialBudget ? initialBudget.toLocaleString("ko-KR") : "",
   );
+  const [personInput, setPersonInput] = useState(
+    initialPersonCount ? String(initialPersonCount) : "",
+  );
 
   const handleSave = () => {
     const totalBudget = budgetInput
       ? Number(budgetInput.replace(/,/g, ""))
       : undefined;
-    onSave?.({ mode, totalBudget });
+    const personCount = personInput ? Number(personInput) : undefined;
+    onSave?.({ mode, totalBudget, personCount });
     onOpenChange(false);
   };
 
@@ -92,6 +99,15 @@ const BudgetEditDialog = ({
                 value={budgetInput}
                 onChange={(v) => setBudgetInput(formatInput(v))}
               />
+
+              {/* 여행 인원 수 입력 */}
+              <BudgetInputField
+                label="여행 인원 수"
+                value={personInput}
+                onChange={(v) => setPersonInput(v.replace(/[^0-9]/g, ""))}
+                unit="명"
+                placeholder="4"
+              />
             </div>
           </TabsContent>
 
@@ -105,8 +121,7 @@ const BudgetEditDialog = ({
                   strokeWidth={2}
                 />
                 <p className="typography-body-sm-reg text-muted-foreground">
-                  별도의 예산 설정 없이 지출을 기록하고, 총 지출 금액을
-                  한눈에 확인할 수 있습니다.
+                  여행 계획에 등록한 일정과 금액을 기준으로, 설정한 인원 수에 따라 분할 계산합니다.
                 </p>
               </div>
             </div>
@@ -130,9 +145,17 @@ interface BudgetInputFieldProps {
   label: string;
   value: string;
   onChange: (value: string) => void;
+  unit?: string;
+  placeholder?: string;
 }
 
-const BudgetInputField = ({ label, value, onChange }: BudgetInputFieldProps) => (
+const BudgetInputField = ({
+  label,
+  value,
+  onChange,
+  unit = "원",
+  placeholder = "1,500,000",
+}: BudgetInputFieldProps) => (
   <div className="flex flex-col gap-2">
     <label className="typography-body-sm-sb text-foreground">{label}</label>
     <div className="flex h-11 items-center gap-2 rounded-xl bg-muted px-3 py-2 outline-none border border-transparent has-focus:border-sky-500 has-focus:ring-2 has-focus:ring-sky-500/25 transition-all">
@@ -141,11 +164,11 @@ const BudgetInputField = ({ label, value, onChange }: BudgetInputFieldProps) => 
         inputMode="numeric"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="1,500,000"
+        placeholder={placeholder}
         className="w-full bg-transparent outline-none typography-body-base text-foreground placeholder:text-muted-foreground"
       />
       <span className="typography-action-base-bold shrink-0 text-muted-foreground">
-        원
+        {unit}
       </span>
     </div>
   </div>
