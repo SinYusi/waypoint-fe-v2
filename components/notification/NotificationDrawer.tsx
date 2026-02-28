@@ -117,7 +117,7 @@ const NotificationDrawerContent = ({
   };
 
   return (
-    <div className="flex min-h-full flex-col bg-white">
+    <div className="flex flex-1 flex-col min-h-0 bg-white">
       <Header
         variant="center"
         title="알림"
@@ -163,8 +163,8 @@ const NotificationDrawerContent = ({
           </div>
         </main>
       ) : (
-        <>
-          <main className="flex-1 flex flex-col px-5 pt-3 pb-10 gap-4">
+        <div className="flex-1 relative overflow-hidden">
+          <main className="h-full overflow-y-auto flex flex-col px-5 pt-3 pb-10 gap-4">
             {visibleNotifications.map((n) => (
               <NotificationItem
                 key={n.id}
@@ -178,13 +178,13 @@ const NotificationDrawerContent = ({
 
           {/* 하단 그라디언트 */}
           <div
-            className="fixed bottom-0 inset-x-0 h-12 pointer-events-none"
+            className="absolute bottom-0 inset-x-0 h-12 pointer-events-none"
             style={{
               background:
                 "linear-gradient(180deg, rgba(250, 250, 250, 0) 0%, #FAFAFA 90%)",
             }}
           />
-        </>
+        </div>
       )}
     </div>
   );
@@ -203,7 +203,7 @@ const NotificationDrawer = () => {
     >
       <DrawerPrimitive.Portal>
         <DrawerPrimitive.Overlay className="fixed inset-0 z-50 bg-black/40 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
-        <DrawerPrimitive.Content className="fixed inset-y-0 right-0 z-50 w-full bg-white flex flex-col overflow-y-auto">
+        <DrawerPrimitive.Content className="fixed inset-y-0 right-0 z-50 w-full bg-white flex flex-col">
           <DrawerPrimitive.Title className="sr-only">알림</DrawerPrimitive.Title>
           <NotificationDrawerContent onClose={closeDrawer} />
         </DrawerPrimitive.Content>
