@@ -31,7 +31,8 @@ const NotificationItem = ({
 
         {/* 삭제 버튼 */}
         <button
-          className="shrink-0 flex items-center justify-center size-6"
+          type="button"
+          className="shrink-0 flex items-center justify-center size-6 cursor-pointer hover:opacity-60 transition-opacity"
           onClick={(e) => {
             e.stopPropagation();
             onDelete?.();
