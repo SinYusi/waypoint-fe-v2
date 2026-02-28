@@ -49,6 +49,10 @@ function BudgetBottomSheet({
   const hasTitle = mode === "add-expense" || mode === "edit-expense";
   const { cancelLabel, confirmLabel } = BUTTON_CONFIG[mode];
 
+  const amountValue = Number(amount.replace(/,/g, ""));
+  const isAddExpenseValid = expenseName.trim() !== "" && amountValue > 0;
+  const confirmDisabled = mode === "add-expense" ? !isAddExpenseValid : false;
+
   const addExpenseContent = (
     <div className="flex flex-col gap-4 pb-3.5">
       <BudgetInputField
@@ -82,6 +86,7 @@ function BudgetBottomSheet({
       confirmLabel={confirmLabel}
       onCancel={mode === "edit-expense" ? onDelete : onCancel}
       onConfirm={onConfirm}
+      confirmDisabled={confirmDisabled}
       content={
         <div>
           {mode === "add-expense" && addExpenseContent}
