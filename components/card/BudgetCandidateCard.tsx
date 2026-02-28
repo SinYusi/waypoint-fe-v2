@@ -53,7 +53,7 @@ const BudgetCandidateCard = ({
                   <span className="typography-body-base h-6 whitespace-nowrap leading-6">
                     {item.cost.toLocaleString("ko-KR")}
                   </span>
-                  <span className="typography-body-sm-reg h-5 w-3.25 leading-5">원</span>
+                  <span className="typography-body-sm-reg h-6 leading-6">원</span>
                 </div>
               </div>
             ))
