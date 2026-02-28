@@ -2,6 +2,8 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useState } from "react"
+import { NotificationDrawerProvider } from "@/lib/context/notification-drawer-context"
+import NotificationDrawer from "@/components/notification/NotificationDrawer"
 
 type ProvidersProps = {
   children: React.ReactNode
@@ -20,5 +22,12 @@ export function Providers({ children }: ProvidersProps) {
       }),
   )
 
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  return (
+    <QueryClientProvider client={queryClient}>
+      <NotificationDrawerProvider>
+        {children}
+        <NotificationDrawer />
+      </NotificationDrawerProvider>
+    </QueryClientProvider>
+  )
 }
