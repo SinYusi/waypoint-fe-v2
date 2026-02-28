@@ -31,7 +31,9 @@ const NotificationPage = () => {
               아직 도착한 알림이 없어요
             </p>
             <p className="text-sm font-medium leading-5 text-center text-[#1C2024]">
-              새로운 소식이 도착하면 알려드릴게요
+              새로운 소식이 도착하면
+              <br />
+              알려드릴게요
             </p>
           </div>
         </div>
