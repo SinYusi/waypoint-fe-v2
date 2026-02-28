@@ -17,7 +17,7 @@ const NotificationPage = () => {
             className="h-10 px-1.5 py-2.5 rounded-2xl text-sm font-bold leading-5 text-[#757575]"
             onClick={handleReadAll}
           >
-            모두 지우기
+            모두 비우기
           </button>
         }
       />
