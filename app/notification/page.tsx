@@ -2,6 +2,7 @@
 
 import Header from "@/components/layout/Header";
 import NotificationItem from "@/components/notification/NotificationItem";
+import AppAlertDialog from "@/components/common/AppAlertDialog";
 import NotiEmptyIllust from "@/public/illust/noti_empty_illust.svg";
 import { useCallback, useState } from "react";
 import { useIntersectionObserver } from "@/lib/hooks/use-intersection-observer";
@@ -86,6 +87,7 @@ const NotificationPage = () => {
     ALL_MOCK_NOTIFICATIONS,
   );
   const [displayCount, setDisplayCount] = useState(PAGE_SIZE);
+  const [isDeleteAllOpen, setIsDeleteAllOpen] = useState(false);
 
   const visibleNotifications = allNotifications.slice(0, displayCount);
   const hasMore = displayCount < allNotifications.length;
@@ -118,11 +120,22 @@ const NotificationPage = () => {
         rightContent={
           <button
             className="h-10 px-1.5 py-2.5 rounded-2xl text-sm font-bold leading-5 text-[#757575]"
-            onClick={handleDeleteAll}
+            onClick={() => setIsDeleteAllOpen(true)}
           >
             모두 비우기
           </button>
         }
+      />
+
+      <AppAlertDialog
+        open={isDeleteAllOpen}
+        onOpenChange={setIsDeleteAllOpen}
+        title="알림을 전부 지울까요?"
+        description={`지금까지 받은 알림들이 모두 사라져요.\n알림함을 깨끗하게 비워도 괜찮으신가요?`}
+        cancelLabel="취소"
+        actionLabel="전부 지우기"
+        onCancel={() => setIsDeleteAllOpen(false)}
+        onAction={handleDeleteAll}
       />
 
       {isEmpty ? (
