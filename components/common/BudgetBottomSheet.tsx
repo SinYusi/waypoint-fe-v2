@@ -1,13 +1,21 @@
 "use client";
 
 import { useState } from "react";
+import { Plus } from "lucide-react";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
+import { Button } from "@/components/ui/button";
 import BudgetInputField from "@/components/common/BudgetInputField";
 
 type BudgetBottomSheetMode =
   | "add-expense"       // 지출 추가
   | "edit-expense"      // 지출 수정/삭제
   | "create-expense";   // 추가 지출 생성
+
+type ExpenseItem = {
+  id: number;
+  name: string;
+  amount: string;
+};
 
 type BudgetBottomSheetProps = {
   open: boolean;
@@ -34,6 +42,9 @@ const formatAmount = (raw: string) => {
   return numeric ? Number(numeric).toLocaleString("ko-KR") : "";
 };
 
+let nextId = 1;
+const createItem = (): ExpenseItem => ({ id: nextId++, name: "", amount: "0" });
+
 function BudgetBottomSheet({
   open,
   onOpenChange,
@@ -43,31 +54,64 @@ function BudgetBottomSheet({
   onConfirm,
   onDelete,
 }: BudgetBottomSheetProps) {
-  const [expenseName, setExpenseName] = useState("");
-  const [amount, setAmount] = useState("0");
+  const [items, setItems] = useState<ExpenseItem[]>([createItem()]);
+
+  const updateItem = (id: number, field: "name" | "amount", value: string) => {
+    setItems((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, [field]: value } : item))
+    );
+  };
+
+  const addItem = () => setItems((prev) => [...prev, createItem()]);
 
   const hasTitle = mode === "add-expense" || mode === "edit-expense";
   const { cancelLabel, confirmLabel } = BUTTON_CONFIG[mode];
 
-  const amountValue = Number(amount.replace(/,/g, ""));
-  const isAddExpenseValid = expenseName.trim() !== "" && amountValue > 0;
+  const isAddExpenseValid = items.every(
+    (item) => item.name.trim() !== "" && Number(item.amount.replace(/,/g, "")) > 0
+  );
   const confirmDisabled = mode === "add-expense" ? !isAddExpenseValid : false;
 
   const addExpenseContent = (
-    <div className="flex flex-col gap-4 pb-3.5">
-      <BudgetInputField
-        label="지출 항목"
-        value={expenseName}
-        onChange={setExpenseName}
-        inputMode="text"
-        unit=""
-        placeholder="지출 항목을 입력해 주세요"
-      />
-      <BudgetInputField
-        label="금액"
-        value={amount}
-        onChange={(v) => setAmount(formatAmount(v))}
-      />
+    <div className="flex flex-col gap-5">
+      {/* 인풋 그룹 목록 */}
+      <div className="flex w-full flex-col">
+        {items.map((item, index) => (
+          <div
+            key={item.id}
+            className={`flex flex-col gap-5 pb-5 ${
+              index === 0 ? "border-b border-[#E2E2E2]" : "pt-5"
+            }`}
+          >
+            <BudgetInputField
+              label="지출 항목"
+              value={item.name}
+              onChange={(v) => updateItem(item.id, "name", v)}
+              inputMode="text"
+              unit=""
+              placeholder="지출 항목을 입력해 주세요"
+            />
+            <BudgetInputField
+              label="금액"
+              value={item.amount}
+              onChange={(v) => updateItem(item.id, "amount", formatAmount(v))}
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* 추가 버튼 */}
+      <div className="flex justify-center">
+        <Button
+          type="button"
+          variant="ghost"
+          size="L"
+          onClick={addItem}
+          className="size-11 rounded-full bg-[#0EA5E9] p-0 hover:bg-[#0EA5E9]/90"
+        >
+          <Plus className="size-5 text-white" strokeWidth={2} />
+        </Button>
+      </div>
     </div>
   );
 
