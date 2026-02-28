@@ -119,6 +119,7 @@ function BudgetBottomSheet({
     <BottomSheet
       open={open}
       onOpenChange={onOpenChange}
+      className="h-168.75"
       header={
         hasTitle ? (
           <h2 className="mb-2 w-full text-center font-sans text-lg font-semibold leading-4 tracking-normal text-black">
