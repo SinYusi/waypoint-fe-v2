@@ -67,7 +67,7 @@ const BudgetEditDialog = ({
       open={open}
       onOpenChange={onOpenChange}
       title="여행 예산 편집"
-      contentClassName="max-w-[425px]"
+      contentClassName="w-[calc(100%-2.5rem)] max-w-[425px] sm:max-w-[425px]"
     >
       <div className="flex flex-col gap-5">
         {/* 탭 */}
