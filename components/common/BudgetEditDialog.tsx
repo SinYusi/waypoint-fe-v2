@@ -47,6 +47,7 @@ const BudgetEditDialog = ({
     initialPersonCount ? String(initialPersonCount) : "",
   );
 
+
   const handleSave = () => {
     const totalBudget = budgetInput
       ? Number(budgetInput.replace(/,/g, ""))
