@@ -42,3 +42,12 @@ export interface GetNotificationsParams {
   page?: number;
   size?: number;
 }
+
+/**
+ * SYSTEM 카테고리만 "공지" 배지, 나머지는 "알림" 배지
+ */
+export function getNotificationBadgeVariant(
+  category: NotificationCategory,
+): "default" | "announcement" {
+  return category === "SYSTEM" ? "announcement" : "default";
+}
