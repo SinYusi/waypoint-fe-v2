@@ -1,7 +1,7 @@
 import { Bell, Megaphone } from "lucide-react";
 import { cn } from "@/lib/utils/utils";
 
-type NotificationBadgeVariant = "default" | "announcement";
+export type NotificationBadgeVariant = "default" | "announcement";
 
 const VARIANT_CONFIG = {
   default: {
