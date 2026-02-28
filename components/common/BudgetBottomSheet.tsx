@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Button } from "@/components/ui/button";
 import BudgetInputField from "@/components/common/BudgetInputField";
@@ -63,6 +63,7 @@ function BudgetBottomSheet({
   };
 
   const addItem = () => setItems((prev) => [...prev, createItem()]);
+  const removeItem = (id: number) => setItems((prev) => prev.filter((item) => item.id !== id));
 
   const hasTitle = mode === "add-expense" || mode === "edit-expense";
   const { cancelLabel, confirmLabel } = BUTTON_CONFIG[mode];
@@ -90,6 +91,17 @@ function BudgetBottomSheet({
               inputMode="text"
               unit=""
               placeholder="지출 항목을 입력해 주세요"
+              labelAction={
+                items.length >= 2 ? (
+                  <button
+                    type="button"
+                    onClick={() => removeItem(item.id)}
+                    className="flex size-9 items-center justify-center rounded-2xl p-1.25 hover:bg-accent"
+                  >
+                    <Trash2 className="size-4.5 text-[#1C2024]" strokeWidth={2} />
+                  </button>
+                ) : undefined
+              }
             />
             <BudgetInputField
               label="금액"
