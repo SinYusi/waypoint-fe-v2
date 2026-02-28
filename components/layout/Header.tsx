@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import HeaderBtn, { HeaderBtnBgVariant } from "./HeaderBtn";
 import { ArrowLeft, Bell, X } from "lucide-react";
 import MemberSideDrawer from "../common/MemberSideDrawer";
+import { useNotificationDrawer } from "@/lib/context/notification-drawer-context";
 
 interface HeaderProps {
   // 헤더 레이아웃 타입
@@ -47,6 +48,7 @@ const Header = ({
   className = "",
 }: HeaderProps) => {
   const router = useRouter();
+  const { openDrawer } = useNotificationDrawer();
 
   // 기본 뒤로가기 핸들러
   const handleBack = () => (onBack ? onBack() : router.back());
@@ -56,7 +58,7 @@ const Header = ({
 
   // 기본 알림 핸들러
   const handleNotification = () =>
-    onNotification ? onNotification() : router.push("/notification");
+    onNotification ? onNotification() : openDrawer();
 
   return (
     <header
