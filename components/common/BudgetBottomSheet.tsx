@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Button } from "@/components/ui/button";
@@ -96,19 +96,18 @@ function BudgetBottomSheet({
   const removeEditFormItem = (id: number) =>
     setEditFormItems((prev) => prev.filter((item) => item.id !== id));
 
-  useEffect(() => {
-    if (!open || mode !== "edit-expense") {
-      setDeleteConfirmOpen(false);
-      setIsEditFormMode(false);
-      return;
-    }
+  const resetEditState = () => {
+    setDeleteConfirmOpen(false);
+    setIsEditFormMode(false);
+    setEditFormItems([]);
+  };
 
-    if (!isEditFormMode) {
-      setEditFormItems(
-        editItems.length > 0 ? editItems.map(createItemFromEdit) : [createItem()]
-      );
+  const handleSheetOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) {
+      resetEditState();
     }
-  }, [open, mode, editItems, isEditFormMode]);
+    onOpenChange(nextOpen);
+  };
 
   const hasTitle = mode === "add-expense" || mode === "edit-expense";
   const { cancelLabel: defaultCancelLabel, confirmLabel } = BUTTON_CONFIG[mode];
@@ -302,7 +301,7 @@ function BudgetBottomSheet({
     <>
       <BottomSheet
         open={open}
-        onOpenChange={onOpenChange}
+        onOpenChange={handleSheetOpenChange}
         className={sheetHeight}
         header={
           hasTitle ? (
@@ -320,6 +319,7 @@ function BudgetBottomSheet({
             ? () => {
                 if (isEditFormMode) {
                   setIsEditFormMode(false);
+                  setEditFormItems([]);
                   return;
                 }
                 setDeleteConfirmOpen(true);
@@ -330,6 +330,9 @@ function BudgetBottomSheet({
           mode === "edit-expense"
             ? () => {
                 if (!isEditFormMode) {
+                  setEditFormItems(
+                    editItems.length > 0 ? editItems.map(createItemFromEdit) : [createItem()]
+                  );
                   setIsEditFormMode(true);
                   return;
                 }
@@ -358,7 +361,7 @@ function BudgetBottomSheet({
         onAction={() => {
           setDeleteConfirmOpen(false);
           onDelete?.();
-          onOpenChange(false);
+          handleSheetOpenChange(false);
         }}
       />
     </>
