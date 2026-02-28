@@ -4,67 +4,70 @@ import Header from "@/components/layout/Header";
 import NotificationItem from "@/components/notification/NotificationItem";
 import NotiEmptyIllust from "@/public/illust/noti_empty_illust.svg";
 import { useCallback, useState } from "react";
-import { type NotificationBadgeVariant } from "@/components/notification/NotificationBadge";
 import { useIntersectionObserver } from "@/lib/hooks/use-intersection-observer";
+import {
+  type NotificationCategory,
+  getNotificationBadgeVariant,
+} from "@/types/notification";
 
 const PAGE_SIZE = 20;
 
 // TODO: API 연동 후 제거
 type MockNotification = {
   id: string;
-  badgeVariant: NotificationBadgeVariant;
+  category: NotificationCategory;
   message: string;
   linkUrl: string;
 };
 
 const BASE_MESSAGES: Omit<MockNotification, "id">[] = [
   {
-    badgeVariant: "default",
+    category: "PLAN_PLACE",
     message: "제주도 여행에 '한라산 정상'이 추가되었어요",
     linkUrl: "/projects",
   },
   {
-    badgeVariant: "default",
+    category: "COLLECTION_ACTIVITY",
     message: "이영희님이 '스타벅스 강남R점'을 패스했어요",
     linkUrl: "/home",
   },
   {
-    badgeVariant: "default",
+    category: "BUDGET",
     message: "제주도 여행에 50,000원 지출이 추가되었어요",
     linkUrl: "/projects",
   },
   {
-    badgeVariant: "default",
+    category: "COLLECTION_PLACE",
     message: "맛집 컬렉션에 '광안리 수제버거'가 추가되었어요",
     linkUrl: "/home",
   },
   {
-    badgeVariant: "announcement",
+    category: "SYSTEM",
     message: "[점검] 3/15(토) 01:00~04:00 시스템 점검 예정입니다",
     linkUrl: "/home",
   },
   {
-    badgeVariant: "default",
+    category: "PLAN_ACTIVITY",
     message: "박지성님이 '한라산 등반'에 의견을 남겼어요",
     linkUrl: "/projects",
   },
   {
-    badgeVariant: "default",
+    category: "PLAN_ACTIVITY",
     message: "내가 추가한 '제주 흑돼지 맛집'이 3월 15일 점심 식사로 선택되었어요",
     linkUrl: "/projects",
   },
   {
-    badgeVariant: "default",
+    category: "AI",
     message: "AI 장소 추출이 완료되었어요. 15개의 장소를 확인해보세요!",
     linkUrl: "/projects",
   },
   {
-    badgeVariant: "announcement",
+    category: "SYSTEM",
     message: "[공지] 3월 15일 서버 점검 안내",
     linkUrl: "/home",
   },
   {
-    badgeVariant: "default",
+    category: "COLLECTION_ACTIVITY",
     message: "김철수님이 내가 추가한 '광안리 수제버거'를 찜했어요",
     linkUrl: "/home",
   },
@@ -143,7 +146,7 @@ const NotificationPage = () => {
           {visibleNotifications.map((n) => (
             <NotificationItem
               key={n.id}
-              badgeVariant={n.badgeVariant}
+              badgeVariant={getNotificationBadgeVariant(n.category)}
               message={n.message}
               onDelete={() => handleDelete(n.id)}
             />
