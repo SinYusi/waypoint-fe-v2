@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Button } from "@/components/ui/button";
+import AppAlertDialog from "@/components/common/AppAlertDialog";
 import BudgetInputField from "@/components/common/BudgetInputField";
 
 type BudgetBottomSheetMode =
@@ -62,6 +63,8 @@ function BudgetBottomSheet({
   onConfirm,
   onDelete,
 }: BudgetBottomSheetProps) {
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+
   // add-expense 전용 state
   const [items, setItems] = useState<ExpenseItem[]>([createItem()]);
 
@@ -207,30 +210,50 @@ function BudgetBottomSheet({
   );
 
   return (
-    <BottomSheet
-      open={open}
-      onOpenChange={onOpenChange}
-      className={sheetHeight}
-      header={
-        hasTitle ? (
-          <h2 className="mb-2 w-full text-center font-sans text-lg font-semibold leading-4 tracking-normal text-black">
-            {placeName ?? ""}
-          </h2>
-        ) : undefined
-      }
-      cancelLabel={cancelLabel}
-      confirmLabel={confirmLabel}
-      onCancel={mode === "edit-expense" ? onDelete : onCancel}
-      onConfirm={onConfirm}
-      confirmDisabled={confirmDisabled}
-      content={
-        <div>
-          {mode === "add-expense" && addExpenseContent}
-          {mode === "edit-expense" && editExpenseContent}
-          {mode === "create-expense" && createExpenseContent}
-        </div>
-      }
-    />
+    <>
+      <BottomSheet
+        open={open}
+        onOpenChange={onOpenChange}
+        className={sheetHeight}
+        header={
+          hasTitle ? (
+            <h2 className="mb-2 w-full text-center font-sans text-lg font-semibold leading-4 tracking-normal text-black">
+              {placeName ?? ""}
+            </h2>
+          ) : undefined
+        }
+        cancelLabel={cancelLabel}
+        confirmLabel={confirmLabel}
+        closeOnCancel={mode !== "edit-expense"}
+        onCancel={
+          mode === "edit-expense" ? () => setDeleteConfirmOpen(true) : onCancel
+        }
+        onConfirm={onConfirm}
+        confirmDisabled={confirmDisabled}
+        content={
+          <div>
+            {mode === "add-expense" && addExpenseContent}
+            {mode === "edit-expense" && editExpenseContent}
+            {mode === "create-expense" && createExpenseContent}
+          </div>
+        }
+      />
+
+      <AppAlertDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        title="지출 기록을 삭제하시겠습니까?"
+        description={`기록 되었던 예산 기록은 삭제 이후\n복구되지 않습니다.`}
+        cancelLabel="취소"
+        onCancel={() => setDeleteConfirmOpen(false)}
+        actionLabel="삭제하기"
+        onAction={() => {
+          setDeleteConfirmOpen(false);
+          onDelete?.();
+          onOpenChange(false);
+        }}
+      />
+    </>
   );
 }
 
