@@ -17,12 +17,19 @@ type ExpenseItem = {
   amount: string;
 };
 
+type EditExpenseItem = {
+  name: string;
+  cost: number;
+};
+
 type BudgetBottomSheetProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   mode: BudgetBottomSheetMode;
   /** 지출 추가/수정·삭제 모드에서 사용되는 장소 이름 */
   placeName?: string;
+  /** 지출 수정/삭제 모드에서 표시할 기존 지출 목록 */
+  editItems?: EditExpenseItem[];
   /** 지출 추가: 취소, 지출 수정/삭제: 닫기 */
   onCancel?: () => void;
   /** 지출 추가: 저장하기, 지출 수정/삭제: 수정하기 */
@@ -50,6 +57,7 @@ function BudgetBottomSheet({
   onOpenChange,
   mode,
   placeName,
+  editItems = [],
   onCancel,
   onConfirm,
   onDelete,
@@ -86,9 +94,11 @@ function BudgetBottomSheet({
 
   const sheetHeight =
     mode === "create-expense" ? "h-139" :
+    mode === "edit-expense" ? "h-168.75" :
     items.length === 1 ? "h-168.75" :
     "h-183.25";
 
+  /* ── add-expense 콘텐츠 ── */
   const addExpenseContent = (
     <div className="flex flex-col gap-5">
       <div className="flex w-full flex-col">
@@ -141,6 +151,43 @@ function BudgetBottomSheet({
     </div>
   );
 
+  /* ── edit-expense 콘텐츠 ── */
+  const editExpenseContent = (
+    <div className="flex flex-col gap-5">
+      <div className="flex w-full flex-col">
+        {editItems.map((item, index) => (
+          <div
+            key={index}
+            className={`flex flex-col gap-5 pb-5 ${
+              index < editItems.length - 1 ? "border-b border-[#E2E2E2]" : ""
+            } ${index > 0 ? "pt-5" : ""}`}
+          >
+            {/* 지출 항목 */}
+            <div className="flex flex-col gap-2">
+              <span className="font-sans text-sm font-semibold leading-5 text-[#1C2024]">
+                지출 항목
+              </span>
+              <span className="font-sans text-base font-normal leading-6 text-[#1C2024]">
+                {item.name}
+              </span>
+            </div>
+
+            {/* 금액 */}
+            <div className="flex flex-col gap-2">
+              <span className="font-sans text-sm font-semibold leading-5 text-[#1C2024]">
+                금액
+              </span>
+              <span className="font-sans text-base font-normal leading-6 text-[#1C2024]">
+                {item.cost.toLocaleString("ko-KR")} 원
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  /* ── create-expense 콘텐츠 ── */
   const createExpenseContent = (
     <div className="flex flex-col gap-5">
       <BudgetInputField
@@ -179,9 +226,7 @@ function BudgetBottomSheet({
       content={
         <div>
           {mode === "add-expense" && addExpenseContent}
-          {mode === "edit-expense" && (
-            <div>{/* TODO: 지출 수정/삭제 */}</div>
-          )}
+          {mode === "edit-expense" && editExpenseContent}
           {mode === "create-expense" && createExpenseContent}
         </div>
       }
@@ -190,4 +235,4 @@ function BudgetBottomSheet({
 }
 
 export default BudgetBottomSheet;
-export type { BudgetBottomSheetProps, BudgetBottomSheetMode };
+export type { BudgetBottomSheetProps, BudgetBottomSheetMode, EditExpenseItem };
