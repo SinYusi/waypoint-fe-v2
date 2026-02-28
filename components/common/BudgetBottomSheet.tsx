@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
+import BudgetInputField from "@/components/common/BudgetInputField";
 
 type BudgetBottomSheetMode =
   | "add-expense"       // 지출 추가
@@ -22,10 +24,15 @@ type BudgetBottomSheetProps = {
 };
 
 const BUTTON_CONFIG = {
-  "add-expense":    { cancelLabel: "취소",   confirmLabel: "저장하기" },
+  "add-expense":    { cancelLabel: "취소",    confirmLabel: "저장하기" },
   "edit-expense":   { cancelLabel: "삭제하기", confirmLabel: "수정하기" },
-  "create-expense": { cancelLabel: "취소",   confirmLabel: "저장하기" },
+  "create-expense": { cancelLabel: "취소",    confirmLabel: "저장하기" },
 } satisfies Record<BudgetBottomSheetMode, { cancelLabel: string; confirmLabel?: string }>;
+
+const formatAmount = (raw: string) => {
+  const numeric = raw.replace(/[^0-9]/g, "");
+  return numeric ? Number(numeric).toLocaleString("ko-KR") : "";
+};
 
 function BudgetBottomSheet({
   open,
@@ -36,8 +43,29 @@ function BudgetBottomSheet({
   onConfirm,
   onDelete,
 }: BudgetBottomSheetProps) {
+  const [expenseName, setExpenseName] = useState("");
+  const [amount, setAmount] = useState("0");
+
   const hasTitle = mode === "add-expense" || mode === "edit-expense";
   const { cancelLabel, confirmLabel } = BUTTON_CONFIG[mode];
+
+  const addExpenseContent = (
+    <div className="flex flex-col gap-4 pb-3.5">
+      <BudgetInputField
+        label="지출 항목"
+        value={expenseName}
+        onChange={setExpenseName}
+        inputMode="text"
+        unit=""
+        placeholder="지출 항목을 입력해 주세요"
+      />
+      <BudgetInputField
+        label="금액"
+        value={amount}
+        onChange={(v) => setAmount(formatAmount(v))}
+      />
+    </div>
+  );
 
   return (
     <BottomSheet
@@ -56,9 +84,7 @@ function BudgetBottomSheet({
       onConfirm={onConfirm}
       content={
         <div>
-          {mode === "add-expense" && (
-            <div>{/* TODO: 지출 추가 */}</div>
-          )}
+          {mode === "add-expense" && addExpenseContent}
           {mode === "edit-expense" && (
             <div>{/* TODO: 지출 수정/삭제 */}</div>
           )}
