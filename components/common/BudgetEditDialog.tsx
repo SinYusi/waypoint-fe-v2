@@ -122,7 +122,7 @@ const BudgetEditDialog = ({
 
           {/* 지출 중심 */}
           <TabsContent value="expense">
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 min-h-58">
               {/* 안내 카드 */}
               <div className="flex items-start gap-2 rounded-xl border border-[#E2E2E2] px-3 py-2">
                 <CircleHelp
