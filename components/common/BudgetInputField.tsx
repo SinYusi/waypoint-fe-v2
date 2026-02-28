@@ -42,7 +42,7 @@ const BudgetInputField = ({
     <div className="flex flex-col gap-2">
       <label className="typography-body-sm-sb text-foreground">{label}</label>
       <div
-        className={`flex h-11 items-center gap-2 rounded-xl bg-muted px-3 py-2 outline-none border transition-all ${
+        className={`flex h-11 items-center gap-2 rounded-xl bg-[#F0F0F0] px-3 py-2 outline-none border transition-all ${
           error
             ? "border-destructive"
             : "border-transparent has-focus:border-sky-500 has-focus:ring-2 has-focus:ring-sky-500/25"
