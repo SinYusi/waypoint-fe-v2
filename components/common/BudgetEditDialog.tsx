@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Check, CircleHelp } from "lucide-react";
 import AppDialog from "@/components/common/AppDialog";
 import { Button } from "@/components/ui/button";
@@ -99,6 +99,7 @@ const BudgetEditDialog = ({
                 label="총 여행 예산"
                 value={budgetInput}
                 onChange={(v) => setBudgetInput(formatInput(v))}
+                placeholder="다 같이 얼마를 쓰면 좋을까요?"
               />
 
               {/* 여행 인원 수 입력 */}
@@ -107,7 +108,7 @@ const BudgetEditDialog = ({
                 value={personInput}
                 onChange={(v) => setPersonInput(v.replace(/[^0-9]/g, ""))}
                 unit="명"
-                placeholder="4"
+                placeholder="모두 몇 명이서 떠나나요?"
               />
             </div>
           </TabsContent>
@@ -132,7 +133,7 @@ const BudgetEditDialog = ({
                 value={personInput}
                 onChange={(v) => setPersonInput(v.replace(/[^0-9]/g, ""))}
                 unit="명"
-                placeholder="4"
+                placeholder="모두 몇 명이서 떠나나요?"
               />
             </div>
           </TabsContent>
@@ -164,24 +165,42 @@ const BudgetInputField = ({
   value,
   onChange,
   unit = "원",
-  placeholder = "1,500,000",
-}: BudgetInputFieldProps) => (
-  <div className="flex flex-col gap-2">
-    <label className="typography-body-sm-sb text-foreground">{label}</label>
-    <div className="flex h-11 items-center gap-2 rounded-xl bg-muted px-3 py-2 outline-none border border-transparent has-focus:border-sky-500 has-focus:ring-2 has-focus:ring-sky-500/25 transition-all">
-      <input
-        type="text"
-        inputMode="numeric"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="w-full bg-transparent outline-none typography-body-base text-foreground placeholder:text-muted-foreground"
-      />
-      <span className="typography-action-base-bold shrink-0 text-muted-foreground">
-        {unit}
-      </span>
+  placeholder = "",
+}: BudgetInputFieldProps) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const isEmpty = value === "";
+
+  const handleFocus = () => {
+    if (isEmpty) {
+      onChange("0");
+      setTimeout(() => inputRef.current?.select(), 0);
+    } else {
+      inputRef.current?.select();
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-2">
+      <label className="typography-body-sm-sb text-foreground">{label}</label>
+      <div className="flex h-11 items-center gap-2 rounded-xl bg-muted px-3 py-2 outline-none border border-transparent has-focus:border-sky-500 has-focus:ring-2 has-focus:ring-sky-500/25 transition-all">
+        <input
+          ref={inputRef}
+          type="text"
+          inputMode="numeric"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onFocus={handleFocus}
+          placeholder={placeholder}
+          className="w-full bg-transparent outline-none typography-body-base text-foreground placeholder:text-muted-foreground"
+        />
+        {!isEmpty && (
+          <span className="typography-action-base-bold shrink-0 text-muted-foreground">
+            {unit}
+          </span>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default BudgetEditDialog;
