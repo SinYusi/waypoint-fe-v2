@@ -19,6 +19,7 @@ import { useExpenses } from "@/lib/hooks/plan/use-expenses";
 import ExpenseGroupItem from "@/components/card/ExpenseGroupItem";
 import { Plus } from "lucide-react";
 import BudgetBottomSheet, { type EditExpenseItem, type BudgetBottomSheetMode } from "@/components/common/BudgetBottomSheet";
+import { useUpdateExpense } from "@/lib/hooks/plan/use-update-expense";
 import { useBudget } from "@/lib/hooks/plan/use-budget";
 import { useUpdateBudget } from "@/lib/hooks/plan/use-update-budget";
 import BudgetSummaryCard from "@/components/card/BudgetSummaryCard";
@@ -28,7 +29,8 @@ import BudgetEditDialog from "@/components/common/BudgetEditDialog";
 const DayExpenses = ({ planId, day }: { planId: string; day: number }) => {
   const { data } = useExpenses(planId, day);
   const expenses = data ?? [];
-  const [bottomSheet, setBottomSheet] = useState<{ placeName?: string; items: EditExpenseItem[]; mode: BudgetBottomSheetMode } | null>(null);
+  const [bottomSheet, setBottomSheet] = useState<{ placeName?: string; expenseId?: string; items: EditExpenseItem[]; mode: BudgetBottomSheetMode } | null>(null);
+  const { mutate: updateExpense } = useUpdateExpense(planId);
 
   if (expenses.length === 0) return null;
 
@@ -72,6 +74,17 @@ const DayExpenses = ({ planId, day }: { planId: string; day: number }) => {
         mode={bottomSheet?.mode ?? "edit-expense"}
         placeName={bottomSheet?.placeName}
         editItems={bottomSheet?.items ?? []}
+        onSave={(savedItems) => {
+          if (!bottomSheet?.expenseId) return;
+          updateExpense({
+            expenseId: bottomSheet.expenseId,
+            items: savedItems.map((i) => ({
+              expense_item_id: i.expense_item_id ?? null,
+              name: i.name,
+              cost: String(i.cost),
+            })),
+          });
+        }}
       />
     </>
   );
