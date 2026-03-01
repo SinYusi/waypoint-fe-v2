@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, Fragment } from "react";
+import { useQueries } from "@tanstack/react-query";
 import DayNav from "@/components/common/DayNav";
 import GoogleMap from "@/components/common/GoogleMap";
 import { DayHeader } from "@/components/layout/DayHeader";
@@ -151,6 +152,23 @@ const PlanEditPage = () => {
   const isBudgetEmpty = budgetData?.type === "INITIAL";
   const { mutate: updateBudget } = useUpdateBudget(planId);
 
+  // 전체 day 지출 병렬 조회: PENDING 그룹 중 예산이 입력된 후보지가 있으면 힌트 표시
+  const expensesByDay = useQueries({
+    queries: days.map((day) => ({
+      queryKey: ["expenses", { planId, day }] as const,
+      queryFn: () => import("@/lib/api/budget").then((m) => m.getExpenses(planId, day)),
+      enabled: !!planId && days.length > 0,
+    })),
+  });
+  const hasPendingBlocks = expensesByDay.some((q) =>
+    q.data?.some(
+      (group) =>
+        group.type === "BLOCK" &&
+        group.block_status === "PENDING" &&
+        group.candidates?.some((c) => c.items.length > 0)
+    )
+  );
+
   // 초기 데이터 로딩 상태
   if (isInitialLoading) {
     return (
@@ -294,6 +312,7 @@ const PlanEditPage = () => {
             usedAmount={budgetData.total_cost}
             perDayAmount={totalDays > 0 ? Math.round(budgetData.total_cost / totalDays) : 0}
             perPersonAmount={budgetData.cost_per_person}
+            showHint={hasPendingBlocks}
             className="pt-3"
             onEditClick={() => setBudgetDialogOpen(true)}
           />
