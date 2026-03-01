@@ -14,11 +14,13 @@ type BudgetBottomSheetMode =
 
 type ExpenseItem = {
   id: number;
+  expense_item_id?: string;
   name: string;
   amount: string;
 };
 
 type EditExpenseItem = {
+  expense_item_id?: string;
   name: string;
   cost: number;
 };
@@ -37,6 +39,8 @@ type BudgetBottomSheetProps = {
   onConfirm?: () => void;
   /** 지출 수정/삭제 모드 전용: 삭제하기 */
   onDelete?: () => void;
+  /** 저장/수정 시 최종 항목 전달 */
+  onSave?: (items: EditExpenseItem[]) => void;
 };
 
 const BUTTON_CONFIG = {
@@ -54,6 +58,7 @@ let nextId = 1;
 const createItem = (): ExpenseItem => ({ id: nextId++, name: "", amount: "0" });
 const createItemFromEdit = (item: EditExpenseItem): ExpenseItem => ({
   id: nextId++,
+  expense_item_id: item.expense_item_id,
   name: item.name,
   amount: item.cost.toLocaleString("ko-KR"),
 });
@@ -67,6 +72,7 @@ function BudgetBottomSheet({
   onCancel,
   onConfirm,
   onDelete,
+  onSave,
 }: BudgetBottomSheetProps) {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [isEditFormMode, setIsEditFormMode] = useState(false);
@@ -336,9 +342,32 @@ function BudgetBottomSheet({
                   setIsEditFormMode(true);
                   return;
                 }
+                // 수정 폼 확정 → onSave 호출
+                onSave?.(
+                  editFormItems.map((i) => ({
+                    expense_item_id: i.expense_item_id,
+                    name: i.name,
+                    cost: Number(i.amount.replace(/,/g, "")),
+                  }))
+                );
                 onConfirm?.();
               }
-            : onConfirm
+            : () => {
+                // add-expense / create-expense → onSave 호출
+                if (mode === "add-expense") {
+                  onSave?.(
+                    items.map((i) => ({
+                      name: i.name,
+                      cost: Number(i.amount.replace(/,/g, "")),
+                    }))
+                  );
+                } else if (mode === "create-expense") {
+                  onSave?.([
+                    { name: createName, cost: Number(createAmount.replace(/,/g, "")) },
+                  ]);
+                }
+                onConfirm?.();
+              }
         }
         confirmDisabled={confirmDisabled}
         content={
