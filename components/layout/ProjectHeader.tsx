@@ -16,6 +16,8 @@ interface ProjectHeaderProps {
   showMapButton?: boolean;
   showCalendarButton?: boolean;
   showMenuButton?: boolean;
+  mapDisabled?: boolean;
+  calendarDisabled?: boolean;
   onMap?: () => void;
   onCalendar?: () => void;
   // 스타일
@@ -32,6 +34,8 @@ const ProjectHeader = ({
   showMapButton = false,
   showCalendarButton = false,
   showMenuButton = false,
+  mapDisabled = false,
+  calendarDisabled = false,
   onMap,
   onCalendar,
   leftBtnBgVariant = "ghost",
@@ -96,8 +100,11 @@ const ProjectHeader = ({
             bgVariant={rightBtnBgVariant}
             icon={Map}
             onClick={onMap}
+            disabled={mapDisabled}
             label="지도"
-            iconClassName={cn(isMapVisible ? "text-primary" : "")}
+            iconClassName={cn(
+              isMapVisible && !mapDisabled ? "text-primary" : "",
+            )}
           />
         )}
 
@@ -106,6 +113,7 @@ const ProjectHeader = ({
             bgVariant={rightBtnBgVariant}
             icon={Calendar}
             onClick={onCalendar}
+            disabled={calendarDisabled}
             label="일차"
             iconClassName={cn(isCalendarVisible ? "text-primary" : "")}
           />
