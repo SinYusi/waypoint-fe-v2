@@ -113,11 +113,14 @@ const BlockDetailPage = () => {
   const opinionCategoryKey = resolveOpinionCategoryKey(category);
   const editCurrentReasonIds = editReasonIdsByState[editCurrentState] ?? [];
   const editCurrentCustomText = editCustomTextByState[editCurrentState] ?? "";
+  const editEffectiveCustomText = editCurrentReasonIds.includes(CUSTOM_INPUT_REASON_ID)
+    ? editCurrentCustomText
+    : "";
   const addCurrentReasonIds = addReasonIdsByState[addCurrentState] ?? [];
   const addCurrentCustomText = addCustomTextByState[addCurrentState] ?? "";
   const hasChanged = editingOpinion
     ? editCurrentState !== editingOpinion.type ||
-      editCurrentCustomText !== (editingOpinion.comment ?? "") ||
+      editEffectiveCustomText !== (editingOpinion.comment ?? "") ||
       JSON.stringify(
         [...editCurrentReasonIds.filter((id) => id !== CUSTOM_INPUT_REASON_ID)].sort((a, b) => a - b),
       ) !==
@@ -420,12 +423,6 @@ const BlockDetailPage = () => {
               ...prev,
               [editCurrentState]: selectedReasonIds,
             }));
-            if (!selectedReasonIds.includes(CUSTOM_INPUT_REASON_ID)) {
-              setEditCustomTextByState((prev) => ({
-                ...prev,
-                [editCurrentState]: "",
-              }));
-            }
           }}
           onCustomInputTextChange={(text) => {
             setEditCustomTextByState((prev) => ({
