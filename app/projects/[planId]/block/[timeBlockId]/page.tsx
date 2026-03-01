@@ -420,6 +420,12 @@ const BlockDetailPage = () => {
               ...prev,
               [editCurrentState]: selectedReasonIds,
             }));
+            if (!selectedReasonIds.includes(CUSTOM_INPUT_REASON_ID)) {
+              setEditCustomTextByState((prev) => ({
+                ...prev,
+                [editCurrentState]: "",
+              }));
+            }
           }}
           onCustomInputTextChange={(text) => {
             setEditCustomTextByState((prev) => ({
