@@ -96,7 +96,7 @@ const BudgetSummaryCard = ({
               </div>
 
               {/* 1일 평균 지출 */}
-              <div className="flex flex-col items-start">
+              <div className="flex flex-col items-end">
                 <span className="typography-nav-xl-bold text-muted-foreground">1일 평균 지출</span>
                 <div className="flex items-center gap-0.5">
                   <span className="typography-display-lg-bold text-muted-foreground">
@@ -158,7 +158,7 @@ const BudgetSummaryCard = ({
               </div>
 
               {/* 1일 평균 지출 */}
-              <div className="flex flex-col items-start">
+              <div className="flex flex-col items-end">
                 <span className="typography-nav-xl-bold text-muted-foreground">1일 평균 지출</span>
                 <div className="flex items-center gap-0.5">
                   <span className="typography-display-lg-bold text-muted-foreground">
@@ -236,7 +236,7 @@ const BudgetSummaryCard = ({
               </div>
 
               {/* 남은 예산 */}
-              <div className="flex flex-col items-start">
+              <div className="flex flex-col items-end">
                 <span className="typography-nav-xl-bold text-muted-foreground">
                   남은 예산
                 </span>
@@ -342,7 +342,7 @@ const BudgetSummaryCard = ({
               </div>
 
               {/* 남은 예산 */}
-              <div className="flex flex-col items-start">
+              <div className="flex flex-col items-end">
                 <span className="typography-nav-xl-bold text-muted-foreground">남은 예산</span>
                 <div className="flex items-center gap-0.5">
                   <span
