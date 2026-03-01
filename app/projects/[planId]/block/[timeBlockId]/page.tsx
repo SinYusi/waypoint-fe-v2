@@ -355,7 +355,7 @@ const BlockDetailPage = () => {
                   </div>
                 </div>
                 {!myOpinionId && (
-                  <div className="sticky top-15 z-40 -mx-5 px-5 bg-background py-2">
+                  <div className="sticky top-0 z-40 -mx-5 px-5 bg-background py-2">
                     <button
                       type="button"
                       onClick={() => setIsAddingOpinion(true)}
