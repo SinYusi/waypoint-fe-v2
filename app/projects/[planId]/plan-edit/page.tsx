@@ -17,6 +17,7 @@ import { useStickyStuck } from "@/lib/hooks/use-sticky-stuck";
 import { useScrollspyDay } from "@/lib/hooks/use-scrollspy-day";
 import { useExpenses } from "@/lib/hooks/plan/use-expenses";
 import ExpenseGroupItem from "@/components/card/ExpenseGroupItem";
+import { Plus } from "lucide-react";
 
 // day별 지출 항목 — 훅을 루프 밖에서 호출하기 위해 별도 컴포넌트로 분리
 const DayExpenses = ({ planId, day }: { planId: string; day: number }) => {
@@ -31,8 +32,12 @@ const DayExpenses = ({ planId, day }: { planId: string; day: number }) => {
         <Fragment key={idx}>
           <ExpenseGroupItem group={group} />
           {idx < expenses.length - 1 && (
-            <div className="flex justify-center">
-              <div className="w-px h-5 bg-border" />
+            <div className="flex flex-col items-center">
+              <div className="w-px h-2.5 bg-border" />
+              <button className="w-7 h-7 rounded-4xl bg-secondary flex items-center justify-center">
+                <Plus className="w-3 h-3 text-slate-50" strokeWidth={2} />
+              </button>
+              <div className="w-px h-2.5 bg-border" />
             </div>
           )}
         </Fragment>
