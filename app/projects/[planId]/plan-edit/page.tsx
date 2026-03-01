@@ -14,6 +14,7 @@ import DayTimeBlocks from "@/components/common/projects/DayTimeBlocks";
 import { usePlanBlockData } from "@/lib/hooks/use-plan-block-data";
 import { cn } from "@/lib/utils/utils";
 import { useStickyStuck } from "@/lib/hooks/use-sticky-stuck";
+import { useScrollspyDay } from "@/lib/hooks/use-scrollspy-day";
 
 const PlanEditPage = () => {
   const router = useRouter();
@@ -61,6 +62,13 @@ const PlanEditPage = () => {
   const isDayNavStuck = useStickyStuck(dayNavSentinelRef, {
     top: dayNavTop,
     enabled: isCalendarVisible,
+  });
+
+  const { suppressRef } = useScrollspyDay({
+    days,
+    topOffset: dayNavTop + 56,
+    enabled: isAllDaysSettled && items.length > 0,
+    onActivate: (day) => setActiveDay(day),
   });
 
   // 초기 데이터 로딩 상태
@@ -160,6 +168,9 @@ const PlanEditPage = () => {
                     setOpenByDay((prev) => ({ ...prev, [day]: true }));
                   }
 
+                  // 스크롤 중 scrollspy 억제
+                  suppressRef.current = true;
+
                   const scrollToDay = () => {
                     const el = document.getElementById(`day-section-${value}`);
                     if (!el) return;
@@ -168,6 +179,8 @@ const PlanEditPage = () => {
                     const top =
                       el.getBoundingClientRect().top + window.scrollY - offset;
                     window.scrollTo({ top, behavior: "smooth" });
+                    // smooth scroll 종료 후 억제 해제 (약 600ms)
+                    setTimeout(() => { suppressRef.current = false; }, 700);
                   };
 
                   // 펼침 애니메이션 후 DOM 확정 시점에 스크롤
