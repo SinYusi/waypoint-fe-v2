@@ -181,7 +181,11 @@ const PlanEditBottomSheet = ({
   };
 
   const handleOpenChange = (nextOpen: boolean) => {
-    if (nextOpen) resetToDefaults();
+    if (nextOpen) {
+      resetToDefaults();
+    } else {
+      resetToDefaults();
+    }
     onOpenChange(nextOpen);
   };
 
