@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import DayNav from "@/components/common/DayNav";
 import GoogleMap from "@/components/common/GoogleMap";
 import { DayHeader } from "@/components/layout/DayHeader";
@@ -12,6 +12,8 @@ import useQueryTab from "@/lib/hooks/use-query-tab";
 import { formatDayInfoText } from "@/lib/utils/date";
 import DayTimeBlocks from "@/components/common/projects/DayTimeBlocks";
 import { usePlanBlockData } from "@/lib/hooks/use-plan-block-data";
+import { cn } from "@/lib/utils/utils";
+import { useStickyStuck } from "@/lib/hooks/use-sticky-stuck";
 
 const PlanEditPage = () => {
   const router = useRouter();
@@ -27,6 +29,8 @@ const PlanEditPage = () => {
 
   const [isCalendarVisible, setIsCalendarVisible] = useState(true);
   const [isMapVisible, setIsMapVisible] = useState(true);
+
+  const dayNavSentinelRef = useRef<HTMLDivElement | null>(null);
 
   const {
     planTitle,
@@ -51,6 +55,13 @@ const PlanEditPage = () => {
     activeMode === "planMode" &&
     isMapVisible &&
     !isAllDaysEmpty;
+
+  const dayNavTop = 64 + (shouldShowMap ? 180 : 0);
+
+  const isDayNavStuck = useStickyStuck(dayNavSentinelRef, {
+    top: dayNavTop,
+    enabled: isCalendarVisible,
+  });
 
   // 초기 데이터 로딩 상태
   if (isInitialLoading) {
@@ -118,33 +129,42 @@ const PlanEditPage = () => {
 
       {/* DayNav - sticky (지도 아래) */}
       {isCalendarVisible && (
-        <div
-          className="sticky z-10 bg-background overflow-hidden"
-          style={{
-            top: `${64 + (shouldShowMap ? 180 : 0)}px`,
-          }}
-        >
-          <div className="relative">
-            <DayNav
-              items={items}
-              value={safeActiveDay}
-              onValueChange={(value) => {
-                setActiveDay(value);
+        <>
+          {/* sticky 상태 감지용 sentinel (DayNav 바로 위에 위치) */}
+          <div ref={dayNavSentinelRef} className="h-px" />
+          <div
+            className={cn(
+              "sticky z-10 overflow-hidden",
+              isDayNavStuck
+                ? "border-t border-border backdrop-blur-xl bg-background/60"
+                : "bg-background",
+            )}
+            style={{
+              top: `${dayNavTop}px`,
+            }}
+          >
+            <div className="relative">
+              <DayNav
+                items={items}
+                value={safeActiveDay}
+                onValueChange={(value) => {
+                  setActiveDay(value);
 
-                const el = document.getElementById(`day-section-${value}`);
-                if (!el) return;
-                const mapHeight = shouldShowMap ? 180 : 0;
-                const offset = 64 + mapHeight + 56; // header + map + DayNav(h-14)
-                const top =
-                  el.getBoundingClientRect().top + window.scrollY - offset;
-                window.scrollTo({ top, behavior: "smooth" });
-              }}
-              className="gap-2.25 py-3 h-14"
-              itemClassName="h-8 py-1.5"
-            />
-            <div className="pointer-events-none absolute top-0 -right-1.25 w-14 h-14 bg-[linear-gradient(90deg,rgba(252,252,252,0)_0%,rgba(252,252,252,1)_100%)]" />
+                  const el = document.getElementById(`day-section-${value}`);
+                  if (!el) return;
+                  const mapHeight = shouldShowMap ? 180 : 0;
+                  const offset = 64 + mapHeight + 56; // header + map + DayNav(h-14)
+                  const top =
+                    el.getBoundingClientRect().top + window.scrollY - offset;
+                  window.scrollTo({ top, behavior: "smooth" });
+                }}
+                className="gap-2.25 py-3 h-14"
+                itemClassName="h-8 py-1.5"
+              />
+              <div className="pointer-events-none absolute top-0 -right-1.25 w-14 h-14 bg-[linear-gradient(90deg,rgba(252,252,252,0)_0%,rgba(252,252,252,1)_100%)]" />
+            </div>
           </div>
-        </div>
+        </>
       )}
 
       <main className="flex flex-col pb-32">
