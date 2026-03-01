@@ -106,6 +106,9 @@ function BudgetBottomSheet({
     setDeleteConfirmOpen(false);
     setIsEditFormMode(false);
     setEditFormItems([]);
+    setItems([createItem()]);
+    setCreateName("");
+    setCreateAmount("0");
   };
 
   const handleSheetOpenChange = (nextOpen: boolean) => {
