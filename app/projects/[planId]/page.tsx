@@ -12,186 +12,7 @@ import PlanHeader from "@/components/layout/PlanHeader";
 import ProjectHeader from "@/components/layout/ProjectHeader";
 import { useBudget } from "@/lib/hooks/plan/use-budget";
 import { useExpenses } from "@/lib/hooks/plan/use-expenses";
-import type { BudgetResponse, ExpenseGroupResponse } from "@/types/budget";
-
-const MOCK_BLOCK_CATEGORY = {
-  level1: { category_id: "cat-l1", name: "관광" },
-  level2: { category_id: "cat-l2", name: "명소" },
-  level3: { category_id: "cat-l3", name: "기타" },
-};
-
-const createMockBlock = (block_id: string, name: string) => ({
-  block_id,
-  name,
-  category: MOCK_BLOCK_CATEGORY,
-});
-
-// TODO: 서버 연결 후 제거
-const mockBudgetData: BudgetResponse = {
-  budget_id: "1",
-  type: "BUDGET",
-  total_budget: 1500000,
-  total_cost: 564000,
-  remaining_budget: 936000,
-  cost_per_person: 141000,
-  traveler_count: 4,
-};
-
-// TODO: 서버 연결 후 제거
-const mockExpensesByDay: Record<number, ExpenseGroupResponse[]> = {
-  1: [
-    // BLOCK + FIXED + 단일 후보 → BudgetPlaceCard
-    {
-      type: "BLOCK",
-      time_block_id: "block-1",
-      block_status: "FIXED",
-      candidate_count: 1,
-      candidates: null,
-      selected: {
-        expense_id: "exp-1",
-        block: createMockBlock("block-1", "성산일출봉"),
-        items: [
-          { expense_item_id: "item-1", name: "입장료", cost: 5000 },
-          { expense_item_id: "item-1b", name: "주차비", cost: 3000 },
-        ],
-      },
-    },
-    // ADDITIONAL + 복수 항목 → BudgetCandidateGroup edit
-    {
-      type: "ADDITIONAL",
-      time_block_id: null,
-      block_status: null,
-      candidate_count: null,
-      candidates: null,
-      selected: {
-        expense_id: "exp-5",
-        block: null,
-        items: [
-          { expense_item_id: "item-5", name: "렌터카", cost: 80000 },
-        ],
-      },
-    },
-    // BLOCK + FIXED + 복수 후보 → BudgetCandidateCard
-    {
-      type: "BLOCK",
-      time_block_id: "block-2",
-      block_status: "FIXED",
-      candidate_count: 2,
-      candidates: null,
-      selected: {
-        expense_id: "exp-2",
-        block: createMockBlock("block-2", "우도"),
-        items: [{ expense_item_id: "item-2", name: "배 왕복", cost: 12000 }],
-      },
-    },
-    {
-      type: "BLOCK",
-      time_block_id: "block-3",
-      block_status: "PENDING",
-      candidate_count: 2,
-      candidates: [
-        {
-          expense_id: "exp-3",
-          block: createMockBlock("block-3", "협재 해수욕장"),
-          items: [{ expense_item_id: "item-3", name: "주차비", cost: 3000 },
-                { expense_item_id: "item-1b", name: "주차비", cost: 3000 },],
-          
-        },
-        {
-          expense_id: "exp-4",
-          block: createMockBlock("block-4", "곽지 해수욕장"),
-          items: [{ expense_item_id: "item-4", name: "주차비", cost: 2000 }],
-        },
-        {
-          expense_id: "exp-6",
-          block: createMockBlock("block-5", "해운대 해수욕장"),
-          items: [{ expense_item_id: "item-6", name: "주차비", cost: 2000 }],
-        },
-      ],
-      selected: null,
-    },
-    {
-      type: "BLOCK",
-      time_block_id: "block-3",
-      block_status: "PENDING",
-      candidate_count: 2,
-      candidates: [
-        {
-          expense_id: "exp-3",
-          block: createMockBlock("block-3", "협재 해수욕장"),
-          items: [{ expense_item_id: "item-3", name: "주차비", cost: 3000 },
-                { expense_item_id: "item-1b", name: "주차비", cost: 3000 },],
-          
-        },
-        {
-          expense_id: "exp-4",
-          block: createMockBlock("block-4", "곽지 해수욕장"),
-          items: [{ expense_item_id: "item-4", name: "주차비", cost: 2000 }],
-        },
-        {
-          expense_id: "exp-6",
-          block: createMockBlock("block-5", "해운대 해수욕장"),
-          items: [{ expense_item_id: "item-6", name: "주차비", cost: 2000 }],
-        },
-        {
-          expense_id: "exp-7",
-          block: createMockBlock("block-6", "송도 해수욕장"),
-          items: [{ expense_item_id: "item-7", name: "주차비", cost: 2000 }],
-        },
-      ],
-      selected: null,
-    },
-  ],
-  2: [
-    // BLOCK + FIXED + 복수 후보 → BudgetCandidateCard
-    {
-      type: "BLOCK",
-      time_block_id: "block-2",
-      block_status: "FIXED",
-      candidate_count: 2,
-      candidates: null,
-      selected: {
-        expense_id: "exp-2",
-        block: createMockBlock("block-2", "우도"),
-        items: [{ expense_item_id: "item-2", name: "배 왕복", cost: 12000 }],
-      },
-    },
-  ],
-  3: [
-    // BLOCK + PENDING → BudgetCandidateGroup view
-    {
-      type: "BLOCK",
-      time_block_id: "block-3",
-      block_status: "PENDING",
-      candidate_count: 2,
-      candidates: [
-        {
-          expense_id: "exp-3",
-          block: createMockBlock("block-3", "협재 해수욕장"),
-          items: [{ expense_item_id: "item-3", name: "주차비", cost: 3000 },
-                { expense_item_id: "item-1b", name: "주차비", cost: 3000 },],
-          
-        },
-        {
-          expense_id: "exp-4",
-          block: createMockBlock("block-4", "곽지 해수욕장"),
-          items: [{ expense_item_id: "item-4", name: "주차비", cost: 2000 }],
-        },
-        {
-          expense_id: "exp-6",
-          block: createMockBlock("block-5", "해운대 해수욕장"),
-          items: [{ expense_item_id: "item-6", name: "주차비", cost: 2000 }],
-        },
-        {
-          expense_id: "exp-7",
-          block: createMockBlock("block-6", "송도 해수욕장"),
-          items: [{ expense_item_id: "item-7", name: "주차비", cost: 2000 }],
-        },
-      ],
-      selected: null,
-    },
-  ],
-};
+import BudgetEmptyState from "@/components/common/BudgetEmptyState";
 
 // day별 지출 항목 — 훅을 루프 밖에서 호출하기 위해 별도 컴포넌트로 분리
 const DayExpenses = ({
@@ -202,7 +23,7 @@ const DayExpenses = ({
   day: number;
 }) => {
   const { data } = useExpenses(planId, day);
-  const expenses = data ?? mockExpensesByDay[day] ?? [];
+  const expenses = data ?? [];
 
   if (expenses.length === 0) return null;
 
@@ -239,9 +60,9 @@ const PlanPage = () => {
   const [isCalendarVisible, setIsCalendarVisible] = useState(true);
   const [isMapVisible, setIsMapVisible] = useState(true);
   const [budgetCardMode, setBudgetCardMode] = useState<"view" | "edit">("view");
-  const { data } = useBudget(planId);
-  const budgetData = data ?? mockBudgetData;
-  const showHint = Object.values(mockExpensesByDay).flat().length > 0;
+  const { data: budgetData } = useBudget(planId);
+  const showHint = false;
+  const isEmpty = !budgetData;
   const startDate = "2026-02-24";
   const items = [
     { value: "1", label: "Day 1" },
@@ -320,22 +141,25 @@ const PlanPage = () => {
       )}
 
       <main className="flex flex-col pb-18">
+        {/* 예산 탭: 빈 상태 */}
+        {activeMode === "budget" && isEmpty && <BudgetEmptyState />}
+
         {/* 예산 탭: BudgetSummaryCard */}
-        {activeMode === "budget" && (
+        {activeMode === "budget" && !isEmpty && (
           <BudgetSummaryCard
-            variant={budgetData.type === "BUDGET" ? "budget" : "expense"}
+            variant={budgetData!.type === "BUDGET" ? "budget" : "expense"}
             mode={budgetCardMode}
-            totalBudget={budgetData.total_budget ?? 0}
-            usedAmount={budgetData.total_cost}
-            perDayAmount={Math.round(budgetData.total_cost / items.length)}
-            perPersonAmount={budgetData.cost_per_person}
+            totalBudget={budgetData!.total_budget ?? 0}
+            usedAmount={budgetData!.total_cost}
+            perDayAmount={Math.round(budgetData!.total_cost / items.length)}
+            perPersonAmount={budgetData!.cost_per_person}
             showHint={showHint}
             onEditClick={() => setBudgetCardMode("edit")}
             className="pt-3"
           />
         )}
 
-        {items.map((item) => (
+        {(!isEmpty || activeMode !== "budget") && items.map((item) => (
           <div key={item.value} id={`day-section-${item.value}`}>
             <DayHeader
               day={Number(item.value)}
