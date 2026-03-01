@@ -8,7 +8,7 @@ import type { EditExpenseItem } from "@/components/common/BudgetBottomSheet";
 interface ExpenseGroupItemProps {
   group: ExpenseGroupResponse;
   onSelectCandidates?: () => void;
-  onCardClick?: (data: { placeName?: string; items: EditExpenseItem[] }) => void;
+  onCardClick?: (data: { placeName?: string; expenseId?: string; items: EditExpenseItem[] }) => void;
 }
 
 const getPlaceType = (category: PlaceCategory | null | undefined): PlaceType =>
@@ -22,6 +22,7 @@ const ExpenseGroupItem = ({ group, onSelectCandidates, onCardClick }: ExpenseGro
       const candidates = group.candidates;
       const cards = candidates.map((c) => ({
         placeName: c.block?.name ?? "알 수 없음",
+        expenseId: c.expense_id,
         items: c.items,
         placeType: getPlaceType(c.block?.category),
       }));
@@ -30,7 +31,7 @@ const ExpenseGroupItem = ({ group, onSelectCandidates, onCardClick }: ExpenseGro
           mode="view"
           cards={cards}
           onSelectCandidates={onSelectCandidates}
-          onCardClick={onCardClick ? (card) => onCardClick({ placeName: card.placeName, items: card.items }) : undefined}
+          onCardClick={onCardClick ? (card) => onCardClick({ placeName: card.placeName, expenseId: card.expenseId, items: card.items }) : undefined}
         />
       );
     }
@@ -47,7 +48,7 @@ const ExpenseGroupItem = ({ group, onSelectCandidates, onCardClick }: ExpenseGro
           placeType={getPlaceType(group.selected?.block?.category)}
           candidateCount={totalCandidateCount}
           onSelectClick={onSelectCandidates}
-          onClick={onCardClick ? () => onCardClick({ placeName: group.selected?.block?.name, items: group.selected?.items ?? [] }) : undefined}
+          onClick={onCardClick ? () => onCardClick({ placeName: group.selected?.block?.name, expenseId: group.selected?.expense_id, items: group.selected?.items ?? [] }) : undefined}
         />
       );
     }
@@ -59,7 +60,7 @@ const ExpenseGroupItem = ({ group, onSelectCandidates, onCardClick }: ExpenseGro
           placeName={group.selected.block?.name ?? ""}
           items={group.selected.items}
           placeType={getPlaceType(group.selected.block?.category)}
-          onClick={onCardClick ? () => onCardClick({ placeName: group.selected?.block?.name, items: group.selected!.items }) : undefined}
+          onClick={onCardClick ? () => onCardClick({ placeName: group.selected?.block?.name, expenseId: group.selected?.expense_id, items: group.selected!.items }) : undefined}
         />
       );
     }
@@ -69,7 +70,7 @@ const ExpenseGroupItem = ({ group, onSelectCandidates, onCardClick }: ExpenseGro
   if (group.type === "ADDITIONAL" && group.selected?.items.length) {
     return <BudgetPlaceCard
       items={group.selected.items}
-      onClick={onCardClick ? () => onCardClick({ items: group.selected!.items }) : undefined}
+      onClick={onCardClick ? () => onCardClick({ expenseId: group.selected?.expense_id, items: group.selected!.items }) : undefined}
     />;
   }
 
