@@ -114,8 +114,6 @@ const EditPlace = ({
         timeBlockId,
         blockId: targetBlockId,
         day,
-        page: 0,
-        size: 20,
       });
       return;
     }
@@ -125,8 +123,6 @@ const EditPlace = ({
       planId,
       timeBlockId,
       day,
-      page: 0,
-      size: 20,
     });
   };
 
