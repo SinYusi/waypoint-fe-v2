@@ -18,6 +18,8 @@ import { useScrollspyDay } from "@/lib/hooks/use-scrollspy-day";
 import { useExpenses } from "@/lib/hooks/plan/use-expenses";
 import ExpenseGroupItem from "@/components/card/ExpenseGroupItem";
 import { Plus } from "lucide-react";
+import { useBudget } from "@/lib/hooks/plan/use-budget";
+import BudgetSummaryCard from "@/components/card/BudgetSummaryCard";
 
 // day별 지출 항목 — 훅을 루프 밖에서 호출하기 위해 별도 컴포넌트로 분리
 const DayExpenses = ({ planId, day }: { planId: string; day: number }) => {
@@ -107,6 +109,10 @@ const PlanEditPage = () => {
     enabled: isAllDaysSettled && items.length > 0,
     onActivate: (day) => setActiveDay(day),
   });
+
+  const { data: budgetData } = useBudget(planId);
+  const hasBudgetData = !!budgetData;
+  const isBudgetEmpty = budgetData?.type === "INITIAL";
 
   // 초기 데이터 로딩 상태
   if (isInitialLoading) {
@@ -233,6 +239,23 @@ const PlanEditPage = () => {
       )}
 
       <main className="flex flex-col pb-32">
+        {/* 예산 탭: 빈 상태 (편집 모드) */}
+        {activeMode === "budget" && isBudgetEmpty && (
+          <BudgetSummaryCard mode="edit" className="pt-3" />
+        )}
+
+        {/* 예산 탭: BudgetSummaryCard */}
+        {activeMode === "budget" && hasBudgetData && !isBudgetEmpty && (
+          <BudgetSummaryCard
+            variant={budgetData.type === "BUDGET" ? "budget" : "expense"}
+            mode="edit"
+            totalBudget={budgetData.total_budget ?? 0}
+            usedAmount={budgetData.total_cost}
+            perDayAmount={totalDays > 0 ? Math.round(budgetData.total_cost / totalDays) : 0}
+            perPersonAmount={budgetData.cost_per_person}
+            className="pt-3"
+          />
+        )}
         {days.map((day, idx) => {
           const q = dayQueries[idx];
           const isEmpty = !!q?.data && (q.data.contents?.length ?? 0) === 0;
