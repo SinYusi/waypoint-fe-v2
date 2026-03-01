@@ -106,6 +106,12 @@ export type BlockDetail = {
   myOpinion: BlockOpinionType | null;
 };
 
+export type CreateBlockOpinionRequest = {
+  type: BlockOpinionType;
+  tag_ids?: string[];
+  comment?: string;
+};
+
 export type UpdateBlockOpinionRequest = {
   type: BlockOpinionType;
   tag_ids: string[];
@@ -210,6 +216,25 @@ export const updateBlock = async (
   );
 
   return normalizeBlockDetail(data);
+};
+
+export const createBlockOpinion = async (
+  planId: string,
+  blockId: string,
+  payload: CreateBlockOpinionRequest,
+): Promise<OpinionItem> => {
+  const { data } = await apiClient.post<BlockOpinionApi>(
+    `/plans/${planId}/blocks/${blockId}/opinions`,
+    payload,
+  );
+
+  return {
+    opinion_Id: data.opinion_id,
+    type: data.type,
+    comment: data.comment,
+    tag_ids: data.tag_ids,
+    added_by: data.added_by,
+  };
 };
 
 export const updateBlockOpinion = async (
