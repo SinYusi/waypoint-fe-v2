@@ -7,21 +7,25 @@ import MemberItem from "./MemberItem";
 
 interface MemberListSectionProps {
   members: (CollectionMember | PlanMember)[];
+  isOwner?: boolean;
   onKick: (memberId: string) => void;
   onAssignOwner: (memberId: string) => void;
+  onInviteClick?: () => void;
 }
 
 const MemberListSection = ({
   members,
+  isOwner = false,
   onKick,
   onAssignOwner,
+  onInviteClick,
 }: MemberListSectionProps) => {
   const [isManaging, setIsManaging] = useState(false);
   return (
     <div className="w-full rounded-2xl bg-[#f0f0f0]">
       <div className="flex px-4 py-3 justify-between">
         <p className="typography-action-base-bold">여행 멤버</p>
-        {!isManaging && (
+        {isOwner && !isManaging && (
           <button
             className="typography-action-sm-reg text-[#757575]"
             onClick={() => setIsManaging(true)}
@@ -57,6 +61,7 @@ const MemberListSection = ({
               icon={<UserPlus size={18} className="opacity-40" />}
               variant="ghost"
               className="rounded-2xl typography-action-sm-reg flex flex-row mb-2"
+              onClick={onInviteClick}
             >
               새로운 멤버 초대하기
             </Button>

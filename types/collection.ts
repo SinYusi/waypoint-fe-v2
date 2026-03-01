@@ -163,3 +163,5 @@ export type CollectionPlacesResponse = {
   size: number;
   page: number;
 };
+
+export type { InvitationResponse } from "@/types/invitation";

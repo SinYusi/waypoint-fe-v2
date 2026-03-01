@@ -26,6 +26,7 @@ interface PlaceListHeaderProps {
   placeCount?: number;
   collectionMembers?: CollectionMember[];
   meRole?: MemberRole;
+  collectionId?: string;
   className?: string;
 }
 
@@ -37,6 +38,7 @@ const PlaceListHeader = ({
   placeCount,
   collectionMembers,
   meRole,
+  collectionId,
   className,
 }: PlaceListHeaderProps) => {
   const { isSearchMode, sort, addedBy, place } = value;
@@ -163,6 +165,7 @@ const PlaceListHeader = ({
             rightBtnBgVariant="ghost"
             members={collectionMembers}
             meRole={meRole}
+            collectionId={collectionId}
           />
         </div>
       </div>
