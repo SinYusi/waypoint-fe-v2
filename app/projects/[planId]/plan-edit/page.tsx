@@ -19,7 +19,9 @@ import { useExpenses } from "@/lib/hooks/plan/use-expenses";
 import ExpenseGroupItem from "@/components/card/ExpenseGroupItem";
 import { Plus } from "lucide-react";
 import { useBudget } from "@/lib/hooks/plan/use-budget";
+import { useUpdateBudget } from "@/lib/hooks/plan/use-update-budget";
 import BudgetSummaryCard from "@/components/card/BudgetSummaryCard";
+import BudgetEditDialog from "@/components/common/BudgetEditDialog";
 
 // day별 지출 항목 — 훅을 루프 밖에서 호출하기 위해 별도 컴포넌트로 분리
 const DayExpenses = ({ planId, day }: { planId: string; day: number }) => {
@@ -71,6 +73,7 @@ const PlanEditPage = () => {
   const [isMapVisible, setIsMapVisible] = useState(true);
 
   const dayNavSentinelRef = useRef<HTMLDivElement | null>(null);
+  const [budgetDialogOpen, setBudgetDialogOpen] = useState(false);
 
   const {
     planTitle,
@@ -113,6 +116,7 @@ const PlanEditPage = () => {
   const { data: budgetData } = useBudget(planId);
   const hasBudgetData = !!budgetData;
   const isBudgetEmpty = budgetData?.type === "INITIAL";
+  const { mutate: updateBudget } = useUpdateBudget(planId);
 
   // 초기 데이터 로딩 상태
   if (isInitialLoading) {
@@ -241,7 +245,11 @@ const PlanEditPage = () => {
       <main className="flex flex-col pb-32">
         {/* 예산 탭: 빈 상태 (편집 모드) */}
         {activeMode === "budget" && isBudgetEmpty && (
-          <BudgetSummaryCard mode="edit" className="pt-3" />
+          <BudgetSummaryCard
+            mode="edit"
+            className="pt-3"
+            onEditClick={() => setBudgetDialogOpen(true)}
+          />
         )}
 
         {/* 예산 탭: BudgetSummaryCard */}
@@ -254,8 +262,25 @@ const PlanEditPage = () => {
             perDayAmount={totalDays > 0 ? Math.round(budgetData.total_cost / totalDays) : 0}
             perPersonAmount={budgetData.cost_per_person}
             className="pt-3"
+            onEditClick={() => setBudgetDialogOpen(true)}
           />
         )}
+
+        {/* 예산 편집 다이얼로그 */}
+        <BudgetEditDialog
+          open={budgetDialogOpen}
+          onOpenChange={setBudgetDialogOpen}
+          defaultMode={budgetData?.type === "EXPENSE" ? "expense" : "budget"}
+          initialBudget={budgetData?.total_budget ?? undefined}
+          initialPersonCount={budgetData?.traveler_count}
+          onSave={({ mode, totalBudget, personCount }) => {
+            updateBudget({
+              type: mode === "budget" ? "BUDGET" : "EXPENSE",
+              total_budget: totalBudget,
+              traveler_count: personCount,
+            });
+          }}
+        />
         {days.map((day, idx) => {
           const q = dayQueries[idx];
           const isEmpty = !!q?.data && (q.data.contents?.length ?? 0) === 0;
