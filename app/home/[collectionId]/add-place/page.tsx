@@ -319,16 +319,7 @@ const AddPlacePage = () => {
                           )
                         }
                       >
-                        <CheckBox
-                          checked={isChecked}
-                          onCheckedChange={(checked) =>
-                            setSelectedPlaceIds((prev) =>
-                              checked
-                                ? [...prev, place.place_id]
-                                : prev.filter((id) => id !== place.place_id),
-                            )
-                          }
-                        />
+                        <CheckBox checked={isChecked} />
                         <div className="flex flex-col gap-1 min-w-0">
                           <p className="typography-label-base-sb truncate">
                             {place.name}
