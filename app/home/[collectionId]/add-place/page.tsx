@@ -88,6 +88,9 @@ const AddPlacePage = () => {
         queryClient.removeQueries({
           queryKey: ["extractionJobLatest", collectionId],
         });
+        queryClient.invalidateQueries({
+          queryKey: ["collectionPlaces", { collectionId }],
+        });
         setIsJobActive(false);
         setSelectedPlaceIds([]);
       },
