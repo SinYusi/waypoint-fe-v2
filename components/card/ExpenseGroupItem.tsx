@@ -1,12 +1,16 @@
-import type { ExpenseGroupResponse } from "@/types/budget";
+import type { ExpenseGroupResponse, PlaceCategory } from "@/types/budget";
 import BudgetPlaceCard from "@/components/card/BudgetPlaceCard";
 import BudgetCandidateCard from "@/components/card/BudgetCandidateCard";
 import BudgetCandidateGroup from "@/components/card/BudgetCandidateGroup";
+import { type PlaceType } from "@/components/card/PlaceTypeIcon";
 
 interface ExpenseGroupItemProps {
   group: ExpenseGroupResponse;
   onSelectCandidates?: () => void;
 }
+
+const getPlaceType = (category: PlaceCategory | null | undefined): PlaceType =>
+  (category?.level2?.name as PlaceType) ?? "기타";
 
 const ExpenseGroupItem = ({ group, onSelectCandidates }: ExpenseGroupItemProps) => {
   // BLOCK 타입
@@ -16,7 +20,7 @@ const ExpenseGroupItem = ({ group, onSelectCandidates }: ExpenseGroupItemProps) 
       const cards = group.candidates.map((c) => ({
         placeName: c.block?.name ?? "알 수 없음",
         items: c.items,
-        placeType: "기타" as const,
+        placeType: getPlaceType(c.block?.category),
       }));
       return (
         <BudgetCandidateGroup
@@ -37,7 +41,7 @@ const ExpenseGroupItem = ({ group, onSelectCandidates }: ExpenseGroupItemProps) 
         <BudgetCandidateCard
           placeName={group.selected.block?.name ?? ""}
           items={group.selected.items}
-          placeType="기타"
+          placeType={getPlaceType(group.selected.block?.category)}
           candidateCount={group.candidate_count ?? 0}
           onSelectClick={onSelectCandidates}
         />
@@ -50,7 +54,7 @@ const ExpenseGroupItem = ({ group, onSelectCandidates }: ExpenseGroupItemProps) 
         <BudgetPlaceCard
           placeName={group.selected.block?.name ?? ""}
           items={group.selected.items}
-          placeType="기타"
+          placeType={getPlaceType(group.selected.block?.category)}
         />
       );
     }
