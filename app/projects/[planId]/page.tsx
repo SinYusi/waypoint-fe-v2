@@ -86,7 +86,7 @@ const PlanPage = () => {
 
   const dayNavTopOffset =
     64 + (activeMode === "planMode" && isMapVisible ? 180 : 0) + 56;
-  const { activeDay, suppressRef } = useScrollspyDay({
+  const { activeDay, setActiveDay, suppressRef } = useScrollspyDay({
     days,
     topOffset: dayNavTopOffset,
     enabled: items.length > 0,
@@ -163,6 +163,7 @@ const PlanPage = () => {
 
               // 스크롤 중 scrollspy 억제
               suppressRef.current = true;
+              setActiveDay(value);
 
               const scrollToDay = () => {
                 const el = document.getElementById(`day-section-${value}`);
