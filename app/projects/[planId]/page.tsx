@@ -14,7 +14,6 @@ import useQueryTab from "@/lib/hooks/use-query-tab";
 import { useBudget } from "@/lib/hooks/plan/use-budget";
 import { useExpenses } from "@/lib/hooks/plan/use-expenses";
 import BudgetEmptyState from "@/components/common/BudgetEmptyState";
-import { usePlan } from "@/lib/hooks/project/plan/use-plan";
 import { usePlanBlockData } from "@/lib/hooks/use-plan-block-data";
 
 // day별 지출 항목 — 훅을 루프 밖에서 호출하기 위해 별도 컴포넌트로 분리
@@ -68,9 +67,8 @@ const PlanPage = () => {
   const [isCalendarVisible, setIsCalendarVisible] = useState(true);
   const [isMapVisible, setIsMapVisible] = useState(true);
   const [budgetCardMode, setBudgetCardMode] = useState<"view" | "edit">("view");
-  const { data: plan } = usePlan(planId);
-  const startDate = plan?.start_date ?? "";
   const {
+    plan,
     planTitle,
     totalDays,
     items,
@@ -78,6 +76,7 @@ const PlanPage = () => {
     openByDay,
     setOpenByDay,
   } = usePlanBlockData({ planId });
+  const startDate = plan?.start_date ?? "";
   const { data: budgetData } = useBudget(planId);
   const showHint = false;
   const hasBudgetData = !!budgetData;
