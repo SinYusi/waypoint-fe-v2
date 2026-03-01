@@ -1,0 +1,81 @@
+import { CircleCheck, ChevronRight } from "lucide-react";
+import PlaceTypeIcon, { type PlaceType } from "@/components/card/PlaceTypeIcon";
+
+interface BudgetCandidateCardProps {
+  placeName: string;
+  feeLabel?: string;
+  amount: number;
+  placeType: PlaceType;
+  candidateCount: number;
+  onSelectClick?: () => void;
+  className?: string;
+}
+
+const BudgetCandidateCard = ({
+  placeName,
+  feeLabel = "입장료",
+  amount,
+  placeType,
+  candidateCount,
+  onSelectClick,
+  className,
+}: BudgetCandidateCardProps) => {
+  return (
+    <article
+      className={`w-full overflow-hidden rounded-2xl border border-border bg-background shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] ${className ?? ""}`}
+    >
+      {/* Header - BudgetPlaceCard와 동일 */}
+      <header className="flex items-start justify-between px-4 pt-3.5 pb-3">
+        <div className="flex min-w-0 items-center gap-2 pr-1.5">
+          <h3 className="typography-display-lg-bold truncate text-[#020618]">
+            {placeName}
+          </h3>
+        </div>
+        <div className="shrink-0">
+          <PlaceTypeIcon type={placeType} />
+        </div>
+      </header>
+
+      {/* Main */}
+      <div className="flex flex-col gap-3 pt-1 pb-3.5">
+        {/* 요금 행 */}
+        <div className="pl-4 pr-3">
+          <div className="flex w-full items-center justify-between pr-1">
+            <span className="typography-body-sm-reg text-muted-foreground">
+              {feeLabel}
+            </span>
+            <div className="flex h-6 w-16 items-center justify-end gap-0.5 text-foreground">
+              <span className="typography-body-base h-6 whitespace-nowrap leading-6">
+                {amount.toLocaleString("ko-KR")}
+              </span>
+              <span className="typography-body-sm-reg h-5 w-3.25 leading-5">원</span>
+            </div>
+          </div>
+        </div>
+
+        {/* 버튼 행 */}
+        <div className="px-4">
+          <button
+            type="button"
+            onClick={onSelectClick}
+            className="flex h-8 w-full items-center justify-center gap-1 rounded-lg bg-[#F0F0F0] px-2.5 py-2"
+          >
+            <CircleCheck
+              className="size-4 shrink-0 text-primary"
+              strokeWidth={2}
+            />
+            <span className="typography-nav-xl-reg text-foreground">
+              총 {candidateCount}개의 후보지 중 다시 선택하기
+            </span>
+            <ChevronRight
+              className="size-4 shrink-0 opacity-40"
+              strokeWidth={2}
+            />
+          </button>
+        </div>
+      </div>
+    </article>
+  );
+};
+
+export default BudgetCandidateCard;
