@@ -16,7 +16,7 @@ import type { BudgetResponse, ExpenseGroupResponse } from "@/types/budget";
 
 // TODO: 서버 연결 후 제거
 const mockBudgetData: BudgetResponse = {
-  budget_id: 1,
+  budget_id: "1",
   type: "BUDGET",
   total_budget: 1500000,
   total_cost: 564000,
