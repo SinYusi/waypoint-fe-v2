@@ -21,6 +21,7 @@ import ExpenseGroupItem from "@/components/card/ExpenseGroupItem";
 import { Plus } from "lucide-react";
 import BudgetBottomSheet, { type EditExpenseItem, type BudgetBottomSheetMode } from "@/components/common/BudgetBottomSheet";
 import { useUpdateExpense } from "@/lib/hooks/plan/use-update-expense";
+import { useDeleteExpense } from "@/lib/hooks/plan/use-delete-expense";
 import { useBudget } from "@/lib/hooks/plan/use-budget";
 import { useUpdateBudget } from "@/lib/hooks/plan/use-update-budget";
 import BudgetSummaryCard from "@/components/card/BudgetSummaryCard";
@@ -32,6 +33,7 @@ const DayExpenses = ({ planId, day }: { planId: string; day: number }) => {
   const expenses = data ?? [];
   const [bottomSheet, setBottomSheet] = useState<{ placeName?: string; expenseId?: string; items: EditExpenseItem[]; mode: BudgetBottomSheetMode } | null>(null);
   const { mutate: updateExpense } = useUpdateExpense(planId);
+  const { mutate: deleteExpense } = useDeleteExpense(planId);
 
   if (expenses.length === 0) return null;
 
@@ -85,6 +87,10 @@ const DayExpenses = ({ planId, day }: { planId: string; day: number }) => {
               cost: String(i.cost),
             })),
           });
+        }}
+        onDelete={() => {
+          if (!bottomSheet?.expenseId) return;
+          deleteExpense({ expenseId: bottomSheet.expenseId });
         }}
       />
     </>
