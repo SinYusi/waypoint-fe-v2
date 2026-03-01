@@ -62,7 +62,7 @@ const PlanPage = () => {
   const [budgetCardMode, setBudgetCardMode] = useState<"view" | "edit">("view");
   const { data: budgetData } = useBudget(planId);
   const showHint = false;
-  const isEmpty = !budgetData;
+  const isEmpty = !budgetData || budgetData.type === "INITIAL";
   const startDate = "2026-02-24";
   const items = [
     { value: "1", label: "Day 1" },
