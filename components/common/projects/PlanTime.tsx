@@ -12,6 +12,7 @@ interface PlanTimeProps {
   isFirst?: boolean;
   isLast?: boolean;
   isFree?: boolean;
+  isEdit?: boolean;
   onMenuClick?: () => void;
 }
 
@@ -22,6 +23,7 @@ const PlanTime = ({
   isFirst = false,
   isLast = false,
   isFree = false,
+  isEdit = false,
   onMenuClick,
 }: PlanTimeProps) => {
   return (
@@ -62,7 +64,7 @@ const PlanTime = ({
           )}
         </div>
       </div>
-      {blockStatus === "PENDING" && (
+      {blockStatus === "PENDING" && isEdit === true && (
         // 후보지 있는 블록 메뉴 버튼
         <HeaderBtn
           icon={Pencil}
