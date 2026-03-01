@@ -150,14 +150,19 @@ const PlanPage = () => {
                 setOpenByDay((prev) => ({ ...prev, [day]: true }));
               }
 
-              const el = document.getElementById(`day-section-${value}`);
-              if (!el) return;
-              const mapHeight =
-                activeMode === "planMode" && isMapVisible ? 180 : 0;
-              const offset = 64 + mapHeight + 56; // header + map + DayNav(h-14)
-              const top =
-                el.getBoundingClientRect().top + window.scrollY - offset;
-              window.scrollTo({ top, behavior: "smooth" });
+              const scrollToDay = () => {
+                const el = document.getElementById(`day-section-${value}`);
+                if (!el) return;
+                const mapHeight =
+                  activeMode === "planMode" && isMapVisible ? 180 : 0;
+                const offset = 64 + mapHeight + 56; // header + map + DayNav(h-14)
+                const top =
+                  el.getBoundingClientRect().top + window.scrollY - offset;
+                window.scrollTo({ top, behavior: "smooth" });
+              };
+
+              // 펼침 애니메이션 후 DOM 확정 시점에 스크롤
+              requestAnimationFrame(() => requestAnimationFrame(scrollToDay));
             }}
           />
           <div className="pointer-events-none absolute top-0 -right-1.25 w-14 h-14 bg-[linear-gradient(90deg,rgba(252,252,252,0)_0%,rgba(252,252,252,1)_100%)]" />
