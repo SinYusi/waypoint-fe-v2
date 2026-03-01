@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import ProjectForm from "@/components/common/projects/ProjectForm";
@@ -49,8 +49,12 @@ const getPlanUpdateDialogContent = (updateType: UpdateType) => {
 
 const ProjectEditPage = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const params = useParams<{ planId: string }>();
   const planId = params.planId;
+
+  const returnTo = searchParams.get("returnTo");
+  const safeReturnTo = returnTo && returnTo.startsWith("/") ? returnTo : null;
 
   // 플랜 조회
   const { data: plan, isLoading, isError, error } = usePlan(planId);
@@ -82,7 +86,10 @@ const ProjectEditPage = () => {
       planId={planId}
       initialTitle={plan.title ?? ""}
       initialRange={fromApiDateRange(plan.start_date, plan.end_date)}
-      onDone={() => router.push("/projects")}
+      onDone={() => {
+        if (safeReturnTo) router.push(safeReturnTo);
+        else router.push("/projects");
+      }}
     />
   );
 };
