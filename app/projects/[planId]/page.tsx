@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Fragment } from "react";
+import { useState, Fragment, useMemo } from "react";
 import DayNav from "@/components/common/DayNav";
 import GoogleMap from "@/components/common/GoogleMap";
 import BudgetSummaryCard from "@/components/card/BudgetSummaryCard";
@@ -14,6 +14,7 @@ import useQueryTab from "@/lib/hooks/use-query-tab";
 import { useBudget } from "@/lib/hooks/plan/use-budget";
 import { useExpenses } from "@/lib/hooks/plan/use-expenses";
 import BudgetEmptyState from "@/components/common/BudgetEmptyState";
+import { usePlan } from "@/lib/hooks/project/plan/use-plan";
 
 // day별 지출 항목 — 훅을 루프 밖에서 호출하기 위해 별도 컴포넌트로 분리
 const DayExpenses = ({ planId, day }: { planId: string; day: number }) => {
@@ -66,18 +67,22 @@ const PlanPage = () => {
   const [isCalendarVisible, setIsCalendarVisible] = useState(true);
   const [isMapVisible, setIsMapVisible] = useState(true);
   const [budgetCardMode, setBudgetCardMode] = useState<"view" | "edit">("view");
+  const { data: plan } = usePlan(planId);
+  const planTitle = plan?.title ?? "";
+  const totalDays = plan?.duration_days ?? 0;
+  const startDate = plan?.start_date ?? "";
+  const items = useMemo(
+    () =>
+      Array.from({ length: totalDays }, (_, i) => ({
+        value: String(i + 1),
+        label: `Day ${i + 1}`,
+      })),
+    [totalDays]
+  );
   const { data: budgetData } = useBudget(planId);
   const showHint = false;
-  const isEmpty = !!budgetData && budgetData.type === "INITIAL";
-  const startDate = "2026-02-24";
-  const items = [
-    { value: "1", label: "Day 1" },
-    { value: "2", label: "Day 2" },
-    { value: "3", label: "Day 3" },
-    { value: "4", label: "Day 4" },
-    { value: "5", label: "Day 5" },
-    { value: "6", label: "Day 6" },
-  ];
+  const hasBudgetData = !!budgetData;
+  const isEmpty = budgetData?.type === "INITIAL";
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -121,7 +126,7 @@ const PlanPage = () => {
 
       {/* PlanHeader - 스크롤 */}
       <div className="px-5 py-4">
-        <PlanHeader title="제주도 여행" day={15} href={editHref} />
+        <PlanHeader title={planTitle} day={totalDays} href={editHref} />
       </div>
 
       {/* DayNav - sticky (지도 아래) */}
@@ -156,14 +161,14 @@ const PlanPage = () => {
         {activeMode === "budget" && isEmpty && <BudgetEmptyState />}
 
         {/* 예산 탭: BudgetSummaryCard */}
-        {activeMode === "budget" && !isEmpty && (
+        {activeMode === "budget" && hasBudgetData && !isEmpty && (
           <BudgetSummaryCard
-            variant={budgetData!.type === "BUDGET" ? "budget" : "expense"}
+            variant={budgetData.type === "BUDGET" ? "budget" : "expense"}
             mode={budgetCardMode}
-            totalBudget={budgetData!.total_budget ?? 0}
-            usedAmount={budgetData!.total_cost}
-            perDayAmount={Math.round(budgetData!.total_cost / items.length)}
-            perPersonAmount={budgetData!.cost_per_person}
+            totalBudget={budgetData.total_budget ?? 0}
+            usedAmount={budgetData.total_cost}
+            perDayAmount={Math.round(budgetData.total_cost / items.length)}
+            perPersonAmount={budgetData.cost_per_person}
             showHint={showHint}
             onEditClick={() => setBudgetCardMode("edit")}
             className="pt-3"
