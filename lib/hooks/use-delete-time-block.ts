@@ -6,17 +6,14 @@ import {
   type UseMutationOptions,
 } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
-
 import { deleteTimeBlock } from "@/lib/api/block";
 import type { ProblemDetail } from "@/types/problem-detail";
-import { blockListQueryKey } from "@/lib/hooks/use-block-list";
+import { blockListInfiniteBaseQueryKey } from "./use-block-list-infinite";
 
 export type DeleteTimeBlockRequest = {
   planId: string;
   timeBlockId: string;
   day: number;
-  page?: number;
-  size?: number;
 };
 
 type UseDeleteTimeBlockOptions = {
@@ -39,10 +36,10 @@ export const useDeleteTimeBlock = (options: UseDeleteTimeBlockOptions = {}) => {
     },
     ...mutationOptions,
     onSuccess: (data, variables, onMutateResult, context) => {
-      const { planId, day, page = 0, size = 20 } = variables;
+      const { planId, day } = variables;
 
       queryClient.invalidateQueries({
-        queryKey: blockListQueryKey(planId, { day, page, size }),
+        queryKey: blockListInfiniteBaseQueryKey(planId, day),
         exact: false,
         refetchType: "active",
       });
