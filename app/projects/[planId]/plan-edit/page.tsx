@@ -18,6 +18,7 @@ import { useScrollspyDay } from "@/lib/hooks/use-scrollspy-day";
 import { useExpenses } from "@/lib/hooks/plan/use-expenses";
 import ExpenseGroupItem from "@/components/card/ExpenseGroupItem";
 import { Plus } from "lucide-react";
+import BudgetBottomSheet, { type EditExpenseItem } from "@/components/common/BudgetBottomSheet";
 import { useBudget } from "@/lib/hooks/plan/use-budget";
 import { useUpdateBudget } from "@/lib/hooks/plan/use-update-budget";
 import BudgetSummaryCard from "@/components/card/BudgetSummaryCard";
@@ -27,33 +28,47 @@ import BudgetEditDialog from "@/components/common/BudgetEditDialog";
 const DayExpenses = ({ planId, day }: { planId: string; day: number }) => {
   const { data } = useExpenses(planId, day);
   const expenses = data ?? [];
+  const [bottomSheet, setBottomSheet] = useState<{ placeName?: string; items: EditExpenseItem[] } | null>(null);
 
   if (expenses.length === 0) return null;
 
   return (
-    <div className="flex flex-col px-5 py-3">
-      {expenses.map((group, idx) => (
-        <Fragment key={idx}>
-          <ExpenseGroupItem group={group} />
-          {idx < expenses.length - 1 ? (
-            <div className="flex flex-col items-center">
-              <div className="w-px h-2.5 bg-border" />
-              <button className="w-7 h-7 rounded-4xl bg-secondary flex items-center justify-center">
-                <Plus className="w-3 h-3 text-slate-50" strokeWidth={2} />
-              </button>
-              <div className="w-px h-2.5 bg-border" />
-            </div>
-          ) : (
-            <div className="flex flex-col items-center">
-              <div className="w-px h-2.5 bg-border" />
-              <button className="w-7 h-7 rounded-4xl bg-secondary flex items-center justify-center">
-                <Plus className="w-3 h-3 text-slate-50" strokeWidth={2} />
-              </button>
-            </div>
-          )}
-        </Fragment>
-      ))}
-    </div>
+    <>
+      <div className="flex flex-col px-5 py-3">
+        {expenses.map((group, idx) => (
+          <Fragment key={idx}>
+            <ExpenseGroupItem
+              group={group}
+              onCardClick={(data) => setBottomSheet(data)}
+            />
+            {idx < expenses.length - 1 ? (
+              <div className="flex flex-col items-center">
+                <div className="w-px h-2.5 bg-border" />
+                <button className="w-7 h-7 rounded-4xl bg-secondary flex items-center justify-center">
+                  <Plus className="w-3 h-3 text-slate-50" strokeWidth={2} />
+                </button>
+                <div className="w-px h-2.5 bg-border" />
+              </div>
+            ) : (
+              <div className="flex flex-col items-center">
+                <div className="w-px h-2.5 bg-border" />
+                <button className="w-7 h-7 rounded-4xl bg-secondary flex items-center justify-center">
+                  <Plus className="w-3 h-3 text-slate-50" strokeWidth={2} />
+                </button>
+              </div>
+            )}
+          </Fragment>
+        ))}
+      </div>
+
+      <BudgetBottomSheet
+        open={!!bottomSheet}
+        onOpenChange={(open) => { if (!open) setBottomSheet(null); }}
+        mode="edit-expense"
+        placeName={bottomSheet?.placeName}
+        editItems={bottomSheet?.items ?? []}
+      />
+    </>
   );
 };
 
