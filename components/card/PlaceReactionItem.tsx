@@ -15,6 +15,7 @@ interface PlaceReactionItemProps {
   type: ReactionType;
   count: number;
   active?: boolean;
+  variant?: "default" | "ghost";
   onClick?: () => void;
 }
 
@@ -22,6 +23,7 @@ const PlaceReactionItem = ({
   type,
   count,
   active = false,
+  variant = "default",
   onClick,
 }: PlaceReactionItemProps) => {
   const Icon = reactionIconMap[type];
@@ -30,7 +32,7 @@ const PlaceReactionItem = ({
   return (
     <button
       type="button"
-      className="flex items-center gap-1.5 rounded-[8px] bg-white px-2 py-1"
+      className={`flex items-center gap-1.5 rounded-[8px] px-2 py-1 ${variant === "default" ? "bg-white" : ""}`}
       onClick={onClick}
     >
       <Icon className="size-4" style={{ color }} />
