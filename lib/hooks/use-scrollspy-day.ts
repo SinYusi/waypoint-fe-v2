@@ -81,5 +81,5 @@ export const useScrollspyDay = ({
     return () => observer.disconnect();
   }, [days, topOffset, enabled]);
 
-  return { activeDay, suppressRef };
+  return { activeDay, setActiveDay, suppressRef };
 };
