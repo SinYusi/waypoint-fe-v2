@@ -14,6 +14,18 @@ import { useBudget } from "@/lib/hooks/plan/use-budget";
 import { useExpenses } from "@/lib/hooks/plan/use-expenses";
 import type { BudgetResponse, ExpenseGroupResponse } from "@/types/budget";
 
+const MOCK_BLOCK_CATEGORY = {
+  level1: { category_id: "cat-l1", name: "관광" },
+  level2: { category_id: "cat-l2", name: "명소" },
+  level3: { category_id: "cat-l3", name: "기타" },
+};
+
+const createMockBlock = (block_id: string, name: string) => ({
+  block_id,
+  name,
+  category: MOCK_BLOCK_CATEGORY,
+});
+
 // TODO: 서버 연결 후 제거
 const mockBudgetData: BudgetResponse = {
   budget_id: "1",
@@ -37,7 +49,7 @@ const mockExpensesByDay: Record<number, ExpenseGroupResponse[]> = {
       candidates: null,
       selected: {
         expense_id: "exp-1",
-        block: { block_id: "block-1", name: "성산일출봉" },
+        block: createMockBlock("block-1", "성산일출봉"),
         items: [
           { expense_item_id: "item-1", name: "입장료", cost: 5000 },
           { expense_item_id: "item-1b", name: "주차비", cost: 3000 },
@@ -68,7 +80,7 @@ const mockExpensesByDay: Record<number, ExpenseGroupResponse[]> = {
       candidates: null,
       selected: {
         expense_id: "exp-2",
-        block: { block_id: "block-2", name: "우도" },
+        block: createMockBlock("block-2", "우도"),
         items: [{ expense_item_id: "item-2", name: "배 왕복", cost: 12000 }],
       },
     },
@@ -80,19 +92,19 @@ const mockExpensesByDay: Record<number, ExpenseGroupResponse[]> = {
       candidates: [
         {
           expense_id: "exp-3",
-          block: { block_id: "block-3", name: "협재 해수욕장" },
+          block: createMockBlock("block-3", "협재 해수욕장"),
           items: [{ expense_item_id: "item-3", name: "주차비", cost: 3000 },
                 { expense_item_id: "item-1b", name: "주차비", cost: 3000 },],
           
         },
         {
           expense_id: "exp-4",
-          block: { block_id: "block-4", name: "곽지 해수욕장" },
+          block: createMockBlock("block-4", "곽지 해수욕장"),
           items: [{ expense_item_id: "item-4", name: "주차비", cost: 2000 }],
         },
         {
           expense_id: "exp-6",
-          block: { block_id: "block-5", name: "해운대 해수욕장" },
+          block: createMockBlock("block-5", "해운대 해수욕장"),
           items: [{ expense_item_id: "item-6", name: "주차비", cost: 2000 }],
         },
       ],
@@ -106,24 +118,24 @@ const mockExpensesByDay: Record<number, ExpenseGroupResponse[]> = {
       candidates: [
         {
           expense_id: "exp-3",
-          block: { block_id: "block-3", name: "협재 해수욕장" },
+          block: createMockBlock("block-3", "협재 해수욕장"),
           items: [{ expense_item_id: "item-3", name: "주차비", cost: 3000 },
                 { expense_item_id: "item-1b", name: "주차비", cost: 3000 },],
           
         },
         {
           expense_id: "exp-4",
-          block: { block_id: "block-4", name: "곽지 해수욕장" },
+          block: createMockBlock("block-4", "곽지 해수욕장"),
           items: [{ expense_item_id: "item-4", name: "주차비", cost: 2000 }],
         },
         {
           expense_id: "exp-6",
-          block: { block_id: "block-5", name: "해운대 해수욕장" },
+          block: createMockBlock("block-5", "해운대 해수욕장"),
           items: [{ expense_item_id: "item-6", name: "주차비", cost: 2000 }],
         },
         {
           expense_id: "exp-7",
-          block: { block_id: "block-6", name: "송도 해수욕장" },
+          block: createMockBlock("block-6", "송도 해수욕장"),
           items: [{ expense_item_id: "item-7", name: "주차비", cost: 2000 }],
         },
       ],
@@ -140,7 +152,7 @@ const mockExpensesByDay: Record<number, ExpenseGroupResponse[]> = {
       candidates: null,
       selected: {
         expense_id: "exp-2",
-        block: { block_id: "block-2", name: "우도" },
+        block: createMockBlock("block-2", "우도"),
         items: [{ expense_item_id: "item-2", name: "배 왕복", cost: 12000 }],
       },
     },
@@ -155,24 +167,24 @@ const mockExpensesByDay: Record<number, ExpenseGroupResponse[]> = {
       candidates: [
         {
           expense_id: "exp-3",
-          block: { block_id: "block-3", name: "협재 해수욕장" },
+          block: createMockBlock("block-3", "협재 해수욕장"),
           items: [{ expense_item_id: "item-3", name: "주차비", cost: 3000 },
                 { expense_item_id: "item-1b", name: "주차비", cost: 3000 },],
           
         },
         {
           expense_id: "exp-4",
-          block: { block_id: "block-4", name: "곽지 해수욕장" },
+          block: createMockBlock("block-4", "곽지 해수욕장"),
           items: [{ expense_item_id: "item-4", name: "주차비", cost: 2000 }],
         },
         {
           expense_id: "exp-6",
-          block: { block_id: "block-5", name: "해운대 해수욕장" },
+          block: createMockBlock("block-5", "해운대 해수욕장"),
           items: [{ expense_item_id: "item-6", name: "주차비", cost: 2000 }],
         },
         {
           expense_id: "exp-7",
-          block: { block_id: "block-6", name: "송도 해수욕장" },
+          block: createMockBlock("block-6", "송도 해수욕장"),
           items: [{ expense_item_id: "item-7", name: "주차비", cost: 2000 }],
         },
       ],
