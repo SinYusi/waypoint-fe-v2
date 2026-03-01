@@ -24,6 +24,11 @@ type Options = Omit<
   "mutationFn"
 >;
 
+const isQueryKeyPrefix = (
+  queryKey: readonly unknown[],
+  prefix: readonly unknown[],
+) => prefix.every((v, i) => queryKey[i] === v);
+
 export const useUpdatePlan = (options?: Options) => {
   const queryClient = useQueryClient();
 
@@ -31,12 +36,31 @@ export const useUpdatePlan = (options?: Options) => {
     mutationFn: ({ planId, body }) => updatePlan(planId, body),
     ...options,
     onSuccess: (data, variables, onMutateResult, context) => {
-      queryClient.setQueryData(
-        ["plan", { planId: variables.planId }],
-        data.plan,
-      );
+      const isConfirmRequest = variables.body.confirm === true;
 
-      queryClient.invalidateQueries({ queryKey: ["plans"] });
+      const shouldSkipCacheUpdate =
+        !isConfirmRequest && data.requires_confirmation === true;
+
+      if (!shouldSkipCacheUpdate) {
+        if (data.plan) {
+          queryClient.setQueryData(
+            ["plan", { planId: variables.planId }],
+            data.plan,
+          );
+        }
+
+        queryClient.invalidateQueries({ queryKey: ["plans"] });
+
+        queryClient.invalidateQueries({
+          predicate: (q) => {
+            const key = q.queryKey;
+            return (
+              Array.isArray(key) &&
+              isQueryKeyPrefix(key, ["block-list-infinite", variables.planId])
+            );
+          },
+        });
+      }
 
       options?.onSuccess?.(data, variables, onMutateResult, context);
     },
