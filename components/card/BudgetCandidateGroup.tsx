@@ -20,6 +20,7 @@ interface CardItem {
 interface BudgetCandidateGroupEditProps {
   mode: "edit";
   cards: CardItem[];
+  onCardClick?: (card: CardItem) => void;
   className?: string;
 }
 
@@ -27,6 +28,7 @@ interface BudgetCandidateGroupViewProps {
   mode: "view";
   cards: CardItem[];
   onSelectCandidates?: () => void;
+  onCardClick?: (card: CardItem) => void;
   className?: string;
 }
 
@@ -42,7 +44,7 @@ const COLLAPSED_SHOW_COUNT = 3;
 // ─── Component ────────────────────────────────────────────────────────────────
 
 const BudgetCandidateGroup = (props: BudgetCandidateGroupProps) => {
-  const { mode, cards, className } = props;
+  const { mode, cards, className, onCardClick } = props;
   const isCollapsible = cards.length >= COLLAPSE_THRESHOLD;
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -62,6 +64,7 @@ const BudgetCandidateGroup = (props: BudgetCandidateGroupProps) => {
             placeName={card.placeName}
             items={card.items}
             placeType={card.placeType}
+            onClick={onCardClick ? () => onCardClick(card) : undefined}
           />
         ))}
         {isCollapsible && (
@@ -94,6 +97,7 @@ const BudgetCandidateGroup = (props: BudgetCandidateGroupProps) => {
           placeName={card.placeName}
           items={card.items}
           placeType={card.placeType}
+          onClick={onCardClick ? () => onCardClick(card) : undefined}
         />
       ))}
 
