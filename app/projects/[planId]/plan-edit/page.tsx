@@ -254,7 +254,9 @@ const PlanEditPage = () => {
         <PlanHeader
           title={planTitle}
           day={totalDays || 0}
-          href={`/projects/${planId}/edit`}
+          href={`/projects/${planId}/edit?returnTo=${encodeURIComponent(
+            `/projects/${planId}/plan-edit`,
+          )}`}
           isEditing
           isEditBudget={activeMode === "budget" ? true : false}
         />
