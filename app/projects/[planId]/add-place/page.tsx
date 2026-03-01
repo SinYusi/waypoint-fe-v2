@@ -389,7 +389,7 @@ const AddPlanPage = () => {
 										</div>
 										<Button
 											onClick={handleAddPlaceToCollection}
-											className="h-10 w-[110px] rounded-xl py-2.5 px-4 typography-action-sm-bold"
+											className="h-10 w-27.5 rounded-xl py-2.5 px-4 typography-action-sm-bold"
 										>
 											장소 추가하기
 										</Button>
