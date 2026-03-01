@@ -579,7 +579,7 @@ const AddPlanPage = () => {
 							className="h-11 w-full rounded-2xl bg-primary px-8 py-0 text-primary-foreground"
 							disabled={!selectedPlaceId}
 						>
-							여행 게획에 추가하기
+							여행 계획에 추가하기
 						</Button>
 					</div>
 				</div>
@@ -597,7 +597,7 @@ const AddPlanPage = () => {
 							className="h-11 w-full rounded-2xl bg-primary px-8 py-0 text-primary-foreground"
 							disabled={!selectedSearchPlaceId || !selectedDay}
 						>
-							여행 게획에 추가하기
+							여행 계획에 추가하기
 						</Button>
 					</div>
 				</div>
@@ -615,7 +615,7 @@ const AddPlanPage = () => {
 							className="h-11 w-full rounded-2xl bg-primary px-8 py-0 text-primary-foreground"
 							disabled={!canSubmitFree || isCreatingBlock}
 						>
-							여행 게획에 추가히기
+							여행 계획에 추가히기
 						</Button>
 					</div>
 				</div>
