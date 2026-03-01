@@ -21,6 +21,7 @@ import type {
   OpinionState,
 } from "@/lib/opinion-bottom-sheet";
 import {
+  useCreateBlockOpinion,
   useDeleteBlockOpinion,
   useUpdateBlockOpinion,
 } from "@/lib/hooks/use-block-opinion";
@@ -91,6 +92,7 @@ const BlockDetailPage = () => {
     enabled: Boolean(planId && blockId),
   });
   const updateBlockMutation = useUpdateBlock({ planId, blockId });
+  const createBlockOpinionMutation = useCreateBlockOpinion({ planId, blockId });
   const updateBlockOpinionMutation = useUpdateBlockOpinion({ planId, blockId });
   const deleteBlockOpinionMutation = useDeleteBlockOpinion({ planId, blockId });
 
@@ -451,12 +453,30 @@ const BlockDetailPage = () => {
           cancelLabel="취소"
           confirmLabel="등록"
           onCancel={() => setIsAddingOpinion(false)}
+          confirmDisabled={createBlockOpinionMutation.isPending}
           onConfirm={() => {
-            // TODO: createBlockOpinion API 연동
-            setIsAddingOpinion(false);
-            setAddCurrentState("POSITIVE");
-            setAddReasonIdsByState(EMPTY_REASON_IDS_BY_STATE);
-            setAddCustomTextByState(EMPTY_CUSTOM_TEXT_BY_STATE);
+            if (createBlockOpinionMutation.isPending) return;
+
+            const hasCustomInput = addCurrentReasonIds.includes(CUSTOM_INPUT_REASON_ID);
+            const tagIds = addCurrentReasonIds
+              .filter((id) => id !== CUSTOM_INPUT_REASON_ID)
+              .map(String);
+
+            createBlockOpinionMutation.mutate(
+              {
+                type: addCurrentState,
+                tag_ids: tagIds,
+                ...(hasCustomInput ? { comment: addCurrentCustomText.trim() } : { comment: "" }),
+              },
+              {
+                onSuccess: () => {
+                  setIsAddingOpinion(false);
+                  setAddCurrentState("POSITIVE");
+                  setAddReasonIdsByState(EMPTY_REASON_IDS_BY_STATE);
+                  setAddCustomTextByState(EMPTY_CUSTOM_TEXT_BY_STATE);
+                },
+              },
+            );
           }}
         />
       )}
