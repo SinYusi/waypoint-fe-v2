@@ -345,7 +345,7 @@ const BlockDetailPage = () => {
                 <button
                   type="button"
                   onClick={() => setIsAddingOpinion(true)}
-                  className="flex items-center justify-between w-full h-11 rounded-xl border border-[#E2E2E2] bg-transparent px-4"
+                  className="flex items-center justify-between w-full h-11 rounded-xl border border-[#E2E2E2] bg-transparent px-4 cursor-pointer"
                 >
                   <span className="typography-body-base text-[#757575]">의견을 남기시겠어요?</span>
                   <MessageCircle className="size-5 shrink-0 text-[#757575]" strokeWidth={2} />
