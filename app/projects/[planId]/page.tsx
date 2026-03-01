@@ -15,6 +15,7 @@ import { useBudget } from "@/lib/hooks/plan/use-budget";
 import { useExpenses } from "@/lib/hooks/plan/use-expenses";
 import BudgetEmptyState from "@/components/common/BudgetEmptyState";
 import { usePlanBlockData } from "@/lib/hooks/use-plan-block-data";
+import { useScrollspyDay } from "@/lib/hooks/use-scrollspy-day";
 
 // day별 지출 항목 — 훅을 루프 밖에서 호출하기 위해 별도 컴포넌트로 분리
 const DayExpenses = ({ planId, day }: { planId: string; day: number }) => {
@@ -71,6 +72,7 @@ const PlanPage = () => {
     plan,
     planTitle,
     totalDays,
+    days,
     items,
     dayQueries,
     openByDay,
@@ -81,6 +83,14 @@ const PlanPage = () => {
   const showHint = false;
   const hasBudgetData = !!budgetData;
   const isEmpty = budgetData?.type === "INITIAL";
+
+  const dayNavTopOffset =
+    64 + (activeMode === "planMode" && isMapVisible ? 180 : 0) + 56;
+  const { activeDay, suppressRef } = useScrollspyDay({
+    days,
+    topOffset: dayNavTopOffset,
+    enabled: items.length > 0,
+  });
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -137,6 +147,7 @@ const PlanPage = () => {
         >
           <DayNav
             items={items}
+            value={activeDay}
             className="gap-2.25 py-3 h-14"
             itemClassName="h-8 py-1.5"
             onValueChange={(value) => {
@@ -150,6 +161,9 @@ const PlanPage = () => {
                 setOpenByDay((prev) => ({ ...prev, [day]: true }));
               }
 
+              // 스크롤 중 scrollspy 억제
+              suppressRef.current = true;
+
               const scrollToDay = () => {
                 const el = document.getElementById(`day-section-${value}`);
                 if (!el) return;
@@ -159,6 +173,8 @@ const PlanPage = () => {
                 const top =
                   el.getBoundingClientRect().top + window.scrollY - offset;
                 window.scrollTo({ top, behavior: "smooth" });
+                // smooth scroll 종료 후 억제 해제 (약 600ms)
+                setTimeout(() => { suppressRef.current = false; }, 700);
               };
 
               // 펼침 애니메이션 후 DOM 확정 시점에 스크롤
