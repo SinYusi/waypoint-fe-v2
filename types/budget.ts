@@ -11,15 +11,15 @@ export type GetBudgetParams = {
  * GET | PATCH /plans/{planId}/budgets → 200
  */
 export type BudgetResponse = {
-  budget_id: number;
+  budget_id: string;
   /** BUDGET: 예산 중심, EXPENSE: 지출 중심 */
   type: "BUDGET" | "EXPENSE";
-  /** 총 예산 (예산 중심일 때만 존재) */
-  total_budget: number | null;
+  /** 총 예산 */
+  total_budget: number;
   /** 총 지출액 */
   total_cost: number;
   /** 남은 예산 (음수면 초과) */
-  remaining_budget: number | null;
+  remaining_budget: number;
   /** 1인당 비용 */
   cost_per_person: number;
   /** 여행 인원 */
@@ -45,6 +45,18 @@ export type BlockStatus = "FIXED" | "PENDING" | "DIRECT";
 export type ExpenseBlockInfo = {
   block_id: string;
   name: string;
+  category?: PlaceCategory;
+};
+
+export type PlaceCategoryLevel = {
+  category_id: string;
+  name: string;
+};
+
+export type PlaceCategory = {
+  level1: PlaceCategoryLevel;
+  level2: PlaceCategoryLevel;
+  level3: PlaceCategoryLevel;
 };
 
 export type ExpenseItemResponse = {
