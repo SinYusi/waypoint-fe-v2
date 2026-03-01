@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 
 interface CardItem {
   placeName: string;
+  expenseId?: string;
   items: ExpenseItem[];
   placeType: PlaceType;
 }
