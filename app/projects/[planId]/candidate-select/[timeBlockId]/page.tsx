@@ -15,6 +15,7 @@ import { usePlanCollectionPlaces } from "@/lib/hooks/plan/use-plan-collection-pl
 import { usePlanCollections } from "@/lib/hooks/plan/use-plan-collections";
 import { normalizePickPassPreference } from "@/lib/utils/pick-pass-preference";
 import PlaceEmptyIllust from "@/public/illust/place-empty_new.svg";
+import CollectionEmptyIllust from "@/public/illust/collection-empty_new.svg";
 import { MapPin } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
@@ -78,6 +79,7 @@ const AddPlanPage = () => {
 		fetchNextPage,
 		hasNextPage,
 		isFetchingNextPage,
+		isLoading: isPlacesLoading,
 	} = usePlanCollectionPlaces(planId ?? "", selectedDay, {
 		size: 20,
 	});
@@ -185,6 +187,11 @@ const AddPlanPage = () => {
 		router.push("/home/create");
 	};
 
+	const handleAddPlaceToCollection = () => {
+		if (!selectedDay) return;
+		router.push(`/home/${selectedDay}/add-place`);
+	};
+
 
 	return (
 		<div className="scrollbar-hide flex min-h-screen flex-col overflow-y-auto bg-background">
@@ -221,7 +228,7 @@ const AddPlanPage = () => {
 							<div className="flex flex-1 w-full flex-col items-center justify-center px-5">
 								<div className="flex w-full flex-col items-center gap-5">
 									<div className="flex w-full flex-col items-center gap-5">
-										<PlaceEmptyIllust width={165} height={160} />
+										<CollectionEmptyIllust width={165} height={160} />
 										<div className="flex flex-col items-center gap-2 text-center">
 											<h2 className="typography-display-xl text-foreground">
 												아직 보관함이 없어요
@@ -242,7 +249,7 @@ const AddPlanPage = () => {
 								</div>
 							</div>
 						) : (
-							<div className="flex w-full flex-col px-5 py-5">
+							<div className="flex flex-1 w-full flex-col items-center px-5">
 								{dayItems.length > 0 && (
 									<DayNav
 										items={dayItems}
@@ -253,29 +260,55 @@ const AddPlanPage = () => {
 									/>
 								)}
 
-								<div className="mt-4 flex w-full flex-col gap-4 self-center">
-									{places.map((item) => (
-										<PlanCardSelection
-											key={item.collection_place_id}
-											isSelected={selectedPlaceId === item.collection_place_id}
-											onSelected={(selected) =>
-												handlePlaceSelected(item.collection_place_id, selected)
-											}
-											title={item.place.name}
-											address={item.place.address}
-											imageSrc={item.place.photos[0]}
-											pickCount={item.pick_pass.picked.count}
-											passCount={item.pick_pass.passed.count}
-											myPreference={normalizePickPassPreference(item.pick_pass.my_preference)}
-											onPickClick={() =>
-												handlePreference(item.collection_place_id, "PICK")
-											}
-											onPassClick={() =>
-												handlePreference(item.collection_place_id, "PASS")
-											}
-										/>
-									))}
-									<div ref={loadMoreRef} className="h-10" />
+								<div className={`flex flex-1 w-full flex-col gap-4 ${!isPlacesLoading && places.length === 0 ? "items-center justify-center" : "pt-5"}`}>
+								{!isPlacesLoading && places.length === 0 ? (
+									<div className="flex w-full flex-col items-center gap-5">
+										<div className="flex w-full flex-col items-center gap-5">
+											<PlaceEmptyIllust width={165} height={160} />
+											<div className="flex flex-col items-center gap-2 text-center">
+												<h2 className="typography-display-xl text-foreground">
+													이 보관함은 아직 비어있어요!
+												</h2>
+												<p className="typography-body-sm-md text-foreground">
+													장소를 보관함에 저장하고,
+													<br />
+													여행 계획을 시작해보세요
+												</p>
+											</div>
+										</div>
+										<Button
+											onClick={handleAddPlaceToCollection}
+											className="h-10 w-27.5 rounded-xl py-2.5 px-4 typography-action-sm-bold"
+										>
+											장소 추가하기
+										</Button>
+									</div>
+								) : (
+									<div className="flex w-full flex-col gap-4">
+										{places.map((item) => (
+											<PlanCardSelection
+												key={item.collection_place_id}
+												isSelected={selectedPlaceId === item.collection_place_id}
+												onSelected={(selected) =>
+													handlePlaceSelected(item.collection_place_id, selected)
+												}
+												title={item.place.name}
+												address={item.place.address}
+												imageSrc={item.place.photos[0]}
+												pickCount={item.pick_pass.picked.count}
+												passCount={item.pick_pass.passed.count}
+												myPreference={normalizePickPassPreference(item.pick_pass.my_preference)}
+												onPickClick={() =>
+													handlePreference(item.collection_place_id, "PICK")
+												}
+												onPassClick={() =>
+													handlePreference(item.collection_place_id, "PASS")
+												}
+											/>
+										))}
+										<div ref={loadMoreRef} className="h-10" />
+									</div>
+								)}
 								</div>
 							</div>
 						)}
