@@ -224,7 +224,7 @@ const BlockDetailPage = () => {
   };
 
   return (
-    <div className="relative min-h-screen min-w-0 overflow-x-hidden pb-[calc(72px+env(safe-area-inset-bottom)+16px)]">
+    <div className="relative min-h-screen min-w-0 overflow-x-clip pb-[calc(72px+env(safe-area-inset-bottom)+16px)]">
       <Header
         showBackButton
         leftBtnBgVariant="glass"
@@ -355,14 +355,16 @@ const BlockDetailPage = () => {
                   </div>
                 </div>
                 {!myOpinionId && (
-                  <button
-                    type="button"
-                    onClick={() => setIsAddingOpinion(true)}
-                    className="flex items-center justify-between w-full h-11 rounded-xl border border-[#E2E2E2] bg-transparent px-4 cursor-pointer"
-                  >
-                    <span className="typography-body-base text-[#757575]">의견을 남기시겠어요?</span>
-                    <MessageCircle className="size-5 shrink-0 text-[#757575]" strokeWidth={2} />
-                  </button>
+                  <div className="sticky top-15 z-40 -mx-5 px-5 bg-background py-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsAddingOpinion(true)}
+                      className="flex items-center justify-between w-full h-11 rounded-xl border border-[#E2E2E2] bg-transparent px-4 cursor-pointer"
+                    >
+                      <span className="typography-body-base text-[#757575]">의견을 남기시겠어요?</span>
+                      <MessageCircle className="size-5 shrink-0 text-[#757575]" strokeWidth={2} />
+                    </button>
+                  </div>
                 )}
                 <div className="w-full flex flex-col gap-6">
                   {opinions.length === 0 ? (
