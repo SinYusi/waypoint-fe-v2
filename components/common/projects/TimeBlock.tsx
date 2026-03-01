@@ -11,11 +11,9 @@ import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { useUpdateBlock } from "@/lib/hooks/use-block-detail";
 import { UpdateBlockRequest } from "@/lib/api/block";
 import PlanEditBottomSheet from "../PlanEditBottomSheet";
-import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ProblemDetail } from "@/types/problem-detail";
 import { AxiosError } from "axios";
-import { blockListQueryKey } from "@/lib/hooks/use-block-list";
 import { useDeleteTimeBlock } from "@/lib/hooks/use-delete-time-block";
 
 interface TimeBlockProps {
@@ -30,6 +28,7 @@ interface TimeBlockProps {
   isFirst?: boolean;
   isLast?: boolean;
   isFree?: boolean;
+  isEdit?: boolean;
 
   singleCard: {
     blockId: string;
@@ -56,6 +55,7 @@ const TimeBlock = ({
   isFirst,
   isLast,
   isFree,
+  isEdit,
   singleCard,
   candidates,
 }: TimeBlockProps) => {
@@ -63,8 +63,6 @@ const TimeBlock = ({
   const [menuSheetOpen, setMenuSheetOpen] = useState(false);
   const [editSheetOpen, setEditSheetOpen] = useState(false);
   const [targetBlockId, setTargetBlockId] = useState<string | null>(null);
-
-  const queryClient = useQueryClient();
 
   const openMenuSheetFor = (blockId: string) => {
     setTargetBlockId(blockId);
@@ -75,36 +73,11 @@ const TimeBlock = ({
   const { mutate: updateBlock } = useUpdateBlock({
     planId,
     blockId: targetBlockId ?? undefined,
+    day,
     mutationOptions: {
-      onSuccess: (_data, variables) => {
+      onSuccess: () => {
         setEditSheetOpen(false);
-
-        const oldDay = day;
-        const newDay = variables.day ? Number(variables.day) : oldDay;
-
-        // 수정 전 day 갱신
-        queryClient.invalidateQueries({
-          queryKey: blockListQueryKey(planId, {
-            day: oldDay,
-            page: 0,
-            size: 20,
-          }),
-          exact: false,
-          refetchType: "active",
-        });
-
-        // 수정 후 day 갱신 (day 이동 시)
-        if (newDay !== oldDay) {
-          queryClient.invalidateQueries({
-            queryKey: blockListQueryKey(planId, {
-              day: newDay,
-              page: 0,
-              size: 20,
-            }),
-            exact: false,
-            refetchType: "active",
-          });
-        }
+        toast("일정을 수정했어요.");
       },
       onError: (err) => {
         const axiosErr = err as AxiosError<ProblemDetail>;
@@ -118,17 +91,12 @@ const TimeBlock = ({
     },
   });
 
+  // 블록 삭제 훅
   const { mutate: deleteTimeBlockMutate } = useDeleteTimeBlock({
     mutationOptions: {
       onSuccess: () => {
         setMenuSheetOpen(false);
         setTargetBlockId(null);
-
-        queryClient.invalidateQueries({
-          queryKey: blockListQueryKey(planId, { day, page: 0, size: 20 }),
-          exact: false,
-          refetchType: "active",
-        });
 
         toast("일정을 삭제했어요.");
       },
@@ -190,8 +158,6 @@ const TimeBlock = ({
           planId,
           timeBlockId,
           day,
-          page: 0,
-          size: 20,
         });
       },
     },
@@ -207,6 +173,7 @@ const TimeBlock = ({
         isFirst={isFirst}
         isLast={isLast}
         isFree={isFree}
+        isEdit={isEdit}
         onMenuClick={() => {
           const blockId = candidates?.[0]?.blockId;
           if (!blockId) return;
