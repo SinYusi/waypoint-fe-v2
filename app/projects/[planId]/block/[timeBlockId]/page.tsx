@@ -65,6 +65,7 @@ const BlockDetailPage = () => {
   const [isEditingMemo, setIsEditingMemo] = useState(false);
   const [memoDraft, setMemoDraft] = useState("");
   const [editingOpinion, setEditingOpinion] = useState<BlockOpinion | null>(null);
+  const [deletingOpinion, setDeletingOpinion] = useState<BlockOpinion | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [editCurrentState, setEditCurrentState] = useState<OpinionState>("POSITIVE");
   const [editReasonIdsByState, setEditReasonIdsByState] = useState<Record<OpinionState, number[]>>(
@@ -183,8 +184,14 @@ const BlockDetailPage = () => {
     setEditingOpinion(opinion);
   };
 
+  const handleOpenDeleteConfirm = (opinion: BlockOpinion) => {
+    setDeletingOpinion(opinion);
+    setDeleteConfirmOpen(true);
+  };
+
   const closeOpinionEditor = () => {
     setEditingOpinion(null);
+    setDeletingOpinion(null);
     setDeleteConfirmOpen(false);
   };
 
@@ -375,7 +382,7 @@ const BlockDetailPage = () => {
                             picture={opinion.added_by.picture}
                             isOwn={myOpinionId === opinion.opinion_Id}
                             onEdit={() => handleOpenOpinionEditor(opinion)}
-                            onDelete={() => handleOpenOpinionEditor(opinion)}
+                            onDelete={() => handleOpenDeleteConfirm(opinion)}
                           />
                         <OpinionCard
                           opinion={opinion}
@@ -490,18 +497,21 @@ const BlockDetailPage = () => {
 
       <AppAlertDialog
         open={deleteConfirmOpen}
-        onOpenChange={setDeleteConfirmOpen}
+        onOpenChange={(open) => {
+          if (!open) closeOpinionEditor();
+        }}
         title="의견을 삭제하시겠습니까?"
         description="의견 삭제 후엔 남겼던 의견 데이터를 되돌릴 수 없어요."
         cancelLabel="취소"
-        onCancel={() => setDeleteConfirmOpen(false)}
+        onCancel={() => closeOpinionEditor()}
         actionLabel="삭제하기"
         actionDisabled={deleteBlockOpinionMutation.isPending}
         onAction={() => {
-          if (!editingOpinion || deleteBlockOpinionMutation.isPending) return;
+          const target = deletingOpinion ?? editingOpinion;
+          if (!target || deleteBlockOpinionMutation.isPending) return;
 
           deleteBlockOpinionMutation.mutate(
-            { opinionId: editingOpinion.opinion_Id },
+            { opinionId: target.opinion_Id },
             {
               onSuccess: () => {
                 closeOpinionEditor();
