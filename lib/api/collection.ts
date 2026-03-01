@@ -8,6 +8,10 @@
  * - 수정 (PUT | `/collections/{collectionId}`)
  * - 삭제 (DELETE | `/collections/{collectionId}`)
  * - 소유자 변경 (PATCH | `/collections/{collectionId}/owner`)
+ * - AI 장소 추출 작업 생성 (POST | `/collections/{collectionId}/extraction-jobs`)
+ * - AI 장소 추출 최신 작업 조회 (GET | `/collections/{collectionId}/extraction-jobs/latest`)
+ * - AI 장소 추출 작업 취소 (DELETE | `/collections/{collectionId}/extraction-jobs/{jobId}`)
+ * - AI 장소 추출 결과 장소 추가 (POST | `/collections/{collectionId}/extraction-jobs/{jobId}/places`)
  */
 
 import {
@@ -28,6 +32,10 @@ import {
 } from "@/types/collection";
 import { InvitationResponse } from "@/types/invitation";
 import { CollectionMembersResponse } from "@/types/member";
+import {
+  CreateExtractionJobResponse,
+  ExtractionJobResponse,
+} from "@/types/extraction-job";
 import { apiClient } from "./client";
 
 /**
@@ -178,4 +186,68 @@ export const createCollectionInvitation = async (collectionId: string) => {
     `/collections/${collectionId}/invitations`,
   );
   return res.data;
+};
+
+/**
+ * AI 장소 추출 작업 생성 API
+ *
+ * @param collectionId - 컬렉션 ID
+ * @param url - 분석할 URL
+ * @returns job_id, status
+ */
+export const createExtractionJob = async (
+  collectionId: string,
+  url: string,
+) => {
+  const res = await apiClient.post<CreateExtractionJobResponse>(
+    `/collections/${collectionId}/extraction-jobs`,
+    { url },
+  );
+  return res.data;
+};
+
+/**
+ * AI 장소 추출 최신 작업 조회 API
+ *
+ * @param collectionId - 컬렉션 ID
+ * @returns 마지막 추출 작업 결과
+ */
+export const getLatestExtractionJob = async (collectionId: string) => {
+  const res = await apiClient.get<ExtractionJobResponse>(
+    `/collections/${collectionId}/extraction-jobs/latest`,
+  );
+  return res.data;
+};
+
+/**
+ * AI 장소 추출 작업 취소 API
+ *
+ * @param collectionId - 컬렉션 ID
+ * @param jobId - 취소할 작업 ID
+ */
+export const deleteExtractionJob = async (
+  collectionId: string,
+  jobId: string,
+) => {
+  await apiClient.delete(
+    `/collections/${collectionId}/extraction-jobs/${jobId}`,
+  );
+};
+
+/**
+ * AI 장소 추출 결과 장소 추가 API
+ *
+ * @param collectionId - 컬렉션 ID
+ * @param jobId - 추출 작업 ID
+ * @param place_ids - 추가할 장소 ID 목록
+ */
+export const addExtractionJobPlaces = async (
+  collectionId: string,
+  jobId: string,
+  place_ids: string[],
+) => {
+  await apiClient.post(
+    `/collections/${collectionId}/extraction-jobs/${jobId}/places`,
+    { place_ids },
+  );
 };
