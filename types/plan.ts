@@ -127,7 +127,7 @@ export type CreatePlanBlockRequest = {
   day: number;
   start_time: string;
   end_time: string;
-  memo: string;
+  memo?: string;
 };
 
 export type CreatePlanBlockByPlaceRequest = {
@@ -135,7 +135,7 @@ export type CreatePlanBlockByPlaceRequest = {
   day: number;
   start_time: string;
   end_time: string;
-  memo: string;
+  memo?: string;
 };
 
 export type AddPlanBlockCandidatesRequest =
