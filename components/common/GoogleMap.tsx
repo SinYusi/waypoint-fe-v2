@@ -311,6 +311,10 @@ export default function GoogleMap({
   }, [mapOptions, resolvedApiKey, isMissingApiKey]);
 
   useEffect(() => {
+    setCurrentZoom(zoom);
+  }, [zoom]);
+
+  useEffect(() => {
     if (!mapRef.current) return;
     mapRef.current.setCenter(center);
   }, [center]);
@@ -351,7 +355,6 @@ export default function GoogleMap({
   const applyZoom = (next: number) => {
     const clamped = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, next));
     setCurrentZoom(clamped);
-    mapRef.current?.setZoom(clamped);
   };
 
   const handleZoomIn = () => {
@@ -378,9 +381,9 @@ export default function GoogleMap({
           <button
             type="button"
             onClick={handleZoomIn}
-            disabled={isLoading || !isMapReady}
+            disabled={!isMapReady}
             className={cn(
-              "h-10 w-10 rounded-full bg-white shadow-[0px_1px_2px_-1px_#000000/10] shadow-sm flex items-center justify-center",
+              "h-10 w-10 rounded-full bg-white shadow-sm flex items-center justify-center",
               "disabled:opacity-50 disabled:cursor-not-allowed",
             )}
             aria-label="Zoom in"
@@ -393,9 +396,9 @@ export default function GoogleMap({
           <button
             type="button"
             onClick={handleZoomOut}
-            disabled={isLoading || !isMapReady}
+            disabled={!isMapReady}
             className={cn(
-              "h-10 w-10 rounded-full bg-white shadow-[0px_1px_2px_-1px_#000000/10] shadow-sm flex items-center justify-center",
+              "h-10 w-10 rounded-full bg-white shadow-sm flex items-center justify-center",
               "disabled:opacity-50 disabled:cursor-not-allowed",
             )}
             aria-label="Zoom out"
