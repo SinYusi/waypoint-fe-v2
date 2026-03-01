@@ -567,59 +567,32 @@ const AddPlanPage = () => {
 				</Tabs>
 			</main>
 
-			{hasPlanCollections && activeTab === "saved" && (
-				<div className="fixed inset-x-0 bottom-0 z-50 h-22.75 border-t border-border bg-background">
-					<div
-						aria-hidden
-						className="pointer-events-none absolute -top-12 inset-x-0 h-12 bg-gradient-bottom-fade"
-					/>
-					<div className="px-5 pt-4">
-						<Button
-							onClick={handleAddToPlan}
-							className="h-11 w-full rounded-2xl bg-primary px-8 py-0 text-primary-foreground"
-							disabled={!selectedPlaceId}
-						>
-							여행 계획에 추가하기
-						</Button>
-					</div>
+			<div className="fixed inset-x-0 bottom-0 z-50 h-22.75 border-t border-border bg-background">
+				<div
+					aria-hidden
+					className="pointer-events-none absolute -top-12 inset-x-0 h-12 bg-gradient-bottom-fade"
+				/>
+				<div className="px-5 pt-4">
+					<Button
+						onClick={
+							activeTab === "saved"
+								? handleAddToPlan
+								: activeTab === "search"
+									? handleOpenPlaceAddFromSearch
+									: handleAddFreeTimeToPlan
+						}
+						className="h-11 w-full rounded-2xl bg-primary px-8 py-0 text-primary-foreground"
+						disabled={
+							!hasPlanCollections ||
+							(activeTab === "saved" && !selectedPlaceId) ||
+							(activeTab === "search" && (!selectedSearchPlaceId || !selectedDay)) ||
+							(activeTab === "free" && (!canSubmitFree || isCreatingBlock))
+						}
+					>
+						여행 계획에 추가하기
+					</Button>
 				</div>
-			)}
-
-			{hasPlanCollections && activeTab === "search" && (
-				<div className="fixed inset-x-0 bottom-0 z-50 h-22.75 border-t border-border bg-background">
-					<div
-						aria-hidden
-						className="pointer-events-none absolute -top-12 inset-x-0 h-12 bg-gradient-bottom-fade"
-					/>
-					<div className="px-5 pt-4">
-						<Button
-							onClick={handleOpenPlaceAddFromSearch}
-							className="h-11 w-full rounded-2xl bg-primary px-8 py-0 text-primary-foreground"
-							disabled={!selectedSearchPlaceId || !selectedDay}
-						>
-							여행 계획에 추가하기
-						</Button>
-					</div>
-				</div>
-			)}
-
-			{hasPlanCollections && activeTab === "free" && (
-				<div className="fixed inset-x-0 bottom-0 z-50 h-22.75 border-t border-border bg-background">
-					<div
-						aria-hidden
-						className="pointer-events-none absolute -top-12 inset-x-0 h-12 bg-gradient-bottom-fade"
-					/>
-					<div className="px-5 pt-4">
-						<Button
-							onClick={handleAddFreeTimeToPlan}
-							className="h-11 w-full rounded-2xl bg-primary px-8 py-0 text-primary-foreground"
-							disabled={!canSubmitFree || isCreatingBlock}
-						>
-							여행 계획에 추가히기
-						</Button>
-					</div>
-				</div>
-			)}
+			</div>
 		</div>
 	);
 };
