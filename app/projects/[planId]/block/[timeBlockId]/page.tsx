@@ -346,7 +346,14 @@ const BlockDetailPage = () => {
                 </div>
                 <button
                   type="button"
-                  onClick={() => setIsAddingOpinion(true)}
+                  onClick={() => {
+                    if (myOpinionId) {
+                      const myOpinion = opinions.find((o) => o.opinion_Id === myOpinionId);
+                      if (myOpinion) handleOpenOpinionEditor(myOpinion);
+                    } else {
+                      setIsAddingOpinion(true);
+                    }
+                  }}
                   className="flex items-center justify-between w-full h-11 rounded-xl border border-[#E2E2E2] bg-transparent px-4 cursor-pointer"
                 >
                   <span className="typography-body-base text-[#757575]">의견을 남기시겠어요?</span>
