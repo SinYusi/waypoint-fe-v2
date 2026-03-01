@@ -13,7 +13,7 @@ import OpinionProfile from "@/components/common/OpinionProfile";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import GoogleMap from "@/components/common/GoogleMap";
-import { Calendar, MapPin, Sparkles, SquareArrowOutUpRight } from "lucide-react";
+import { Calendar, MapPin, MessageCircle, Sparkles, SquareArrowOutUpRight } from "lucide-react";
 import { useParams } from "next/navigation";
 import type {
   BlockOpinion,
@@ -72,6 +72,14 @@ const BlockDetailPage = () => {
   const [editCustomTextByState, setEditCustomTextByState] = useState<Record<OpinionState, string>>(
     EMPTY_CUSTOM_TEXT_BY_STATE,
   );
+  const [isAddingOpinion, setIsAddingOpinion] = useState(false);
+  const [addCurrentState, setAddCurrentState] = useState<OpinionState>("POSITIVE");
+  const [addReasonIdsByState, setAddReasonIdsByState] = useState<Record<OpinionState, number[]>>(
+    EMPTY_REASON_IDS_BY_STATE,
+  );
+  const [addCustomTextByState, setAddCustomTextByState] = useState<Record<OpinionState, string>>(
+    EMPTY_CUSTOM_TEXT_BY_STATE,
+  );
 
   const {
     data: blockDetail,
@@ -102,6 +110,8 @@ const BlockDetailPage = () => {
   const opinionCategoryKey = resolveOpinionCategoryKey(category);
   const editCurrentReasonIds = editReasonIdsByState[editCurrentState] ?? [];
   const editCurrentCustomText = editCustomTextByState[editCurrentState] ?? "";
+  const addCurrentReasonIds = addReasonIdsByState[addCurrentState] ?? [];
+  const addCurrentCustomText = addCustomTextByState[addCurrentState] ?? "";
   const hasChanged = editingOpinion
     ? editCurrentState !== editingOpinion.type ||
       editCurrentCustomText !== (editingOpinion.comment ?? "") ||
@@ -332,6 +342,14 @@ const BlockDetailPage = () => {
                     </span>
                   </div>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => setIsAddingOpinion(true)}
+                  className="flex items-center justify-between w-full h-11 rounded-xl border border-[#E2E2E2] bg-transparent px-4"
+                >
+                  <span className="typography-body-base text-[#757575]">의견을 남기시겠어요?</span>
+                  <MessageCircle className="size-5 shrink-0 text-[#757575]" strokeWidth={2} />
+                </button>
                 <div className="w-full flex flex-col gap-6">
                   {opinions.length === 0 ? (
                     <div className="flex h-20 items-center justify-center rounded-xl bg-card typography-body-sm-reg text-muted-foreground">
@@ -399,6 +417,47 @@ const BlockDetailPage = () => {
           closeOnCancel={false}
           onCancel={() => setDeleteConfirmOpen(true)}
           onConfirm={handleConfirmOpinionUpdate}
+        />
+      )}
+
+      {isAddingOpinion && (
+        <OpinionBottomSheet
+          open={isAddingOpinion}
+          onOpenChange={(open) => {
+            if (!open) {
+              setIsAddingOpinion(false);
+              setAddCurrentState("POSITIVE");
+              setAddReasonIdsByState(EMPTY_REASON_IDS_BY_STATE);
+              setAddCustomTextByState(EMPTY_CUSTOM_TEXT_BY_STATE);
+            }
+          }}
+          categoryKey={opinionCategoryKey}
+          state={addCurrentState}
+          selectedReasonIds={addCurrentReasonIds}
+          customInputText={addCurrentCustomText}
+          onStateChange={setAddCurrentState}
+          onSelectedReasonIdsChange={(selectedReasonIds) => {
+            setAddReasonIdsByState((prev) => ({
+              ...prev,
+              [addCurrentState]: selectedReasonIds,
+            }));
+          }}
+          onCustomInputTextChange={(text) => {
+            setAddCustomTextByState((prev) => ({
+              ...prev,
+              [addCurrentState]: text,
+            }));
+          }}
+          cancelLabel="취소"
+          confirmLabel="등록"
+          onCancel={() => setIsAddingOpinion(false)}
+          onConfirm={() => {
+            // TODO: createBlockOpinion API 연동
+            setIsAddingOpinion(false);
+            setAddCurrentState("POSITIVE");
+            setAddReasonIdsByState(EMPTY_REASON_IDS_BY_STATE);
+            setAddCustomTextByState(EMPTY_CUSTOM_TEXT_BY_STATE);
+          }}
         />
       )}
 
