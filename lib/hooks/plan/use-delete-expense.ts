@@ -24,11 +24,11 @@ export const useDeleteExpense = (planId: string, options?: Options) => {
   return useMutation<void, AxiosError<ProblemDetail>, Variables>({
     mutationFn: ({ expenseId }) => deleteExpense(planId, expenseId),
     ...options,
-    onSuccess: (data, variables, context) => {
+    onSuccess: (data, variables, onMutateResult, context) => {
       queryClient.invalidateQueries({ queryKey: ["expenses", { planId }] });
       queryClient.invalidateQueries({ queryKey: ["budget", { planId }] });
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, onMutateResult, context);
     },
   });
 };

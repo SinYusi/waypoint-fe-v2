@@ -21,10 +21,10 @@ export const useUpdateBudget = (planId: string, options?: Options) => {
   return useMutation<BudgetResponse, AxiosError<ProblemDetail>, UpdateBudgetRequest>({
     mutationFn: (body) => updateBudget(planId, body),
     ...options,
-    onSuccess: (data, variables, context) => {
+    onSuccess: (data, variables, onMutateResult, context) => {
       queryClient.invalidateQueries({ queryKey: ["budget", { planId }] });
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, onMutateResult, context);
     },
   });
 };

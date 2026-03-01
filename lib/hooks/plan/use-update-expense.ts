@@ -26,11 +26,11 @@ export const useUpdateExpense = (planId: string, options?: Options) => {
   return useMutation<ExpenseResponse, AxiosError<ProblemDetail>, Variables>({
     mutationFn: ({ expenseId, items }) => updateExpense(planId, expenseId, items),
     ...options,
-    onSuccess: (data, variables, context) => {
+    onSuccess: (data, variables, onMutateResult, context) => {
       queryClient.invalidateQueries({ queryKey: ["expenses", { planId }] });
       queryClient.invalidateQueries({ queryKey: ["budget", { planId }] });
 
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, onMutateResult, context);
     },
   });
 };
