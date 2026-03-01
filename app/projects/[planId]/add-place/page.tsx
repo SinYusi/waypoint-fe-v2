@@ -121,7 +121,6 @@ const AddPlanPage = () => {
 		isFreeStartTimeValid &&
 		isFreeEndTimeValid &&
 		isFreeStartNotAfterEnd &&
-		normalizedFreeMemo.trim().length > 0 &&
 		isFreeMemoPolicyValid;
 	const searchableQuery = activeTab === "search" ? debouncedQuery : "";
 
@@ -312,7 +311,7 @@ const AddPlanPage = () => {
 				day: freeDayNumber,
 				start_time: freeStartTime,
 				end_time: freeEndTime,
-				memo: normalizedFreeMemo.trim(),
+				memo: normalizedFreeMemo.trim() || undefined,
 			},
 		});
 	};
@@ -500,7 +499,7 @@ const AddPlanPage = () => {
 							</div>
 
 							<div className="flex flex-col gap-2">
-								<Label htmlFor="free-memo" required>
+								<Label htmlFor="free-memo">
 									<span className="typography-label-sm-sb text-foreground">메모</span>
 								</Label>
 								<Textarea
