@@ -22,6 +22,7 @@ import { Plus } from "lucide-react";
 import BudgetBottomSheet, { type EditExpenseItem, type BudgetBottomSheetMode } from "@/components/common/BudgetBottomSheet";
 import { useUpdateExpense } from "@/lib/hooks/plan/use-update-expense";
 import { useDeleteExpense } from "@/lib/hooks/plan/use-delete-expense";
+import { useAddExpense } from "@/lib/hooks/plan/use-add-expense";
 import { useBudget } from "@/lib/hooks/plan/use-budget";
 import { useUpdateBudget } from "@/lib/hooks/plan/use-update-budget";
 import BudgetSummaryCard from "@/components/card/BudgetSummaryCard";
@@ -34,6 +35,8 @@ const DayExpenses = ({ planId, day }: { planId: string; day: number }) => {
   const [bottomSheet, setBottomSheet] = useState<{ placeName?: string; expenseId?: string; items: EditExpenseItem[]; mode: BudgetBottomSheetMode } | null>(null);
   const { mutate: updateExpense } = useUpdateExpense(planId);
   const { mutate: deleteExpense } = useDeleteExpense(planId);
+  const { mutate: addExpense } = useAddExpense(planId);
+  const [createSheet, setCreateSheet] = useState<{ prevExpenseId?: string } | null>(null);
 
   if (expenses.length === 0) return null;
 
@@ -54,7 +57,10 @@ const DayExpenses = ({ planId, day }: { planId: string; day: number }) => {
             {idx < expenses.length - 1 ? (
               <div className="flex flex-col items-center">
                 <div className="w-px h-2.5 bg-border" />
-                <button className="w-7 h-7 rounded-4xl bg-secondary flex items-center justify-center">
+                <button
+                  className="w-7 h-7 rounded-4xl bg-secondary flex items-center justify-center"
+                  onClick={() => setCreateSheet({ prevExpenseId: expenses[idx].selected?.expense_id })}
+                >
                   <Plus className="w-3 h-3 text-slate-50" strokeWidth={2} />
                 </button>
                 <div className="w-px h-2.5 bg-border" />
@@ -62,7 +68,10 @@ const DayExpenses = ({ planId, day }: { planId: string; day: number }) => {
             ) : (
               <div className="flex flex-col items-center">
                 <div className="w-px h-2.5 bg-border" />
-                <button className="w-7 h-7 rounded-4xl bg-secondary flex items-center justify-center">
+                <button
+                  className="w-7 h-7 rounded-4xl bg-secondary flex items-center justify-center"
+                  onClick={() => setCreateSheet({ prevExpenseId: expenses[idx].selected?.expense_id })}
+                >
                   <Plus className="w-3 h-3 text-slate-50" strokeWidth={2} />
                 </button>
               </div>
@@ -91,6 +100,18 @@ const DayExpenses = ({ planId, day }: { planId: string; day: number }) => {
         onDelete={() => {
           if (!bottomSheet?.expenseId) return;
           deleteExpense({ expenseId: bottomSheet.expenseId });
+        }}
+      />
+
+      <BudgetBottomSheet
+        open={!!createSheet}
+        onOpenChange={(open) => { if (!open) setCreateSheet(null); }}
+        mode="create-expense"
+        onSave={(savedItems) => {
+          addExpense({
+            prev_expense_id: createSheet?.prevExpenseId ?? null,
+            items: savedItems.map((i) => ({ name: i.name, cost: String(i.cost) })),
+          });
         }}
       />
     </>
