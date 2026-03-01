@@ -12,8 +12,8 @@ export type GetBudgetParams = {
  */
 export type BudgetResponse = {
   budget_id: string;
-  /** BUDGET: 예산 중심, EXPENSE: 지출 중심 */
-  type: "BUDGET" | "EXPENSE";
+  /** BUDGET: 예산 중심, EXPENSE: 지출 중심, INITIAL: 초기 상태 */
+  type: "BUDGET" | "EXPENSE" | "INITIAL";
   /** 총 예산 */
   total_budget: number;
   /** 총 지출액 */
