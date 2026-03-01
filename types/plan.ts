@@ -138,9 +138,15 @@ export type CreatePlanBlockByPlaceRequest = {
   memo: string;
 };
 
-export type AddPlanBlockCandidatesRequest = {
-  collection_place_ids: string[];
-};
+export type AddPlanBlockCandidatesRequest =
+  | {
+      collection_place_ids: string[];
+      place_ids?: never;
+    }
+  | {
+      place_ids: string[];
+      collection_place_ids?: never;
+    };
 
 export type BlockResponse = {
   time_block_id: string;
