@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Fragment, useMemo } from "react";
+import { useState, Fragment } from "react";
 import DayNav from "@/components/common/DayNav";
 import GoogleMap from "@/components/common/GoogleMap";
 import BudgetSummaryCard from "@/components/card/BudgetSummaryCard";
@@ -15,6 +15,7 @@ import { useBudget } from "@/lib/hooks/plan/use-budget";
 import { useExpenses } from "@/lib/hooks/plan/use-expenses";
 import BudgetEmptyState from "@/components/common/BudgetEmptyState";
 import { usePlan } from "@/lib/hooks/project/plan/use-plan";
+import { usePlanBlockData } from "@/lib/hooks/use-plan-block-data";
 
 // day별 지출 항목 — 훅을 루프 밖에서 호출하기 위해 별도 컴포넌트로 분리
 const DayExpenses = ({ planId, day }: { planId: string; day: number }) => {
@@ -68,17 +69,15 @@ const PlanPage = () => {
   const [isMapVisible, setIsMapVisible] = useState(true);
   const [budgetCardMode, setBudgetCardMode] = useState<"view" | "edit">("view");
   const { data: plan } = usePlan(planId);
-  const planTitle = plan?.title ?? "";
-  const totalDays = plan?.duration_days ?? 0;
   const startDate = plan?.start_date ?? "";
-  const items = useMemo(
-    () =>
-      Array.from({ length: totalDays }, (_, i) => ({
-        value: String(i + 1),
-        label: `Day ${i + 1}`,
-      })),
-    [totalDays]
-  );
+  const {
+    planTitle,
+    totalDays,
+    items,
+    dayQueries,
+    openByDay,
+    setOpenByDay,
+  } = usePlanBlockData({ planId });
   const { data: budgetData } = useBudget(planId);
   const showHint = false;
   const hasBudgetData = !!budgetData;
@@ -175,19 +174,30 @@ const PlanPage = () => {
           />
         )}
 
-        {(!isEmpty || activeMode !== "budget") && items.map((item) => (
-          <div key={item.value} id={`day-section-${item.value}`}>
-            <DayHeader
-              day={Number(item.value)}
-              date={formatDayDate(startDate, Number(item.value) - 1)}
-              defaultOpen
-            >
-              {activeMode === "budget" && (
-                <DayExpenses planId={planId} day={Number(item.value)} />
-              )}
-            </DayHeader>
-          </div>
-        ))}
+        {(!isEmpty || activeMode !== "budget") && items.map((item, idx) => {
+          const day = Number(item.value);
+          const q = dayQueries[idx];
+          const isDayEmpty = !!q?.data && (q.data.contents?.length ?? 0) === 0;
+          const isOpen = openByDay[day] ?? !isDayEmpty;
+
+          return (
+            <div key={item.value} id={`day-section-${item.value}`}>
+              <DayHeader
+                day={day}
+                date={formatDayDate(startDate, day - 1)}
+                open={isOpen}
+                onOpenChange={(next) =>
+                  setOpenByDay((prev) => ({ ...prev, [day]: next }))
+                }
+                disabled={q?.data ? isDayEmpty : false}
+              >
+                {activeMode === "budget" && (
+                  <DayExpenses planId={planId} day={day} />
+                )}
+              </DayHeader>
+            </div>
+          );
+        })}
       </main>
 
       <div className="fixed bottom-0 left-0 w-full">
