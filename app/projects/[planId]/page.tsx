@@ -140,6 +140,16 @@ const PlanPage = () => {
             className="gap-2.25 py-3 h-14"
             itemClassName="h-8 py-1.5"
             onValueChange={(value) => {
+              const day = Number(value);
+              const idx = day - 1;
+              const q = dayQueries[idx];
+              const isDayEmpty = !!q?.data && (q.data.contents?.length ?? 0) === 0;
+
+              // 접혀 있고 비어있지 않으면 펼침
+              if (!isDayEmpty) {
+                setOpenByDay((prev) => ({ ...prev, [day]: true }));
+              }
+
               const el = document.getElementById(`day-section-${value}`);
               if (!el) return;
               const mapHeight =
