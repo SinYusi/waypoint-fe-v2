@@ -2,24 +2,18 @@
 
 import { useQueries, UseQueryResult } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
-import {
-  getBlockList,
-  type BlockListResponse,
-  type GetBlockListParams,
-} from "@/lib/api/block";
-import { blockListQueryKey } from "@/lib/hooks/use-block-list";
+import { getBlockList, type BlockListResponse } from "@/lib/api/block";
+import { blockListInfiniteBaseQueryKey } from "./use-block-list-infinite";
 
 type UsePlanBlockListsOptions = {
   planId?: string;
   days: number[];
-  params?: Omit<GetBlockListParams, "day">;
   enabled?: boolean;
 };
 
 export const usePlanBlockList = ({
   planId,
   days,
-  params = { page: 0, size: 20 },
   enabled = true,
 }: UsePlanBlockListsOptions): UseQueryResult<
   BlockListResponse,
@@ -29,8 +23,11 @@ export const usePlanBlockList = ({
 
   return useQueries({
     queries: days.map((day) => ({
-      queryKey: blockListQueryKey(planId ?? "", { day, ...params }),
-      queryFn: () => getBlockList(planId!, { day, ...params }),
+      queryKey: [
+        ...blockListInfiniteBaseQueryKey(planId ?? "", day),
+        "peek",
+      ] as const,
+      queryFn: () => getBlockList(planId!, { day, page: 0, size: 1 }),
       enabled: canFetch,
       staleTime: 30_000,
     })),
