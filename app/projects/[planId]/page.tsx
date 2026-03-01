@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, Fragment } from "react";
+import { useQueries } from "@tanstack/react-query";
 import DayNav from "@/components/common/DayNav";
 import GoogleMap from "@/components/common/GoogleMap";
 import BudgetSummaryCard from "@/components/card/BudgetSummaryCard";
@@ -80,7 +81,21 @@ const PlanPage = () => {
   } = usePlanBlockData({ planId });
   const startDate = plan?.start_date ?? "";
   const { data: budgetData } = useBudget(planId);
-  const showHint = false;
+  const expensesByDay = useQueries({
+    queries: days.map((day) => ({
+      queryKey: ["expenses", { planId, day }] as const,
+      queryFn: () => import("@/lib/api/budget").then((m) => m.getExpenses(planId, day)),
+      enabled: !!planId && days.length > 0,
+    })),
+  });
+  const showHint = expensesByDay.some((q) =>
+    q.data?.some(
+      (group) =>
+        group.type === "BLOCK" &&
+        group.block_status === "PENDING" &&
+        group.candidates?.some((c) => c.items.length > 0)
+    )
+  );
   const hasBudgetData = !!budgetData;
   const isEmpty = budgetData?.type === "INITIAL";
 
