@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, Fragment } from "react";
 import DayNav from "@/components/common/DayNav";
 import GoogleMap from "@/components/common/GoogleMap";
 import { DayHeader } from "@/components/layout/DayHeader";
@@ -15,6 +15,31 @@ import { usePlanBlockData } from "@/lib/hooks/use-plan-block-data";
 import { cn } from "@/lib/utils/utils";
 import { useStickyStuck } from "@/lib/hooks/use-sticky-stuck";
 import { useScrollspyDay } from "@/lib/hooks/use-scrollspy-day";
+import { useExpenses } from "@/lib/hooks/plan/use-expenses";
+import ExpenseGroupItem from "@/components/card/ExpenseGroupItem";
+
+// day별 지출 항목 — 훅을 루프 밖에서 호출하기 위해 별도 컴포넌트로 분리
+const DayExpenses = ({ planId, day }: { planId: string; day: number }) => {
+  const { data } = useExpenses(planId, day);
+  const expenses = data ?? [];
+
+  if (expenses.length === 0) return null;
+
+  return (
+    <div className="flex flex-col px-5 py-3">
+      {expenses.map((group, idx) => (
+        <Fragment key={idx}>
+          <ExpenseGroupItem group={group} />
+          {idx < expenses.length - 1 && (
+            <div className="flex justify-center">
+              <div className="w-px h-5 bg-border" />
+            </div>
+          )}
+        </Fragment>
+      ))}
+    </div>
+  );
+};
 
 const PlanEditPage = () => {
   const router = useRouter();
@@ -226,7 +251,7 @@ const PlanEditPage = () => {
                   />
                 ) : (
                   // Budget
-                  <></>
+                  <DayExpenses planId={planId} day={day} />
                 )}
               </DayHeader>
             </div>
