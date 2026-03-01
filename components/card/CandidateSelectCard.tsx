@@ -10,13 +10,17 @@ import PlaceReactionItem, {
 } from "@/components/card/PlaceReactionItem";
 import OpinionBtn from "@/components/card/OpinionBtn";
 import PlaceOpinionBottomSheet from "@/components/common/PlaceOpinionBottomSheet";
-import { type BlockOpinion } from "@/lib/opinion-bottom-sheet";
+import {
+  type BlockOpinion,
+  type OpinionCategoryKey,
+} from "@/lib/opinion-bottom-sheet";
 
 interface CandidateSelectCardProps {
   index: number;
   placeName: string;
   writerNickname: string;
   writerProfileImageUrl: string;
+  categoryKey: OpinionCategoryKey;
   imageUrl?: string;
   memo?: string;
   amount?: number;
@@ -39,6 +43,7 @@ const CandidateSelectCard = ({
   placeName,
   writerNickname,
   writerProfileImageUrl,
+  categoryKey,
   imageUrl,
   memo,
   amount,
@@ -145,7 +150,7 @@ const CandidateSelectCard = ({
       <PlaceOpinionBottomSheet
         open={isOpinionOpen}
         onOpenChange={setIsOpinionOpen}
-        categoryKey="FNB"
+        categoryKey={categoryKey}
         opinions={opinions}
       />
     </div>
