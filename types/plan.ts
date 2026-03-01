@@ -88,13 +88,15 @@ export type UpdatePlanRequest = {
   confirm?: boolean; // 날짜 삭제(축소) 재요청시 사용
 };
 
+export type UpdateType = "DECREASE" | "STAY" | "INCREASE" | null;
+
 /**
  * 날짜 축소로 인해 영향 받는 일차 정보
  * affectedDays[].scheduleCount === 0 이면 일정 없이 삭제되는 날
  */
 export type AffectedDays = {
   day: number;
-  scheduleCount: number;
+  schedule_count: number;
 };
 
 /**
@@ -102,11 +104,12 @@ export type AffectedDays = {
  * 200
  */
 export type UpdatePlanResponse = {
-  requiresConfirmation: boolean;
-  plan: PlanResponse;
-  affectedDays: AffectedDays[];
+  requires_confirmation: boolean;
+  update_type: UpdateType;
+  plan: PlanResponse | null;
+  affected_days: AffectedDays[] | null;
 };
-  
+
 export type PlanAddedBy = {
   plan_member_id: string;
   nickname: string;
