@@ -2,16 +2,16 @@
 
 import { useState } from "react";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
-import BudgetPlaceCard from "@/components/card/BudgetPlaceCard";
+import BudgetPlaceCard, { type ExpenseItem } from "@/components/card/BudgetPlaceCard";
 import { type PlaceType } from "@/components/card/PlaceTypeIcon";
 import { Button } from "@/components/ui/button";
+
 
 // ─── Item type ────────────────────────────────────────────────────────────────
 
 interface CardItem {
   placeName: string;
-  feeLabel?: string;
-  amount: number;
+  items: ExpenseItem[];
   placeType: PlaceType;
 }
 
@@ -60,8 +60,7 @@ const BudgetCandidateGroup = (props: BudgetCandidateGroupProps) => {
           <BudgetPlaceCard
             key={index}
             placeName={card.placeName}
-            feeLabel={card.feeLabel}
-            amount={card.amount}
+            items={card.items}
             placeType={card.placeType}
           />
         ))}
@@ -93,8 +92,7 @@ const BudgetCandidateGroup = (props: BudgetCandidateGroupProps) => {
         <BudgetPlaceCard
           key={index}
           placeName={card.placeName}
-          feeLabel={card.feeLabel}
-          amount={card.amount}
+          items={card.items}
           placeType={card.placeType}
         />
       ))}
