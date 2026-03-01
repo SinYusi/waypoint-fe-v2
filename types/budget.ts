@@ -45,7 +45,7 @@ export type BlockStatus = "FIXED" | "PENDING" | "DIRECT";
 export type ExpenseBlockInfo = {
   block_id: string;
   name: string;
-  category?: PlaceCategory;
+  category: PlaceCategory;
 };
 
 export type PlaceCategoryLevel = {
