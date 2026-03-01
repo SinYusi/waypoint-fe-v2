@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
@@ -11,9 +11,41 @@ import { useUpdatePlan } from "@/lib/hooks/project/plan/use-update-plan";
 import { useProjectForm } from "@/lib/hooks/project/use-project-form";
 import { fromApiDateRange, toApiDateRange } from "@/lib/utils/date";
 import type { DateRange } from "react-day-picker";
-import type { UpdatePlanRequest } from "@/types/plan";
+import type { UpdatePlanRequest, UpdateType } from "@/types/plan";
 import { ProblemDetail } from "@/types/problem-detail";
 import { AxiosError } from "axios";
+
+const getPlanUpdateDialogContent = (updateType: UpdateType) => {
+  switch (updateType) {
+    case "STAY":
+      return {
+        title: "여행 일자를 수정하시겠습니까?",
+        description:
+          "기존 여행 일차 수는 그대로 유지되며,\n계획된 장소와 일정이 일차 기준으로 함께 이동합니다.",
+        actionClassName: "bg-primary hover:bg-primary/90",
+      };
+    case "INCREASE":
+      return {
+        title: "여행 일자를 수정하시겠습니까?",
+        description:
+          "기존 계획은 유지되며, 추가된 일정은 기존 일정의 뒤에 자동으로 추가됩니다.",
+        actionClassName: "bg-primary hover:bg-primary/90",
+      };
+    case "DECREASE":
+      return {
+        title: "여행 일자를 축소하시겠습니까?",
+        description:
+          "여행 일차가 줄어들면, 마지막 일차에 포함된 계획 블록이 삭제됩니다.",
+        actionClassName: "",
+      };
+    default:
+      return {
+        title: "여행 일자를 수정하시겠습니까?",
+        description: "여행 일자가 변경됩니다. 계속 진행할까요?",
+        actionClassName: "bg-primary hover:bg-primary/90",
+      };
+  }
+};
 
 const ProjectEditPage = () => {
   const router = useRouter();
@@ -77,19 +109,37 @@ const ProjectEditForm = ({
     null,
   );
 
+  // 1차 응답에서 내려오는 update_type / affected_days 저장
+  const [pendingUpdateType, setPendingUpdateType] = useState<UpdateType>(null);
+
+  const dialogContent = useMemo(
+    () => getPlanUpdateDialogContent(pendingUpdateType),
+    [pendingUpdateType],
+  );
+
   // 플랜 수정
   const { mutate, isPending } = useUpdatePlan({
     onSuccess: (res, variables) => {
-      // 날짜 축소 -> 확인 필요
-      if (res.requiresConfirmation) {
-        setPendingBody(variables.body); // confirm 재요청용
-        setIsConfirmOpen(true);
+      const isConfirmRequest = variables.body.confirm === true;
+
+      // 2차(confirm=true) 성공 → 최종 완료 처리
+      if (isConfirmRequest) {
+        form.resetAll();
+        onDone();
         return;
       }
 
-      // 정상 완료
-      form.resetAll();
-      onDone();
+      // 1차 응답인데 확인 불필요(타이틀만 수정) → 바로 완료
+      if (!res.requires_confirmation) {
+        form.resetAll();
+        onDone();
+        return;
+      }
+
+      // 1차(confirm=false) 응답 → update_type 보고 다이얼로그 띄우기
+      setPendingBody(variables.body); // confirm 재요청용
+      setPendingUpdateType(res.update_type);
+      setIsConfirmOpen(true);
     },
     onError: (err) => {
       const message =
@@ -190,14 +240,15 @@ const ProjectEditForm = ({
         </Button>
       </footer>
 
-      {/* 여행 기간 축소 확인 다이얼로그 */}
+      {/* 여행 기간 수정 확인 다이얼로그 */}
       <AppAlertDialog
         open={isConfirmOpen}
         onOpenChange={setIsConfirmOpen}
-        title="여행 날짜가 줄어들어요"
-        description="여행 날짜를 줄이면 일부 일차/일정이 삭제될 수 있어요. 계속 진행할까요?"
+        title={dialogContent?.title ?? ""}
+        description={dialogContent?.description}
         actionLabel="수정하기"
         onAction={handleConfirm}
+        actionClassName={dialogContent?.actionClassName}
       />
     </div>
   );
