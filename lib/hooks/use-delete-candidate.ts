@@ -8,16 +8,13 @@ import {
 import type { AxiosError } from "axios";
 import { deleteCandidate } from "@/lib/api/block";
 import type { ProblemDetail } from "@/types/problem-detail";
-import { blockListQueryKey } from "@/lib/hooks/use-block-list";
-import { blockDetailQueryKey } from "@/lib/hooks/use-block-detail";
+import { blockListInfiniteBaseQueryKey } from "./use-block-list-infinite";
 
 export type DeleteCandidateRequest = {
   planId: string;
   timeBlockId: string;
   blockId: string;
   day: number;
-  page?: number;
-  size?: number;
 };
 
 type UseDeleteCandidateOptions = {
@@ -40,10 +37,10 @@ export const useDeleteCandidate = (options: UseDeleteCandidateOptions = {}) => {
     },
     ...mutationOptions,
     onSuccess: (data, variables, onMutateResult, context) => {
-      const { planId, day, page = 0, size = 20 } = variables;
+      const { planId, day } = variables;
 
       queryClient.invalidateQueries({
-        queryKey: blockListQueryKey(planId, { day, page, size }),
+        queryKey: blockListInfiniteBaseQueryKey(planId, day),
         exact: false,
         refetchType: "active",
       });
