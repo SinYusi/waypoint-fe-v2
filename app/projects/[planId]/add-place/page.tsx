@@ -345,12 +345,12 @@ const AddPlanPage = () => {
 										<PlaceEmptyIllust width={165} height={160} />
 										<div className="flex flex-col items-center gap-2 text-center">
 											<h2 className="typography-display-xl text-foreground">
-												이 보관함은 아직 비어있어요!
+												아직 보관함이 없어요
 											</h2>
 											<p className="typography-body-sm-md text-foreground">
-												장소를 보관함에 저장하고,
+												가고 싶은 여행 장소를 담아
 												<br />
-												여행 계획을 시작해보세요
+												보관함을 만들어보세요
 											</p>
 										</div>
 									</div>
@@ -358,7 +358,7 @@ const AddPlanPage = () => {
 										onClick={handleCreateCollection}
 										className="h-10 w-27.5 rounded-xl py-2.5 px-4 typography-action-sm-bold"
 									>
-										새 보관함 만들기
+										보관함 만들기
 									</Button>
 								</div>
 							</div>
