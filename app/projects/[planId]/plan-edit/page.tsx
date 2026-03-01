@@ -160,13 +160,18 @@ const PlanEditPage = () => {
                     setOpenByDay((prev) => ({ ...prev, [day]: true }));
                   }
 
-                  const el = document.getElementById(`day-section-${value}`);
-                  if (!el) return;
-                  const mapHeight = shouldShowMap ? 180 : 0;
-                  const offset = 64 + mapHeight + 56; // header + map + DayNav(h-14)
-                  const top =
-                    el.getBoundingClientRect().top + window.scrollY - offset;
-                  window.scrollTo({ top, behavior: "smooth" });
+                  const scrollToDay = () => {
+                    const el = document.getElementById(`day-section-${value}`);
+                    if (!el) return;
+                    const mapHeight = shouldShowMap ? 180 : 0;
+                    const offset = 64 + mapHeight + 56; // header + map + DayNav(h-14)
+                    const top =
+                      el.getBoundingClientRect().top + window.scrollY - offset;
+                    window.scrollTo({ top, behavior: "smooth" });
+                  };
+
+                  // 펼침 애니메이션 후 DOM 확정 시점에 스크롤
+                  requestAnimationFrame(() => requestAnimationFrame(scrollToDay));
                 }}
                 className="gap-2.25 py-3 h-14"
                 itemClassName="h-8 py-1.5"
