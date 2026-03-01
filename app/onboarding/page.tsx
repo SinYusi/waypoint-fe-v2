@@ -4,6 +4,7 @@ import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/utils";
 import { Vote, MapPin, UsersRound } from "lucide-react";
+import { useRouter } from "next/navigation";
 import AiIcon from "@/public/icons/ai-icon.svg";
 import { useState } from "react";
 
@@ -39,6 +40,7 @@ const onboardingOptions = [
 ] as const;
 
 const OnboardingPage = () => {
+  const router = useRouter();
   const [selectedOption, setSelectedOption] = useState<string>(
     onboardingOptions[0].id,
   );
@@ -112,7 +114,9 @@ const OnboardingPage = () => {
 
       <footer className="fixed inset-x-0 bottom-0 h-22.75">
         <div className="mx-auto flex h-full w-full max-w-93.75 items-start px-5 pt-4">
-          <Button className="h-11 w-full">여행 계획 시작하기</Button>
+          <Button className="h-11 w-full" onClick={() => router.push("/login")}>
+            여행 계획 시작하기
+          </Button>
         </div>
       </footer>
     </div>
