@@ -6,9 +6,11 @@ import {
 import type { AxiosError } from "axios"
 
 import {
+  createBlockOpinion,
   deleteBlockOpinion,
   updateBlockOpinion,
   type BlockDetail,
+  type CreateBlockOpinionRequest,
   type UpdateBlockOpinionRequest,
 } from "@/lib/api/block"
 import type { BlockOpinion } from "@/lib/opinion-bottom-sheet"
@@ -61,6 +63,50 @@ type UseUpdateBlockOpinionOptions = {
     UseMutationOptions<BlockOpinion, AxiosError, UpdateBlockOpinionVariables>,
     "mutationFn"
   >
+}
+
+type UseCreateBlockOpinionOptions = {
+  planId?: string
+  blockId?: string
+  mutationOptions?: Omit<
+    UseMutationOptions<BlockOpinion, AxiosError, CreateBlockOpinionRequest>,
+    "mutationFn"
+  >
+}
+
+export const useCreateBlockOpinion = (options: UseCreateBlockOpinionOptions) => {
+  const queryClient = useQueryClient()
+  const { planId, blockId, mutationOptions } = options
+
+  return useMutation<BlockOpinion, AxiosError, CreateBlockOpinionRequest>({
+    mutationFn: async (payload) => {
+      if (!planId || !blockId) {
+        throw new Error("planId and blockId are required")
+      }
+
+      return createBlockOpinion(planId, blockId, payload)
+    },
+    ...mutationOptions,
+    onSuccess: (data, variables, onMutateResult, context) => {
+      if (planId && blockId) {
+        queryClient.setQueryData<BlockDetail>(
+          blockDetailQueryKey(planId, blockId),
+          (old) => {
+            if (!old) return old
+
+            const next = {
+              ...old,
+              opinions: [...old.opinions, data],
+            }
+
+            return patchBlockDetailOpinionDerivedFields(next)
+          },
+        )
+      }
+
+      mutationOptions?.onSuccess?.(data, variables, onMutateResult, context)
+    },
+  })
 }
 
 export const useUpdateBlockOpinion = (options: UseUpdateBlockOpinionOptions) => {
