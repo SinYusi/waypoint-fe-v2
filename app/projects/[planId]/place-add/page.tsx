@@ -146,7 +146,6 @@ const ProjectPlaceAddPage = () => {
     isStartTimeValid &&
     isEndTimeValid &&
     isStartNotAfterEnd &&
-    normalizedMemo.trim().length > 0 &&
     isMemoPolicyValid;
 
   const { mutate: createBlock, isPending: isCreatingBlock } = useCreatePlanBlock({
@@ -245,7 +244,7 @@ const ProjectPlaceAddPage = () => {
           day: dayNumber,
           start_time: startTime,
           end_time: endTime,
-          memo: normalizedMemo.trim(),
+          memo: normalizedMemo.trim() || undefined,
         },
       });
       return;
@@ -261,7 +260,7 @@ const ProjectPlaceAddPage = () => {
         day: dayNumber,
         start_time: startTime,
         end_time: endTime,
-        memo: normalizedMemo.trim(),
+        memo: normalizedMemo.trim() || undefined,
       },
     });
   };
@@ -363,7 +362,7 @@ const ProjectPlaceAddPage = () => {
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <Label htmlFor="memo" required>
+                  <Label htmlFor="memo">
                     <span className="typography-label-sm-sb text-foreground">메모</span>
                   </Label>
                   <Textarea
