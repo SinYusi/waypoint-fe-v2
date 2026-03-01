@@ -16,7 +16,6 @@ import { useCreatePlanBlock } from "@/lib/hooks/plan/use-create-plan-block";
 import { usePlanCollectionPlaces } from "@/lib/hooks/plan/use-plan-collection-places";
 import { usePlanCollections } from "@/lib/hooks/plan/use-plan-collections";
 import { normalizePickPassPreference } from "@/lib/utils/pick-pass-preference";
-import CollectionEmptyIllust from "@/public/illust/collection-empty.svg";
 import PlaceEmptyIllust from "@/public/illust/place-empty_new.svg";
 import { MapPin } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -233,24 +232,6 @@ const AddPlanPage = () => {
 		router.push(`/home/${selectedDay}/add-place`);
 	};
 
-	const renderEmptyCollections = () => (
-		<div className="flex flex-col items-center gap-12 px-5 py-8">
-			<div className="flex flex-col gap-5 items-center">
-				<CollectionEmptyIllust />
-				<div className="flex flex-col text-center gap-2">
-					<h2 className="typography-display-xl">우리만의 장소 보관함 만들기</h2>
-					<p className="typography-body-sm-md">
-						함께 꿈꾸는 여행지들을 보관함에 담고,
-						<br />
-						서로 가고 싶은 곳들을 자유롭게 나눠볼까요?
-					</p>
-				</div>
-			</div>
-			<Button onClick={handleCreateCollection} className="w-full">
-				새 보관함 만들기
-			</Button>
-		</div>
-	);
 
 	const handleFreeTimeKeyDown = (
 		e: KeyboardEvent<HTMLInputElement>,
@@ -358,7 +339,29 @@ const AddPlanPage = () => {
 								보관함을 불러오는 중...
 							</div>
 						) : isPlanCollectionsEmpty ? (
-							renderEmptyCollections()
+							<div className="flex flex-1 w-full flex-col items-center justify-center px-5">
+								<div className="flex w-full flex-col items-center gap-5">
+									<div className="flex w-full flex-col items-center gap-5">
+										<PlaceEmptyIllust width={165} height={160} />
+										<div className="flex flex-col items-center gap-2 text-center">
+											<h2 className="typography-display-xl text-foreground">
+												이 보관함은 아직 비어있어요!
+											</h2>
+											<p className="typography-body-sm-md text-foreground">
+												장소를 보관함에 저장하고,
+												<br />
+												여행 계획을 시작해보세요
+											</p>
+										</div>
+									</div>
+									<Button
+										onClick={handleCreateCollection}
+										className="h-10 w-27.5 rounded-xl py-2.5 px-4 typography-action-sm-bold"
+									>
+										새 보관함 만들기
+									</Button>
+								</div>
+							</div>
 						) : (
 							<div className="flex flex-1 w-full flex-col items-center px-5">
 								{dayItems.length > 0 && (
