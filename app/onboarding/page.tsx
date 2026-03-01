@@ -57,8 +57,8 @@ const OnboardingPage = () => {
     <div className="min-h-screen bg-background">
       <Header className="fixed inset-x-0 top-0 z-10" />
 
-      <main className="mt-15 flex min-h-[calc(100vh-60px)] justify-center px-5 pt-6 pb-26.25">
-        <section className="flex h-210 w-full max-w-83.75 flex-col gap-10 p-0">
+      <main className="mt-15 flex min-h-[calc(100vh-60px)] px-5 pt-6 pb-26.25">
+        <section className="flex h-210 w-full flex-col gap-10 p-0">
           <div className="flex h-58 w-full flex-col gap-5">
             <div className="flex h-10 w-full items-center justify-center">
               <h1 className="font-[Urbanist] text-2xl leading-8 font-extrabold text-[#2D2D2D]">
@@ -121,7 +121,7 @@ const OnboardingPage = () => {
       </main>
 
       <footer className="fixed inset-x-0 bottom-0 h-22.75">
-        <div className="mx-auto flex h-full w-full max-w-93.75 items-start px-5 pt-4">
+        <div className="flex h-full w-full items-start px-5 pt-4">
           <Button className="h-11 w-full" onClick={() => router.push("/login")}>
             여행 계획 시작하기
           </Button>
