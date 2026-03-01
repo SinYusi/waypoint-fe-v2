@@ -150,6 +150,16 @@ const PlanEditPage = () => {
                 onValueChange={(value) => {
                   setActiveDay(value);
 
+                  const day = Number(value);
+                  const idx = day - 1;
+                  const q = dayQueries[idx];
+                  const isDayEmpty = !!q?.data && (q.data.contents?.length ?? 0) === 0;
+
+                  // 접혀 있고 비어있지 않으면 펼침
+                  if (!isDayEmpty) {
+                    setOpenByDay((prev) => ({ ...prev, [day]: true }));
+                  }
+
                   const el = document.getElementById(`day-section-${value}`);
                   if (!el) return;
                   const mapHeight = shouldShowMap ? 180 : 0;
