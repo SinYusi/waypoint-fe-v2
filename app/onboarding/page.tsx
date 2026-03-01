@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils/utils";
 import { Vote, MapPin, UsersRound } from "lucide-react";
 import { useRouter } from "next/navigation";
 import AiIcon from "@/public/icons/ai-icon.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const onboardingOptions = [
   {
@@ -44,6 +44,14 @@ const OnboardingPage = () => {
   const [selectedOption, setSelectedOption] = useState<string>(
     onboardingOptions[0].id,
   );
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+
+    if (token) {
+      router.replace("/home");
+    }
+  }, [router]);
 
   return (
     <div className="min-h-screen bg-background">
