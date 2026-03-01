@@ -27,7 +27,7 @@ const InviteDialog = ({ variant, id, open, onOpenChange }: InviteDialogProps) =>
     } else {
       reset();
     }
-  }, [open]);
+  }, [open, id, variant]);
 
   const handleCopy = async () => {
     if (!invitation?.url) return;
