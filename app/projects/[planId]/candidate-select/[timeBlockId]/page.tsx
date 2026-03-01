@@ -6,7 +6,6 @@ import PlanCardSelection from "@/components/card/PlanCardSelection";
 import { Button } from "@/components/ui/button";
 import { InputForm } from "@/components/ui/input-form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useAddCollectionPlace } from "@/lib/hooks/collection/use-add-collection-place";
 import { useCollectionPlacePreference } from "@/lib/hooks/collection/use-collection-place-preference";
 import { useIntersectionObserver } from "@/lib/hooks/use-intersection-observer";
 import { usePlaceSearch } from "@/lib/hooks/use-place-search";
@@ -84,36 +83,6 @@ const AddPlanPage = () => {
 	const places = placesData?.pages.flatMap((page) => page.contents) ?? [];
 	const { data: searchedPlaces = [] } = usePlaceSearch(query);
 	const { mutate: postPreference } = useCollectionPlacePreference();
-	const { mutate: addCollectionPlace, isPending: isAddingCollectionPlace } =
-		useAddCollectionPlace({
-			onSuccess: (data) => {
-				if (!planId || !timeBlockId) return;
-				addCandidatesToBlock({
-					planId,
-					timeBlockId,
-					body: {
-						collection_place_ids: [data.collection_place_id],
-					},
-				});
-				setSelectedSearchPlaceId(null);
-			},
-			onError: (err) => {
-				const detail = err.response?.data?.detail?.toLowerCase() ?? "";
-				const code = err.response?.data?.code?.toLowerCase() ?? "";
-				const reason = err.response?.data?.errors?.[0]?.reason?.toLowerCase() ?? "";
-				const isAlreadyExistsError =
-					detail.includes("이미") ||
-					reason.includes("이미") ||
-					detail.includes("already") ||
-					reason.includes("already") ||
-					code.includes("already") ||
-					code.includes("duplicate");
-
-				if (isAlreadyExistsError) {
-					moveToSavedFirst();
-				}
-			},
-		});
 	const { mutate: addCandidatesToBlock, isPending: isAddingCandidates } =
 		useAddPlanBlockCandidates({
 			onSuccess: () => {
@@ -156,11 +125,14 @@ const AddPlanPage = () => {
 	};
 
 	const handleOpenPlaceAddFromSearch = () => {
-		if (!planId || !selectedDay || !selectedSearchPlaceId) return;
+		if (!planId || !selectedSearchPlaceId) return;
 		if (!timeBlockId) return;
-		addCollectionPlace({
-			collectionId: selectedDay,
-			place_id: selectedSearchPlaceId,
+		addCandidatesToBlock({
+			planId,
+			timeBlockId,
+			body: {
+				place_ids: [selectedSearchPlaceId],
+			},
 		});
 	};
 
@@ -344,7 +316,7 @@ const AddPlanPage = () => {
 				</div>
 			)}
 
-			{hasPlanCollections && activeTab === "search" && (
+			{activeTab === "search" && (
 				<div className="fixed inset-x-0 bottom-0 z-50 h-22.75 border-t border-border bg-background">
 					<div
 						aria-hidden
@@ -356,9 +328,7 @@ const AddPlanPage = () => {
 							className="h-11 w-full rounded-2xl bg-primary px-8 py-0 text-primary-foreground"
 							disabled={
 								!selectedSearchPlaceId ||
-								!selectedDay ||
 								!timeBlockId ||
-								isAddingCollectionPlace ||
 								isAddingCandidates
 							}
 						>
