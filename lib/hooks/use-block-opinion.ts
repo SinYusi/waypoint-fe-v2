@@ -97,6 +97,7 @@ export const useCreateBlockOpinion = (options: UseCreateBlockOpinionOptions) => 
             const next = {
               ...old,
               opinions: [...old.opinions, data],
+              myOpinionId: data.opinion_Id,
             }
 
             return patchBlockDetailOpinionDerivedFields(next)
