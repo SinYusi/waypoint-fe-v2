@@ -59,7 +59,7 @@ const CollectionManagePage = () => {
         title="보관함 관리"
         showBackButton
         leftBtnBgVariant="ghost"
-        className="fixed top-0 inset-x-0 bg-background"
+        className="fixed top-0 inset-x-0 bg-background z-50"
       />
 
       <main className="flex flex-1 flex-col px-5 pt-3 pb-3.5 gap-3.5 mb-3">
@@ -72,11 +72,16 @@ const CollectionManagePage = () => {
             {error.response?.data.detail ?? "알 수 없는 오류"}
           </div>
         ) : !data || data.length === 0 ? (
-          <div className="fixed inset-0 flex flex-col gap-5 items-center justify-center">
+          <div className="fixed top-15 inset-0 flex flex-col gap-5 items-center justify-center -mt-15">
             <CollectionEmptyIllust />
-            <h2 className="typography-display-lg-bold">
-              연결된 보관함이 없어요.
-            </h2>
+            <div className="flex flex-col gap-2 items-center justify-center">
+              <h2 className="typography-display-lg-bold">
+                연결된 보관함이 없어요
+              </h2>
+              <span className="typography-body-sm-md">
+                보관함을 연결해서 미리 담아둔 장소를 불러올 수 있어요
+              </span>
+            </div>
           </div>
         ) : (
           <>
