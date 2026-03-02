@@ -31,6 +31,7 @@ export const DayHeader = ({
   day,
   date,
   children,
+  disabled = false,
   className,
   id,
   contentClassName,
@@ -45,23 +46,17 @@ export const DayHeader = ({
 
   const setOpen = React.useCallback(
     (next: boolean) => {
+      if (disabled) return;
       if (!isControlled) setUncontrolledOpen(next);
       onOpenChange?.(next);
     },
-    [isControlled, onOpenChange],
+    [disabled, isControlled, onOpenChange],
   );
 
   const toggle = React.useCallback(() => {
+    if (disabled) return;
     setOpen(!isOpen);
-  }, [isOpen, setOpen]);
-
-  // 키보드 접근성(Enter/Space)
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      toggle();
-    }
-  };
+  }, [disabled, isOpen, setOpen]);
 
   return (
     <section className={cn("w-full", className)}>
@@ -69,9 +64,13 @@ export const DayHeader = ({
       <button
         aria-expanded={isOpen}
         aria-controls={panelId}
+        aria-disabled={disabled}
+        disabled={disabled}
         onClick={toggle}
-        onKeyDown={onKeyDown}
-        className="w-full cursor-pointer h-20.5 flex justify-between items-center gap-3 px-5 py-4 border-b-[0.67px] border-border/60"
+        className={cn(
+          "w-full cursor-pointer h-20.5 flex justify-between items-center gap-3 px-5 py-4 border-b-[0.67px] border-border/60",
+          disabled ? "cursor-not-allowed" : "cursor-pointer",
+        )}
       >
         <div className="flex items-center gap-4">
           <span className="w-12 h-12 rounded-[18px] bg-primary/10 flex items-center justify-center typography-display-xl text-primary">
@@ -89,6 +88,7 @@ export const DayHeader = ({
           className={cn(
             "size-6 transition-transform duration-200",
             isOpen && "rotate-90",
+            disabled && "text-disabled",
           )}
           aria-hidden="true"
         />

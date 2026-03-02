@@ -10,7 +10,8 @@ interface PlanHeaderProps {
   title: string;
   day: number;
   isEditing?: boolean;
-  href: string;
+  href?: string;
+  isEditBudget?: boolean;
   className?: string;
 }
 
@@ -18,6 +19,7 @@ const PlanHeader = ({
   title,
   day,
   isEditing = false,
+  isEditBudget = false,
   href,
   className,
 }: PlanHeaderProps) => {
@@ -26,7 +28,8 @@ const PlanHeader = ({
   const safeDay = Math.max(day, 1);
 
   const handleToggleMode = () => {
-    router.replace(href);
+    if (!href) return;
+    router.push(href);
   };
 
   return (
@@ -51,26 +54,28 @@ const PlanHeader = ({
             : `${safeDay - 1}박 ${safeDay}일 여행`}
         </p>
       </div>
-      {isEditing ? (
-        // 편집 화면일 때: Header 버튼
-        <HeaderBtn
-          icon={Settings}
-          label="보기 버튼"
-          bgVariant="ghost"
-          iconClassName="text-muted-foreground"
-          onClick={handleToggleMode}
-        />
-      ) : (
-        // 보기 화면일 때: '편집하기' 버튼
-        <Button
-          variant="default"
-          onClick={handleToggleMode}
-          className="h-10 px-4 py-2.5 gap-1 rounded-xl typography-action-sm-bold shrink-0"
-        >
-          <Pencil className="w-4.5 h-4.5 opacity-40 text-black stroke-3" />
-          편집하기
-        </Button>
-      )}
+
+      {!isEditBudget &&
+        (isEditing ? (
+          // 편집 화면일 때: Header 버튼
+          <HeaderBtn
+            icon={Settings}
+            label="보기 버튼"
+            bgVariant="ghost"
+            iconClassName="text-muted-foreground"
+            onClick={handleToggleMode}
+          />
+        ) : (
+          // 보기 화면일 때: '편집하기' 버튼
+          <Button
+            variant="default"
+            onClick={handleToggleMode}
+            className="h-10 px-4 py-2.5 gap-1 rounded-xl typography-action-sm-bold shrink-0"
+          >
+            <Pencil className="w-4.5 h-4.5 opacity-40 text-black stroke-3" />
+            편집하기
+          </Button>
+        ))}
     </div>
   );
 };

@@ -172,7 +172,7 @@ const ProjectEditForm = ({
       </form>
 
       {/* 하단 버튼 */}
-      <footer className="w-full h-[91px] px-5 pt-4 pb-5">
+      <footer className="w-full h-22.75 px-5 pt-4 pb-5">
         <Button
           variant="default"
           type="submit"

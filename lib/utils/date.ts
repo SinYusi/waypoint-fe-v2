@@ -128,3 +128,56 @@ export const isSameDay = (a?: Date, b?: Date): boolean => {
 export const isSameDateRange = (a?: DateRange, b?: DateRange): boolean => {
   return isSameDay(a?.from, b?.from) && isSameDay(a?.to, b?.to);
 };
+
+/**
+ * API day_of_week(EN) → 한글 요일(일~토)
+ */
+export const dayOfWeekToKo = (dayOfWeek?: string): string => {
+  if (!dayOfWeek) return "";
+
+  const map: Record<string, string> = {
+    SUNDAY: "일",
+    MONDAY: "월",
+    TUESDAY: "화",
+    WEDNESDAY: "수",
+    THURSDAY: "목",
+    FRIDAY: "금",
+    SATURDAY: "토",
+  };
+
+  return map[dayOfWeek.toUpperCase()] ?? "";
+};
+
+/**
+ * yyyy-MM-dd → yy.MM.dd 변환
+ * 예: 2026-02-25 → 2026.02.25
+ */
+export const formatDateToDotYY = (dateString: string): string => {
+  if (!dateString) return "";
+
+  const date = fromApiDate(dateString);
+  if (isNaN(date.getTime())) return "";
+
+  const yy = String(date.getFullYear());
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const dd = String(date.getDate()).padStart(2, "0");
+
+  return `${yy}.${mm}.${dd}`;
+};
+
+/**
+ * day_info(date, day_of_week) → "YY.MM.DD (요일)" 형태로 변환
+ * 예: ("2026-02-25", "WEDNESDAY") → "2026.02.25 (수)"
+ */
+export const formatDayInfoText = (
+  dateString: string,
+  dayOfWeek: string,
+): string => {
+  const dateText = formatDateToDotYY(dateString);
+  const dayText = dayOfWeekToKo(dayOfWeek);
+
+  if (!dateText) return "";
+  if (!dayText) return dateText;
+
+  return `${dateText} (${dayText})`;
+};

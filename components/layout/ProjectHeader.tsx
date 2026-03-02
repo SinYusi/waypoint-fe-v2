@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import HeaderBtn, { HeaderBtnBgVariant } from "./HeaderBtn";
 import { cn } from "@/lib/utils/utils";
 import { ArrowLeft, Calendar, Map, Menu } from "lucide-react";
@@ -16,6 +16,8 @@ interface ProjectHeaderProps {
   showMapButton?: boolean;
   showCalendarButton?: boolean;
   showMenuButton?: boolean;
+  mapDisabled?: boolean;
+  calendarDisabled?: boolean;
   onMap?: () => void;
   onCalendar?: () => void;
   // 스타일
@@ -32,6 +34,8 @@ const ProjectHeader = ({
   showMapButton = false,
   showCalendarButton = false,
   showMenuButton = false,
+  mapDisabled = false,
+  calendarDisabled = false,
   onMap,
   onCalendar,
   leftBtnBgVariant = "ghost",
@@ -41,12 +45,15 @@ const ProjectHeader = ({
   const router = useRouter();
   const params = useParams<{ planId: string }>();
   const planId = params.planId;
+  const searchParams = useSearchParams();
+  const query = searchParams.toString();
+  const suffix = query ? `?${query}` : "";
 
   // 보기모드 뒤로가기 핸들러
-  const handleViewBack = () => router.replace(`/projects`);
+  const handleViewBack = () => router.push(`/projects`);
 
   // 편집모드 뒤로가기 핸들러
-  const handleEditBack = () => router.replace(`/projects/${planId}`);
+  const handleEditBack = () => router.replace(`/projects/${planId}${suffix}`);
 
   return (
     <header
@@ -93,8 +100,11 @@ const ProjectHeader = ({
             bgVariant={rightBtnBgVariant}
             icon={Map}
             onClick={onMap}
+            disabled={mapDisabled}
             label="지도"
-            iconClassName={cn(isMapVisible ? "text-primary" : "")}
+            iconClassName={cn(
+              isMapVisible && !mapDisabled ? "text-primary" : "",
+            )}
           />
         )}
 
@@ -103,6 +113,7 @@ const ProjectHeader = ({
             bgVariant={rightBtnBgVariant}
             icon={Calendar}
             onClick={onCalendar}
+            disabled={calendarDisabled}
             label="일차"
             iconClassName={cn(isCalendarVisible ? "text-primary" : "")}
           />

@@ -6,6 +6,7 @@ import { type PlaceType } from "@/components/card/PlaceTypeIcon";
 import { type ReactionType } from "@/components/card/PlaceReactionItem";
 import { Button } from "../ui/button";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+import { cn } from "@/lib/utils/utils";
 
 // ─── Item types ──────────────────────────────────────────────────────────────
 
@@ -19,6 +20,7 @@ export interface EditCandidateItem {
   id: string;
   placeType: PlaceType;
   placeName: string;
+  blockId: string;
 }
 
 export interface ViewCandidateItem {
@@ -40,6 +42,7 @@ export interface ViewCandidateItem {
 interface CandidateGroupEditProps {
   mode: "edit";
   candidates: EditCandidateItem[];
+  onCandidateMenuClick?: (candidateBlockId: string) => void;
 }
 
 interface CandidateGroupViewProps {
@@ -70,14 +73,17 @@ const CandidateGroup = (props: CandidateGroupProps) => {
   const hiddenCount = candidates.length - COLLAPSED_SHOW_COUNT;
 
   if (mode === "edit") {
+    const { onCandidateMenuClick } = props as CandidateGroupEditProps;
+
     return (
-      <div className="flex flex-col gap-3 rounded-3xl border border-dashed border-[#e2e2e2] bg-[#f0f0f0] p-3">
+      <div className="flex flex-col gap-3 rounded-3xl border border-dashed border-border bg-card p-3">
         {(visibleCandidates as EditCandidateItem[]).map((item) => (
           <CandidateCard
             key={item.id}
             mode="edit"
             placeType={item.placeType}
             placeName={item.placeName}
+            onMenuClick={() => onCandidateMenuClick?.(item.id)}
           />
         ))}
         {isCollapsible && (
@@ -86,7 +92,7 @@ const CandidateGroup = (props: CandidateGroupProps) => {
             className="flex items-center justify-center gap-1 typography-action-sm-reg text-foreground py-2.5 px-2 w-full"
             onClick={() => setIsExpanded((prev) => !prev)}
           >
-            {isExpanded ? "접기" : `+ ${hiddenCount}개 더보기`}
+            {isExpanded ? "접기" : `+ ${hiddenCount}개 더 보기`}
             {isExpanded ? (
               <ChevronUpIcon className="size-6 opacity-40" />
             ) : (
@@ -101,7 +107,7 @@ const CandidateGroup = (props: CandidateGroupProps) => {
   const { onSelectCandidate } = props as CandidateGroupViewProps;
 
   return (
-    <div className="flex flex-col gap-3 rounded-3xl border border-dashed border-[#e2e2e2] bg-[#f0f0f0] p-3">
+    <div className="flex flex-col gap-3 rounded-3xl border border-dashed border-border bg-card p-3">
       {(visibleCandidates as ViewCandidateItem[]).map((item) => (
         <CandidateCard
           key={item.id}
@@ -129,37 +135,34 @@ const CandidateGroup = (props: CandidateGroupProps) => {
       />
 
       {/* Bottom */}
-      {isCollapsible ? (
-        <div className="flex items-center justify-between">
+
+      <div className="flex items-center justify-between">
+        {isCollapsible && (
           <button
             type="button"
             className="flex items-center gap-1 typography-action-sm-reg text-foreground py-2.5 px-2"
             onClick={() => setIsExpanded((prev) => !prev)}
           >
-            {isExpanded ? "접기" : `+ ${hiddenCount}개 더보기`}
+            {isExpanded ? "접기" : `+ ${hiddenCount}개 더 보기`}
             {isExpanded ? (
               <ChevronUpIcon className="size-6 opacity-40" />
             ) : (
               <ChevronDownIcon className="size-6 opacity-40" />
             )}
           </button>
-          <Button
-            variant="outline"
-            className="rounded-xl border border-[#e2e2e2] bg-[#fafafa] py-2.5 px-4 typography-action-sm-bold text-foreground"
-            onClick={onSelectCandidate}
-          >
-            후보지 선택하기
-          </Button>
-        </div>
-      ) : (
+        )}
         <Button
           variant="outline"
-          className="w-full rounded-xl border border-[#e2e2e2] bg-[#fafafa] py-2.5 px-4 typography-action-sm-bold text-foreground"
+          size="M"
+          className={cn(
+            "h-10 rounded-xl border border-border bg-background typography-action-sm-bold text-foreground",
+            !isCollapsible ? "w-full" : "",
+          )}
           onClick={onSelectCandidate}
         >
           후보지 선택하기
         </Button>
-      )}
+      </div>
     </div>
   );
 };

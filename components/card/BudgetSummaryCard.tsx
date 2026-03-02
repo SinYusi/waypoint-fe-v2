@@ -87,7 +87,7 @@ const BudgetSummaryCard = ({
               {/* 총 지출 */}
               <div className="flex flex-col">
                 <span className="typography-nav-xl-bold text-muted-foreground">총 지출</span>
-                <div className="flex items-baseline gap-0.5">
+                <div className="flex items-center gap-0.5">
                   <span className="typography-display-lg-bold text-primary">
                     {formatKRW(usedAmount)}
                   </span>
@@ -96,9 +96,9 @@ const BudgetSummaryCard = ({
               </div>
 
               {/* 1일 평균 지출 */}
-              <div className="flex flex-col items-start">
+              <div className="flex flex-col items-end">
                 <span className="typography-nav-xl-bold text-muted-foreground">1일 평균 지출</span>
-                <div className="flex items-baseline gap-0.5">
+                <div className="flex items-center gap-0.5">
                   <span className="typography-display-lg-bold text-muted-foreground">
                     {formatKRW(perDayAmount)}
                   </span>
@@ -114,7 +114,7 @@ const BudgetSummaryCard = ({
               <UsersRound className="size-4 shrink-0 text-primary" strokeWidth={1.5} />
               <span className="typography-caption-xs-reg text-primary">1인당 예상 비용</span>
             </div>
-            <div className="flex items-baseline gap-0.5">
+            <div className="flex items-center gap-0.5">
               <span className="typography-display-lg-bold text-foreground">
                 {formatKRW(perPersonAmount)}
               </span>
@@ -149,7 +149,7 @@ const BudgetSummaryCard = ({
               {/* 총 지출 */}
               <div className="flex flex-col">
                 <span className="typography-nav-xl-bold text-muted-foreground">총 지출</span>
-                <div className="flex items-baseline gap-0.5">
+                <div className="flex items-center gap-0.5">
                   <span className="typography-display-lg-bold text-primary">
                     {formatKRW(usedAmount)}
                   </span>
@@ -158,9 +158,9 @@ const BudgetSummaryCard = ({
               </div>
 
               {/* 1일 평균 지출 */}
-              <div className="flex flex-col items-start">
+              <div className="flex flex-col items-end">
                 <span className="typography-nav-xl-bold text-muted-foreground">1일 평균 지출</span>
-                <div className="flex items-baseline gap-0.5">
+                <div className="flex items-center gap-0.5">
                   <span className="typography-display-lg-bold text-muted-foreground">
                     {formatKRW(perDayAmount)}
                   </span>
@@ -176,7 +176,7 @@ const BudgetSummaryCard = ({
               <UsersRound className="size-4 shrink-0 text-primary" strokeWidth={1.5} />
               <span className="typography-caption-xs-reg text-primary">1인당 예상 비용</span>
             </div>
-            <div className="flex items-baseline gap-0.5">
+            <div className="flex items-center gap-0.5">
               <span className="typography-display-lg-bold text-foreground">
                 {formatKRW(perPersonAmount)}
               </span>
@@ -227,7 +227,7 @@ const BudgetSummaryCard = ({
               {/* 총 예산 */}
               <div className="flex flex-col">
                 <span className="typography-nav-xl-bold text-muted-foreground">총 예산</span>
-                <div className="flex items-baseline gap-0.5">
+                <div className="flex items-center gap-0.5">
                   <span className="typography-display-lg-bold text-foreground">
                     {formatKRW(totalBudget)}
                   </span>
@@ -236,11 +236,11 @@ const BudgetSummaryCard = ({
               </div>
 
               {/* 남은 예산 */}
-              <div className="flex flex-col items-start">
+              <div className="flex flex-col items-end">
                 <span className="typography-nav-xl-bold text-muted-foreground">
                   남은 예산
                 </span>
-                <div className="flex items-baseline gap-0.5">
+                <div className="flex items-center gap-0.5">
                   <span
                     className={cn(
                       "typography-display-lg-bold",
@@ -266,7 +266,7 @@ const BudgetSummaryCard = ({
               <div className="flex flex-col">
                 <span className="typography-nav-xl-bold text-muted-foreground">지출액</span>
                 <div className="flex justify-between items-center">
-                  <div className="flex items-baseline gap-0.5">
+                  <div className="flex items-center gap-0.5">
                     <span className="typography-display-lg-bold text-foreground">
                       {formatKRW(usedAmount)}
                     </span>
@@ -293,7 +293,7 @@ const BudgetSummaryCard = ({
               <UsersRound className="size-4 shrink-0 text-primary" strokeWidth={1.5} />
               <span className="typography-caption-xs-reg text-primary">1인당 예상 비용</span>
             </div>
-            <div className="flex items-baseline gap-0.5">
+            <div className="flex items-center gap-0.5">
               <span className="typography-display-lg-bold text-foreground">
                 {formatKRW(perPersonAmount)}
               </span>
@@ -333,7 +333,7 @@ const BudgetSummaryCard = ({
               {/* 총 예산 */}
               <div className="flex flex-col">
                 <span className="typography-nav-xl-bold text-muted-foreground">총 예산</span>
-                <div className="flex items-baseline gap-0.5">
+                <div className="flex items-center gap-0.5">
                   <span className="typography-display-lg-bold text-foreground">
                     {formatKRW(totalBudget)}
                   </span>
@@ -342,9 +342,9 @@ const BudgetSummaryCard = ({
               </div>
 
               {/* 남은 예산 */}
-              <div className="flex flex-col items-start">
+              <div className="flex flex-col items-end">
                 <span className="typography-nav-xl-bold text-muted-foreground">남은 예산</span>
-                <div className="flex items-baseline gap-0.5">
+                <div className="flex items-center gap-0.5">
                   <span
                     className={cn(
                       "typography-display-lg-bold",
@@ -370,7 +370,7 @@ const BudgetSummaryCard = ({
               <div className="flex flex-col">
                 <span className="typography-nav-xl-bold text-muted-foreground">지출액</span>
                 <div className="flex justify-between items-center">
-                  <div className="flex items-baseline gap-0.5">
+                  <div className="flex items-center gap-0.5">
                     <span className="typography-display-lg-bold text-foreground">
                       {formatKRW(usedAmount)}
                     </span>
@@ -397,7 +397,7 @@ const BudgetSummaryCard = ({
               <UsersRound className="size-4 shrink-0 text-primary" strokeWidth={1.5} />
               <span className="typography-caption-xs-reg text-primary">1인당 예상 비용</span>
             </div>
-            <div className="flex items-baseline gap-0.5">
+            <div className="flex items-center gap-0.5">
               <span className="typography-display-lg-bold text-foreground">
                 {formatKRW(perPersonAmount)}
               </span>

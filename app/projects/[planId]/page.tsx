@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, Fragment } from "react";
-import { useParams } from "next/navigation";
+import { useQueries } from "@tanstack/react-query";
 import DayNav from "@/components/common/DayNav";
 import GoogleMap from "@/components/common/GoogleMap";
 import BudgetSummaryCard from "@/components/card/BudgetSummaryCard";
@@ -10,187 +10,18 @@ import { DayHeader } from "@/components/layout/DayHeader";
 import NavigationBar from "@/components/layout/NavigationBar";
 import PlanHeader from "@/components/layout/PlanHeader";
 import ProjectHeader from "@/components/layout/ProjectHeader";
+import { useParams, useSearchParams } from "next/navigation";
+import useQueryTab from "@/lib/hooks/use-query-tab";
 import { useBudget } from "@/lib/hooks/plan/use-budget";
 import { useExpenses } from "@/lib/hooks/plan/use-expenses";
-import type { BudgetResponse, ExpenseGroupResponse } from "@/types/budget";
-
-// TODO: 서버 연결 후 제거
-const mockBudgetData: BudgetResponse = {
-  budget_id: 1,
-  type: "BUDGET",
-  total_budget: 1500000,
-  total_cost: 564000,
-  remaining_budget: 936000,
-  cost_per_person: 141000,
-  traveler_count: 4,
-};
-
-// TODO: 서버 연결 후 제거
-const mockExpensesByDay: Record<number, ExpenseGroupResponse[]> = {
-  1: [
-    // BLOCK + FIXED + 단일 후보 → BudgetPlaceCard
-    {
-      type: "BLOCK",
-      time_block_id: "block-1",
-      block_status: "FIXED",
-      candidate_count: 1,
-      candidates: null,
-      selected: {
-        expense_id: "exp-1",
-        block: { block_id: "block-1", name: "성산일출봉" },
-        items: [
-          { expense_item_id: "item-1", name: "입장료", cost: 5000 },
-          { expense_item_id: "item-1b", name: "주차비", cost: 3000 },
-        ],
-      },
-    },
-    // ADDITIONAL + 복수 항목 → BudgetCandidateGroup edit
-    {
-      type: "ADDITIONAL",
-      time_block_id: null,
-      block_status: null,
-      candidate_count: null,
-      candidates: null,
-      selected: {
-        expense_id: "exp-5",
-        block: null,
-        items: [
-          { expense_item_id: "item-5", name: "렌터카", cost: 80000 },
-        ],
-      },
-    },
-    // BLOCK + FIXED + 복수 후보 → BudgetCandidateCard
-    {
-      type: "BLOCK",
-      time_block_id: "block-2",
-      block_status: "FIXED",
-      candidate_count: 2,
-      candidates: null,
-      selected: {
-        expense_id: "exp-2",
-        block: { block_id: "block-2", name: "우도" },
-        items: [{ expense_item_id: "item-2", name: "배 왕복", cost: 12000 }],
-      },
-    },
-    {
-      type: "BLOCK",
-      time_block_id: "block-3",
-      block_status: "PENDING",
-      candidate_count: 2,
-      candidates: [
-        {
-          expense_id: "exp-3",
-          block: { block_id: "block-3", name: "협재 해수욕장" },
-          items: [{ expense_item_id: "item-3", name: "주차비", cost: 3000 },
-                { expense_item_id: "item-1b", name: "주차비", cost: 3000 },],
-          
-        },
-        {
-          expense_id: "exp-4",
-          block: { block_id: "block-4", name: "곽지 해수욕장" },
-          items: [{ expense_item_id: "item-4", name: "주차비", cost: 2000 }],
-        },
-        {
-          expense_id: "exp-6",
-          block: { block_id: "block-5", name: "해운대 해수욕장" },
-          items: [{ expense_item_id: "item-6", name: "주차비", cost: 2000 }],
-        },
-      ],
-      selected: null,
-    },
-    {
-      type: "BLOCK",
-      time_block_id: "block-3",
-      block_status: "PENDING",
-      candidate_count: 2,
-      candidates: [
-        {
-          expense_id: "exp-3",
-          block: { block_id: "block-3", name: "협재 해수욕장" },
-          items: [{ expense_item_id: "item-3", name: "주차비", cost: 3000 },
-                { expense_item_id: "item-1b", name: "주차비", cost: 3000 },],
-          
-        },
-        {
-          expense_id: "exp-4",
-          block: { block_id: "block-4", name: "곽지 해수욕장" },
-          items: [{ expense_item_id: "item-4", name: "주차비", cost: 2000 }],
-        },
-        {
-          expense_id: "exp-6",
-          block: { block_id: "block-5", name: "해운대 해수욕장" },
-          items: [{ expense_item_id: "item-6", name: "주차비", cost: 2000 }],
-        },
-        {
-          expense_id: "exp-7",
-          block: { block_id: "block-6", name: "송도 해수욕장" },
-          items: [{ expense_item_id: "item-7", name: "주차비", cost: 2000 }],
-        },
-      ],
-      selected: null,
-    },
-  ],
-  2: [
-    // BLOCK + FIXED + 복수 후보 → BudgetCandidateCard
-    {
-      type: "BLOCK",
-      time_block_id: "block-2",
-      block_status: "FIXED",
-      candidate_count: 2,
-      candidates: null,
-      selected: {
-        expense_id: "exp-2",
-        block: { block_id: "block-2", name: "우도" },
-        items: [{ expense_item_id: "item-2", name: "배 왕복", cost: 12000 }],
-      },
-    },
-  ],
-  3: [
-    // BLOCK + PENDING → BudgetCandidateGroup view
-    {
-      type: "BLOCK",
-      time_block_id: "block-3",
-      block_status: "PENDING",
-      candidate_count: 2,
-      candidates: [
-        {
-          expense_id: "exp-3",
-          block: { block_id: "block-3", name: "협재 해수욕장" },
-          items: [{ expense_item_id: "item-3", name: "주차비", cost: 3000 },
-                { expense_item_id: "item-1b", name: "주차비", cost: 3000 },],
-          
-        },
-        {
-          expense_id: "exp-4",
-          block: { block_id: "block-4", name: "곽지 해수욕장" },
-          items: [{ expense_item_id: "item-4", name: "주차비", cost: 2000 }],
-        },
-        {
-          expense_id: "exp-6",
-          block: { block_id: "block-5", name: "해운대 해수욕장" },
-          items: [{ expense_item_id: "item-6", name: "주차비", cost: 2000 }],
-        },
-        {
-          expense_id: "exp-7",
-          block: { block_id: "block-6", name: "송도 해수욕장" },
-          items: [{ expense_item_id: "item-7", name: "주차비", cost: 2000 }],
-        },
-      ],
-      selected: null,
-    },
-  ],
-};
+import BudgetEmptyState from "@/components/common/BudgetEmptyState";
+import { usePlanBlockData } from "@/lib/hooks/use-plan-block-data";
+import { useScrollspyDay } from "@/lib/hooks/use-scrollspy-day";
 
 // day별 지출 항목 — 훅을 루프 밖에서 호출하기 위해 별도 컴포넌트로 분리
-const DayExpenses = ({
-  planId,
-  day,
-}: {
-  planId: string;
-  day: number;
-}) => {
+const DayExpenses = ({ planId, day }: { planId: string; day: number }) => {
   const { data } = useExpenses(planId, day);
-  const expenses = data ?? mockExpensesByDay[day] ?? [];
+  const expenses = data ?? [];
 
   if (expenses.length === 0) return null;
 
@@ -222,23 +53,59 @@ const formatDayDate = (startDate: string, dayIndex: number) => {
 };
 
 const PlanPage = () => {
-  const { planId } = useParams<{ planId: string }>();
-  const [activeMode, setActiveMode] = useState<"planMode" | "budget">("planMode");
+  const params = useParams<{ planId: string }>();
+  const searchParams = useSearchParams();
+  const query = searchParams.toString();
+  const planId = params.planId;
+  const { tab: mode, setTab: setMode } = useQueryTab({
+    defaultValue: "planMode",
+    allowedValues: ["planMode", "budget"] as const,
+    removeWhenDefault: true,
+  });
+  const activeMode = mode;
+  const editHref = query
+    ? `/projects/${planId}/plan-edit?${query}`
+    : `/projects/${planId}/plan-edit`;
   const [isCalendarVisible, setIsCalendarVisible] = useState(true);
   const [isMapVisible, setIsMapVisible] = useState(true);
   const [budgetCardMode, setBudgetCardMode] = useState<"view" | "edit">("view");
-  const { data } = useBudget(planId);
-  const budgetData = data ?? mockBudgetData;
-  const showHint = Object.values(mockExpensesByDay).flat().length > 0;
-  const startDate = "2026-02-24";
-  const items = [
-    { value: "1", label: "Day 1" },
-    { value: "2", label: "Day 2" },
-    { value: "3", label: "Day 3" },
-    { value: "4", label: "Day 4" },
-    { value: "5", label: "Day 5" },
-    { value: "6", label: "Day 6" },
-  ];
+  const {
+    plan,
+    planTitle,
+    totalDays,
+    days,
+    items,
+    dayQueries,
+    openByDay,
+    setOpenByDay,
+  } = usePlanBlockData({ planId });
+  const startDate = plan?.start_date ?? "";
+  const { data: budgetData } = useBudget(planId);
+  const expensesByDay = useQueries({
+    queries: days.map((day) => ({
+      queryKey: ["expenses", { planId, day }] as const,
+      queryFn: () => import("@/lib/api/budget").then((m) => m.getExpenses(planId, day)),
+      enabled: !!planId && days.length > 0,
+    })),
+  });
+  const showHint = expensesByDay.some((q) =>
+    q.data?.some(
+      (group) =>
+        group.type === "BLOCK" &&
+        group.block_status === "PENDING" &&
+        group.candidates?.some((c) => c.items.length > 0)
+    )
+  );
+  const hasBudgetData = !!budgetData;
+  const isEmpty = budgetData?.type === "INITIAL";
+
+  const dayNavTopOffset =
+    64 + (activeMode === "planMode" && isMapVisible ? 180 : 0) + 56;
+  const { activeDay, setActiveDay, suppressRef } = useScrollspyDay({
+    days,
+    topOffset: dayNavTopOffset,
+    enabled: items.length > 0,
+  });
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -282,34 +149,64 @@ const PlanPage = () => {
 
       {/* PlanHeader - 스크롤 */}
       <div className="px-5 py-4">
-        <PlanHeader title="제주도 여행" day={15} href="" />
+        <PlanHeader title={planTitle} day={totalDays} href={editHref} />
       </div>
 
       {/* DayNav - sticky (지도 아래) */}
       {isCalendarVisible && (
         <div
-          className="sticky z-10 bg-background"
-          style={{ top: `${64 + (activeMode === "planMode" && isMapVisible ? 180 : 0)}px` }}
+          className="sticky z-10 bg-background overflow-hidden"
+          style={{
+            top: `${64 + (activeMode === "planMode" && isMapVisible ? 180 : 0)}px`,
+          }}
         >
           <DayNav
             items={items}
+            value={activeDay}
             className="gap-2.25 py-3 h-14"
             itemClassName="h-8 py-1.5"
             onValueChange={(value) => {
-              const el = document.getElementById(`day-section-${value}`);
-              if (!el) return;
-              const mapHeight = activeMode === "planMode" && isMapVisible ? 180 : 0;
-              const offset = 64 + mapHeight + 56; // header + map + DayNav(h-14)
-              const top = el.getBoundingClientRect().top + window.scrollY - offset;
-              window.scrollTo({ top, behavior: "smooth" });
+              const day = Number(value);
+              const idx = day - 1;
+              const q = dayQueries[idx];
+              const isDayEmpty = !!q?.data && (q.data.contents?.length ?? 0) === 0;
+
+              // 접혀 있고 비어있지 않으면 펼침
+              if (!isDayEmpty) {
+                setOpenByDay((prev) => ({ ...prev, [day]: true }));
+              }
+
+              // 스크롤 중 scrollspy 억제
+              suppressRef.current = true;
+              setActiveDay(value);
+
+              const scrollToDay = () => {
+                const el = document.getElementById(`day-section-${value}`);
+                if (!el) return;
+                const mapHeight =
+                  activeMode === "planMode" && isMapVisible ? 180 : 0;
+                const offset = 64 + mapHeight + 56; // header + map + DayNav(h-14)
+                const top =
+                  el.getBoundingClientRect().top + window.scrollY - offset;
+                window.scrollTo({ top, behavior: "smooth" });
+                // smooth scroll 종료 후 억제 해제 (약 600ms)
+                setTimeout(() => { suppressRef.current = false; }, 700);
+              };
+
+              // 펼침 애니메이션 후 DOM 확정 시점에 스크롤
+              requestAnimationFrame(() => requestAnimationFrame(scrollToDay));
             }}
           />
+          <div className="pointer-events-none absolute top-0 -right-1.25 w-14 h-14 bg-[linear-gradient(90deg,rgba(252,252,252,0)_0%,rgba(252,252,252,1)_100%)]" />
         </div>
       )}
 
       <main className="flex flex-col pb-18">
+        {/* 예산 탭: 빈 상태 */}
+        {activeMode === "budget" && isEmpty && <BudgetEmptyState />}
+
         {/* 예산 탭: BudgetSummaryCard */}
-        {activeMode === "budget" && (
+        {activeMode === "budget" && hasBudgetData && !isEmpty && (
           <BudgetSummaryCard
             variant={budgetData.type === "BUDGET" ? "budget" : "expense"}
             mode={budgetCardMode}
@@ -323,26 +220,38 @@ const PlanPage = () => {
           />
         )}
 
-        {items.map((item) => (
-          <div key={item.value} id={`day-section-${item.value}`}>
-            <DayHeader
-              day={Number(item.value)}
-              date={formatDayDate(startDate, Number(item.value) - 1)}
-              defaultOpen
-            >
-              {activeMode === "budget" && (
-                <DayExpenses planId={planId} day={Number(item.value)} />
-              )}
-            </DayHeader>
-          </div>
-        ))}
+        {(!isEmpty || activeMode !== "budget") && items.map((item, idx) => {
+          const day = Number(item.value);
+          const q = dayQueries[idx];
+          const isDayEmpty = !!q?.data && (q.data.contents?.length ?? 0) === 0;
+          const isOpen = openByDay[day] ?? !isDayEmpty;
+
+          return (
+            <div key={item.value} id={`day-section-${item.value}`}>
+              <DayHeader
+                day={day}
+                date={formatDayDate(startDate, day - 1)}
+                open={isOpen}
+                onOpenChange={(next) =>
+                  setOpenByDay((prev) => ({ ...prev, [day]: next }))
+                }
+                disabled={q?.data ? isDayEmpty : false}
+              >
+                {activeMode === "budget" && (
+                  <DayExpenses planId={planId} day={day} />
+                )}
+              </DayHeader>
+            </div>
+          );
+        })}
       </main>
 
       <div className="fixed bottom-0 left-0 w-full">
         <NavigationBar
           variant="variant3"
-          onPlanModeClick={() => setActiveMode("planMode")}
-          onBudgetClick={() => setActiveMode("budget")}
+          activeMode={activeMode}
+          onPlanModeClick={() => setMode("planMode")}
+          onBudgetClick={() => setMode("budget")}
         />
       </div>
     </div>

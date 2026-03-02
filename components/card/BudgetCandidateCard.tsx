@@ -8,6 +8,7 @@ interface BudgetCandidateCardProps {
   placeType: PlaceType;
   candidateCount: number;
   onSelectClick?: () => void;
+  onClick?: () => void;
   className?: string;
 }
 
@@ -17,11 +18,13 @@ const BudgetCandidateCard = ({
   placeType,
   candidateCount,
   onSelectClick,
+  onClick,
   className,
 }: BudgetCandidateCardProps) => {
   return (
     <article
-      className={`w-full overflow-hidden rounded-2xl border border-border bg-background shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] ${className ?? ""}`}
+      onClick={onClick}
+      className={`w-full overflow-hidden rounded-2xl border border-border bg-background shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] ${onClick ? "cursor-pointer" : ""} ${className ?? ""}`}
     >
       {/* Header */}
       <header className="flex items-start justify-between px-4 pt-3.5 pb-3">
@@ -53,7 +56,7 @@ const BudgetCandidateCard = ({
                   <span className="typography-body-base h-6 whitespace-nowrap leading-6">
                     {item.cost.toLocaleString("ko-KR")}
                   </span>
-                  <span className="typography-body-sm-reg h-5 w-3.25 leading-5">원</span>
+                  <span className="typography-body-sm-reg h-6 leading-6">원</span>
                 </div>
               </div>
             ))
@@ -64,7 +67,7 @@ const BudgetCandidateCard = ({
         <div className="px-4">
           <button
             type="button"
-            onClick={onSelectClick}
+            onClick={(e) => { e.stopPropagation(); onSelectClick?.(); }}
             className="flex h-8 w-full cursor-pointer items-center justify-center gap-1 rounded-lg bg-[#F0F0F0] px-2.5 py-2"
           >
             <CircleCheck
