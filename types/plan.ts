@@ -127,7 +127,7 @@ export type CreatePlanBlockRequest = {
   day: number;
   start_time: string;
   end_time: string;
-  memo: string;
+  memo?: string;
 };
 
 export type CreatePlanBlockByPlaceRequest = {
@@ -135,12 +135,18 @@ export type CreatePlanBlockByPlaceRequest = {
   day: number;
   start_time: string;
   end_time: string;
-  memo: string;
+  memo?: string;
 };
 
-export type AddPlanBlockCandidatesRequest = {
-  collection_place_ids: string[];
-};
+export type AddPlanBlockCandidatesRequest =
+  | {
+      collection_place_ids: string[];
+      place_ids?: never;
+    }
+  | {
+      place_ids: string[];
+      collection_place_ids?: never;
+    };
 
 export type BlockResponse = {
   time_block_id: string;
