@@ -8,7 +8,7 @@ export default function Home() {
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-    router.replace(token ? "/home" : "/login");
+    router.replace(token ? "/home" : "/onboarding");
   }, [router]);
 
   return null;
