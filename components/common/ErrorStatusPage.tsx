@@ -20,7 +20,7 @@ const ErrorStatusPage = ({
       />
 
       <main className="mt-15 flex flex-1 justify-center px-5 pt-7 pb-3.5">
-        <section className="flex h-172.5 w-full max-w-83.75 flex-col items-center justify-center gap-3 border-b border-[#E2E2E2] p-0 text-center">
+        <section className="flex h-172.5 w-full max-w-83.75 flex-col items-center justify-center gap-3 p-0 text-center">
           <div className="h-[100.003px] w-[219.617px] [&>svg]:h-full [&>svg]:w-full">
             {illustration}
           </div>
