@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import HeaderBtn, { HeaderBtnBgVariant } from "./HeaderBtn";
 import { ArrowLeft, Bell, X } from "lucide-react";
 import MemberSideDrawer from "../common/MemberSideDrawer";
+import { useNotificationDrawer } from "@/lib/context/notification-drawer-context";
 
 interface HeaderProps {
   // 헤더 레이아웃 타입
@@ -17,10 +18,13 @@ interface HeaderProps {
   // 우측 버튼
   showCloseButton?: boolean;
   showNotificationButton?: boolean;
+  showNotificationDot?: boolean;
   showMenuButton?: boolean;
   onClose?: () => void;
   onNotification?: () => void;
   menuDrawerContent?: React.ReactNode;
+  // 우측 커스텀 컨텐츠 (텍스트 버튼 등)
+  rightContent?: React.ReactNode;
   // 스타일
   leftBtnBgVariant?: HeaderBtnBgVariant;
   rightBtnBgVariant?: HeaderBtnBgVariant;
@@ -33,15 +37,18 @@ const Header = ({
   showBackButton = false,
   showCloseButton = false,
   showNotificationButton = false,
+  showNotificationDot = false,
   showMenuButton = false,
   onBack,
   onClose,
   onNotification,
+  rightContent,
   leftBtnBgVariant = "solid",
   rightBtnBgVariant = "solid",
   className = "",
 }: HeaderProps) => {
   const router = useRouter();
+  const { openDrawer } = useNotificationDrawer();
 
   // 기본 뒤로가기 핸들러
   const handleBack = () => (onBack ? onBack() : router.back());
@@ -51,12 +58,12 @@ const Header = ({
 
   // 기본 알림 핸들러
   const handleNotification = () =>
-    onNotification ? onNotification() : console.log("알림 클릭");
+    onNotification ? onNotification() : openDrawer();
 
   return (
     <header
       className={cn(
-        "grid grid-cols-[1fr_auto_1fr] gap-2 w-full h-[60px] items-center justify-between px-2.5 pt-3.5 pb-0.5 bg-transparent",
+        "grid grid-cols-[1fr_auto_1fr] gap-2 w-full h-15 items-center justify-between px-2.5 pt-3.5 pb-0.5 bg-transparent",
         className,
       )}
     >
@@ -89,12 +96,15 @@ const Header = ({
 
       {/* 우측 영역 */}
       <div className="flex items-center justify-end">
+        {rightContent}
+
         {showNotificationButton && (
           <HeaderBtn
             bgVariant={rightBtnBgVariant}
             icon={Bell}
             onClick={handleNotification}
             label="알림"
+            showDot={showNotificationDot}
           />
         )}
 
