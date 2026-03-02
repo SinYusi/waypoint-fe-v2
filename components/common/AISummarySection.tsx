@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import YoutubeIcon from "@/public/icons/youtube.svg";
 import { SquareArrowOutUpRight } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 type AISummarySectionProps = {
   isLoading: boolean;
@@ -28,6 +29,13 @@ const AISummarySection = ({
       <div className="flex items-center gap-1 w-full h-6">
         {headerIcon}
         <span className="typography-label-base-bold text-foreground">{title}</span>
+        <div className="flex-1" />
+        <Badge
+          className="w-11.75 h-5.5 rounded-full py-0.75 px-2.75 text-white text-xs border-none"
+          style={{ background: "var(--semantic-accent-foreground, #1C2024)" }}
+        >
+          Beta
+        </Badge>
       </div>
       <div className="flex flex-col w-full p-4 rounded-xl bg-muted">
         <p className="typography-body-sm-reg text-foreground">

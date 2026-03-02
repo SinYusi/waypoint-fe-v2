@@ -13,7 +13,7 @@ import OpinionProfile from "@/components/common/OpinionProfile";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import GoogleMap from "@/components/common/GoogleMap";
-import { Calendar, MapPin, Sparkles, SquareArrowOutUpRight } from "lucide-react";
+import { Calendar, MapPin, MessageCircle, Sparkles, SquareArrowOutUpRight } from "lucide-react";
 import { useParams } from "next/navigation";
 import type {
   BlockOpinion,
@@ -21,6 +21,7 @@ import type {
   OpinionState,
 } from "@/lib/opinion-bottom-sheet";
 import {
+  useCreateBlockOpinion,
   useDeleteBlockOpinion,
   useUpdateBlockOpinion,
 } from "@/lib/hooks/use-block-opinion";
@@ -64,12 +65,21 @@ const BlockDetailPage = () => {
   const [isEditingMemo, setIsEditingMemo] = useState(false);
   const [memoDraft, setMemoDraft] = useState("");
   const [editingOpinion, setEditingOpinion] = useState<BlockOpinion | null>(null);
+  const [deletingOpinion, setDeletingOpinion] = useState<BlockOpinion | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [editCurrentState, setEditCurrentState] = useState<OpinionState>("POSITIVE");
   const [editReasonIdsByState, setEditReasonIdsByState] = useState<Record<OpinionState, number[]>>(
     EMPTY_REASON_IDS_BY_STATE,
   );
   const [editCustomTextByState, setEditCustomTextByState] = useState<Record<OpinionState, string>>(
+    EMPTY_CUSTOM_TEXT_BY_STATE,
+  );
+  const [isAddingOpinion, setIsAddingOpinion] = useState(false);
+  const [addCurrentState, setAddCurrentState] = useState<OpinionState>("POSITIVE");
+  const [addReasonIdsByState, setAddReasonIdsByState] = useState<Record<OpinionState, number[]>>(
+    EMPTY_REASON_IDS_BY_STATE,
+  );
+  const [addCustomTextByState, setAddCustomTextByState] = useState<Record<OpinionState, string>>(
     EMPTY_CUSTOM_TEXT_BY_STATE,
   );
 
@@ -83,6 +93,7 @@ const BlockDetailPage = () => {
     enabled: Boolean(planId && blockId),
   });
   const updateBlockMutation = useUpdateBlock({ planId, blockId });
+  const createBlockOpinionMutation = useCreateBlockOpinion({ planId, blockId });
   const updateBlockOpinionMutation = useUpdateBlockOpinion({ planId, blockId });
   const deleteBlockOpinionMutation = useDeleteBlockOpinion({ planId, blockId });
 
@@ -102,9 +113,14 @@ const BlockDetailPage = () => {
   const opinionCategoryKey = resolveOpinionCategoryKey(category);
   const editCurrentReasonIds = editReasonIdsByState[editCurrentState] ?? [];
   const editCurrentCustomText = editCustomTextByState[editCurrentState] ?? "";
+  const editEffectiveCustomText = editCurrentReasonIds.includes(CUSTOM_INPUT_REASON_ID)
+    ? editCurrentCustomText
+    : "";
+  const addCurrentReasonIds = addReasonIdsByState[addCurrentState] ?? [];
+  const addCurrentCustomText = addCustomTextByState[addCurrentState] ?? "";
   const hasChanged = editingOpinion
     ? editCurrentState !== editingOpinion.type ||
-      editCurrentCustomText !== (editingOpinion.comment ?? "") ||
+      editEffectiveCustomText !== (editingOpinion.comment ?? "") ||
       JSON.stringify(
         [...editCurrentReasonIds.filter((id) => id !== CUSTOM_INPUT_REASON_ID)].sort((a, b) => a - b),
       ) !==
@@ -171,8 +187,14 @@ const BlockDetailPage = () => {
     setEditingOpinion(opinion);
   };
 
+  const handleOpenDeleteConfirm = (opinion: BlockOpinion) => {
+    setDeletingOpinion(opinion);
+    setDeleteConfirmOpen(true);
+  };
+
   const closeOpinionEditor = () => {
     setEditingOpinion(null);
+    setDeletingOpinion(null);
     setDeleteConfirmOpen(false);
   };
 
@@ -202,7 +224,7 @@ const BlockDetailPage = () => {
   };
 
   return (
-    <div className="relative min-h-screen min-w-0 overflow-x-hidden pb-[calc(72px+env(safe-area-inset-bottom)+16px)]">
+    <div className="relative min-h-screen min-w-0 overflow-x-clip pb-[calc(72px+env(safe-area-inset-bottom)+16px)]">
       <Header
         showBackButton
         leftBtnBgVariant="glass"
@@ -332,6 +354,18 @@ const BlockDetailPage = () => {
                     </span>
                   </div>
                 </div>
+                {!myOpinionId && (
+                  <div className="sticky top-0 z-40 -mx-5 px-5 bg-background py-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsAddingOpinion(true)}
+                      className="flex items-center justify-between w-full h-11 rounded-xl border border-[#E2E2E2] bg-transparent px-4 cursor-pointer"
+                    >
+                      <span className="typography-body-base text-[#757575]">의견을 남기시겠어요?</span>
+                      <MessageCircle className="size-5 shrink-0 text-[#757575]" strokeWidth={2} />
+                    </button>
+                  </div>
+                )}
                 <div className="w-full flex flex-col gap-6">
                   {opinions.length === 0 ? (
                     <div className="flex h-20 items-center justify-center rounded-xl bg-card typography-body-sm-reg text-muted-foreground">
@@ -348,7 +382,7 @@ const BlockDetailPage = () => {
                             picture={opinion.added_by.picture}
                             isOwn={myOpinionId === opinion.opinion_Id}
                             onEdit={() => handleOpenOpinionEditor(opinion)}
-                            onDelete={() => handleOpenOpinionEditor(opinion)}
+                            onDelete={() => handleOpenDeleteConfirm(opinion)}
                           />
                         <OpinionCard
                           opinion={opinion}
@@ -402,20 +436,82 @@ const BlockDetailPage = () => {
         />
       )}
 
+      {isAddingOpinion && (
+        <OpinionBottomSheet
+          open={isAddingOpinion}
+          onOpenChange={(open) => {
+            if (!open) {
+              setIsAddingOpinion(false);
+              setAddCurrentState("POSITIVE");
+              setAddReasonIdsByState(EMPTY_REASON_IDS_BY_STATE);
+              setAddCustomTextByState(EMPTY_CUSTOM_TEXT_BY_STATE);
+            }
+          }}
+          categoryKey={opinionCategoryKey}
+          state={addCurrentState}
+          selectedReasonIds={addCurrentReasonIds}
+          customInputText={addCurrentCustomText}
+          onStateChange={setAddCurrentState}
+          onSelectedReasonIdsChange={(selectedReasonIds) => {
+            setAddReasonIdsByState((prev) => ({
+              ...prev,
+              [addCurrentState]: selectedReasonIds,
+            }));
+          }}
+          onCustomInputTextChange={(text) => {
+            setAddCustomTextByState((prev) => ({
+              ...prev,
+              [addCurrentState]: text,
+            }));
+          }}
+          cancelLabel="취소"
+          confirmLabel="등록"
+          onCancel={() => setIsAddingOpinion(false)}
+          confirmDisabled={createBlockOpinionMutation.isPending}
+          onConfirm={() => {
+            if (createBlockOpinionMutation.isPending) return;
+
+            const hasCustomInput = addCurrentReasonIds.includes(CUSTOM_INPUT_REASON_ID);
+            const tagIds = addCurrentReasonIds
+              .filter((id) => id !== CUSTOM_INPUT_REASON_ID)
+              .map(String);
+
+            createBlockOpinionMutation.mutate(
+              {
+                type: addCurrentState,
+                tag_ids: tagIds,
+                ...(hasCustomInput ? { comment: addCurrentCustomText.trim() } : { comment: "" }),
+              },
+              {
+                onSuccess: () => {
+                  setIsAddingOpinion(false);
+                  setAddCurrentState("POSITIVE");
+                  setAddReasonIdsByState(EMPTY_REASON_IDS_BY_STATE);
+                  setAddCustomTextByState(EMPTY_CUSTOM_TEXT_BY_STATE);
+                },
+              },
+            );
+          }}
+        />
+      )}
+
       <AppAlertDialog
         open={deleteConfirmOpen}
-        onOpenChange={setDeleteConfirmOpen}
+        onOpenChange={(open) => {
+          if (!open) closeOpinionEditor();
+        }}
         title="의견을 삭제하시겠습니까?"
         description="의견 삭제 후엔 남겼던 의견 데이터를 되돌릴 수 없어요."
         cancelLabel="취소"
-        onCancel={() => setDeleteConfirmOpen(false)}
+        onCancel={() => closeOpinionEditor()}
         actionLabel="삭제하기"
         actionDisabled={deleteBlockOpinionMutation.isPending}
         onAction={() => {
-          if (!editingOpinion || deleteBlockOpinionMutation.isPending) return;
+          const target = deletingOpinion ?? editingOpinion;
+          if (!target || deleteBlockOpinionMutation.isPending) return;
 
           deleteBlockOpinionMutation.mutate(
-            { opinionId: editingOpinion.opinion_Id },
+            { opinionId: target.opinion_Id },
             {
               onSuccess: () => {
                 closeOpinionEditor();
