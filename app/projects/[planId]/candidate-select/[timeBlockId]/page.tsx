@@ -6,6 +6,7 @@ import PlanCardSelection from "@/components/card/PlanCardSelection";
 import { Button } from "@/components/ui/button";
 import { InputForm } from "@/components/ui/input-form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAddCollectionPlace } from "@/lib/hooks/collection/use-add-collection-place";
 import { useCollectionPlacePreference } from "@/lib/hooks/collection/use-collection-place-preference";
 import { useIntersectionObserver } from "@/lib/hooks/use-intersection-observer";
 import { usePlaceSearch } from "@/lib/hooks/use-place-search";
@@ -13,7 +14,8 @@ import { useAddPlanBlockCandidates } from "@/lib/hooks/plan/use-create-plan-bloc
 import { usePlanCollectionPlaces } from "@/lib/hooks/plan/use-plan-collection-places";
 import { usePlanCollections } from "@/lib/hooks/plan/use-plan-collections";
 import { normalizePickPassPreference } from "@/lib/utils/pick-pass-preference";
-import CollectionEmptyIllust from "@/public/illust/collection-empty.svg";
+import PlaceEmptyIllust from "@/public/illust/place-empty_new.svg";
+import CollectionEmptyIllust from "@/public/illust/collection-empty_new.svg";
 import { MapPin } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
@@ -77,12 +79,43 @@ const AddPlanPage = () => {
 		fetchNextPage,
 		hasNextPage,
 		isFetchingNextPage,
+		isLoading: isPlacesLoading,
 	} = usePlanCollectionPlaces(planId ?? "", selectedDay, {
 		size: 20,
 	});
 	const places = placesData?.pages.flatMap((page) => page.contents) ?? [];
 	const { data: searchedPlaces = [] } = usePlaceSearch(query);
 	const { mutate: postPreference } = useCollectionPlacePreference();
+	const { mutate: addCollectionPlace, isPending: isAddingCollectionPlace } =
+		useAddCollectionPlace({
+			onSuccess: (data) => {
+				if (!planId || !timeBlockId) return;
+				addCandidatesToBlock({
+					planId,
+					timeBlockId,
+					body: {
+						collection_place_ids: [data.collection_place_id],
+					},
+				});
+				setSelectedSearchPlaceId(null);
+			},
+			onError: (err) => {
+				const detail = err.response?.data?.detail?.toLowerCase() ?? "";
+				const code = err.response?.data?.code?.toLowerCase() ?? "";
+				const reason = err.response?.data?.errors?.[0]?.reason?.toLowerCase() ?? "";
+				const isAlreadyExistsError =
+					detail.includes("이미") ||
+					reason.includes("이미") ||
+					detail.includes("already") ||
+					reason.includes("already") ||
+					code.includes("already") ||
+					code.includes("duplicate");
+
+				if (isAlreadyExistsError) {
+					moveToSavedFirst();
+				}
+			},
+		});
 	const { mutate: addCandidatesToBlock, isPending: isAddingCandidates } =
 		useAddPlanBlockCandidates({
 			onSuccess: () => {
@@ -127,12 +160,15 @@ const AddPlanPage = () => {
 	const handleOpenPlaceAddFromSearch = () => {
 		if (!planId || !selectedSearchPlaceId) return;
 		if (!timeBlockId) return;
-		addCandidatesToBlock({
-			planId,
-			timeBlockId,
-			body: {
-				place_ids: [selectedSearchPlaceId],
-			},
+
+		if (!selectedDay) {
+			handleCreateCollection();
+			return;
+		}
+
+		addCollectionPlace({
+			collectionId: selectedDay,
+			place_id: selectedSearchPlaceId,
 		});
 	};
 
@@ -151,24 +187,11 @@ const AddPlanPage = () => {
 		router.push("/home/create");
 	};
 
-	const renderEmptyCollections = () => (
-		<div className="flex flex-col items-center gap-12 px-5 py-8">
-			<div className="flex flex-col gap-5 items-center">
-				<CollectionEmptyIllust />
-				<div className="flex flex-col text-center gap-2">
-					<h2 className="typography-display-xl">우리만의 장소 보관함 만들기</h2>
-					<p className="typography-body-sm-md">
-						함께 꿈꾸는 여행지들을 보관함에 담고,
-						<br />
-						서로 가고 싶은 곳들을 자유롭게 나눠볼까요?
-					</p>
-				</div>
-			</div>
-			<Button onClick={handleCreateCollection} className="w-full">
-				새 보관함 만들기
-			</Button>
-		</div>
-	);
+	const handleAddPlaceToCollection = () => {
+		if (!selectedDay) return;
+		router.push(`/home/${selectedDay}/add-place`);
+	};
+
 
 	return (
 		<div className="scrollbar-hide flex min-h-screen flex-col overflow-y-auto bg-background">
@@ -184,6 +207,7 @@ const AddPlanPage = () => {
 				<Tabs
 					value={activeTab}
 					onValueChange={(value) => setActiveTab(value as "saved" | "search")}
+					className="flex flex-1 flex-col"
 				>
 					<TabsList style="underline" fullWidth className="w-full px-5">
 						<TabsTrigger value="saved" style="underline" fullWidth>
@@ -195,15 +219,37 @@ const AddPlanPage = () => {
 					</TabsList>
 
 
-					<TabsContent value="saved">
+					<TabsContent value="saved" className="flex flex-1 flex-col">
 						{isPlanCollectionsLoading ? (
 							<div className="px-5 py-8 typography-body-sm-md text-muted-foreground">
 								보관함을 불러오는 중...
 							</div>
 						) : isPlanCollectionsEmpty ? (
-							renderEmptyCollections()
+							<div className="flex flex-1 w-full flex-col items-center justify-center px-5">
+								<div className="flex w-full flex-col items-center gap-5">
+									<div className="flex w-full flex-col items-center gap-5">
+										<CollectionEmptyIllust width={165} height={160} />
+										<div className="flex flex-col items-center gap-2 text-center">
+											<h2 className="typography-display-xl text-foreground">
+												아직 보관함이 없어요
+											</h2>
+											<p className="typography-body-sm-md text-foreground">
+												가고 싶은 여행 장소를 담아
+												<br />
+												보관함을 만들어보세요
+											</p>
+										</div>
+									</div>
+									<Button
+										onClick={handleCreateCollection}
+										className="h-10 w-27.5 rounded-xl py-2.5 px-4 typography-action-sm-bold"
+									>
+										보관함 만들기
+									</Button>
+								</div>
+							</div>
 						) : (
-							<div className="flex w-full flex-col px-5 py-5">
+							<div className="flex flex-1 w-full flex-col items-center px-5">
 								{dayItems.length > 0 && (
 									<DayNav
 										items={dayItems}
@@ -214,29 +260,55 @@ const AddPlanPage = () => {
 									/>
 								)}
 
-								<div className="mt-4 flex w-full flex-col gap-4 self-center">
-									{places.map((item) => (
-										<PlanCardSelection
-											key={item.collection_place_id}
-											isSelected={selectedPlaceId === item.collection_place_id}
-											onSelected={(selected) =>
-												handlePlaceSelected(item.collection_place_id, selected)
-											}
-											title={item.place.name}
-											address={item.place.address}
-											imageSrc={item.place.photos[0]}
-											pickCount={item.pick_pass.picked.count}
-											passCount={item.pick_pass.passed.count}
-											myPreference={normalizePickPassPreference(item.pick_pass.my_preference)}
-											onPickClick={() =>
-												handlePreference(item.collection_place_id, "PICK")
-											}
-											onPassClick={() =>
-												handlePreference(item.collection_place_id, "PASS")
-											}
-										/>
-									))}
-									<div ref={loadMoreRef} className="h-10" />
+								<div className={`flex flex-1 w-full flex-col gap-4 ${!isPlacesLoading && places.length === 0 ? "items-center justify-center" : "pt-5"}`}>
+								{!isPlacesLoading && places.length === 0 ? (
+									<div className="flex w-full flex-col items-center gap-5">
+										<div className="flex w-full flex-col items-center gap-5">
+											<PlaceEmptyIllust width={165} height={160} />
+											<div className="flex flex-col items-center gap-2 text-center">
+												<h2 className="typography-display-xl text-foreground">
+													이 보관함은 아직 비어있어요!
+												</h2>
+												<p className="typography-body-sm-md text-foreground">
+													장소를 보관함에 저장하고,
+													<br />
+													여행 계획을 시작해보세요
+												</p>
+											</div>
+										</div>
+										<Button
+											onClick={handleAddPlaceToCollection}
+											className="h-10 w-27.5 rounded-xl py-2.5 px-4 typography-action-sm-bold"
+										>
+											장소 추가하기
+										</Button>
+									</div>
+								) : (
+									<div className="flex w-full flex-col gap-4">
+										{places.map((item) => (
+											<PlanCardSelection
+												key={item.collection_place_id}
+												isSelected={selectedPlaceId === item.collection_place_id}
+												onSelected={(selected) =>
+													handlePlaceSelected(item.collection_place_id, selected)
+												}
+												title={item.place.name}
+												address={item.place.address}
+												imageSrc={item.place.photos[0]}
+												pickCount={item.pick_pass.picked.count}
+												passCount={item.pick_pass.passed.count}
+												myPreference={normalizePickPassPreference(item.pick_pass.my_preference)}
+												onPickClick={() =>
+													handlePreference(item.collection_place_id, "PICK")
+												}
+												onPassClick={() =>
+													handlePreference(item.collection_place_id, "PASS")
+												}
+											/>
+										))}
+										<div ref={loadMoreRef} className="h-10" />
+									</div>
+								)}
 								</div>
 							</div>
 						)}
@@ -298,45 +370,29 @@ const AddPlanPage = () => {
 				</Tabs>
 			</main>
 
-			{hasPlanCollections && activeTab === "saved" && (
-				<div className="fixed inset-x-0 bottom-0 z-50 h-22.75 border-t border-border bg-background">
-					<div
-						aria-hidden
-						className="pointer-events-none absolute -top-12 inset-x-0 h-12 bg-gradient-bottom-fade"
-					/>
-					<div className="px-5 pt-4">
-						<Button
-							onClick={handleAddToPlan}
-							className="h-11 w-full rounded-2xl bg-primary px-8 py-0 text-primary-foreground"
-							disabled={!selectedPlaceId || !timeBlockId || isAddingCandidates}
-						>
-							후보지 추가하기
-						</Button>
-					</div>
+			<div className="fixed inset-x-0 bottom-0 z-50 h-22.75 border-t border-border bg-background">
+				<div
+					aria-hidden
+					className="pointer-events-none absolute -top-12 inset-x-0 h-12 bg-gradient-bottom-fade"
+				/>
+				<div className="px-5 pt-4">
+					<Button
+						onClick={activeTab === "saved" ? handleAddToPlan : handleOpenPlaceAddFromSearch}
+						className="h-11 w-full rounded-2xl bg-primary px-8 py-0 text-primary-foreground"
+						disabled={
+							(activeTab === "saved" &&
+								(!hasPlanCollections || !selectedPlaceId || !timeBlockId || isAddingCandidates)) ||
+							(activeTab === "search" &&
+								(!selectedSearchPlaceId ||
+									!timeBlockId ||
+									isAddingCollectionPlace ||
+									isAddingCandidates))
+						}
+					>
+						후보지 추가하기
+					</Button>
 				</div>
-			)}
-
-			{activeTab === "search" && (
-				<div className="fixed inset-x-0 bottom-0 z-50 h-22.75 border-t border-border bg-background">
-					<div
-						aria-hidden
-						className="pointer-events-none absolute -top-12 inset-x-0 h-12 bg-gradient-bottom-fade"
-					/>
-					<div className="px-5 pt-4">
-						<Button
-							onClick={handleOpenPlaceAddFromSearch}
-							className="h-11 w-full rounded-2xl bg-primary px-8 py-0 text-primary-foreground"
-							disabled={
-								!selectedSearchPlaceId ||
-								!timeBlockId ||
-								isAddingCandidates
-							}
-						>
-							후보지 추가하기
-						</Button>
-					</div>
-				</div>
-			)}
+			</div>
 		</div>
 	);
 };
