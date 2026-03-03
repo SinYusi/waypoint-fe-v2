@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuthInit } from "@/lib/hooks/use-auth-init";
 import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import CheckBox from "@/components/common/CheckBox";
@@ -11,8 +12,8 @@ import { useUpdateMe } from "@/lib/hooks/use-update-me";
 
 const OnboardPage = () => {
   const router = useRouter();
+  const { isReady } = useAuthInit();
   const [step, setStep] = useState(1);
-  const [isAuthorized, setIsAuthorized] = useState(false);
 
   // step 1
   const [allChecked, setAllChecked] = useState(false);
@@ -39,15 +40,7 @@ const OnboardPage = () => {
     },
   });
 
-  useEffect(() => {
-    if (!localStorage.getItem("accessToken")) {
-      router.replace("/login");
-    } else {
-      setIsAuthorized(true);
-    }
-  }, [router]);
-
-  if (!isAuthorized) return null;
+  if (!isReady) return null;
 
   const handleAllChange = (checked: boolean) => {
     setAllChecked(checked);
