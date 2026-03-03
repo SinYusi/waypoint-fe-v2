@@ -14,11 +14,11 @@ export const useAgreeTerms = (options?: Options) => {
   return useMutation<AgreeTermsResponse, AxiosError<ProblemDetail>, void>({
     mutationFn: agreeTerms,
     ...options,
-    onSuccess: (data, variables, context) => {
+    onSuccess: (data, variables, onMutateResult, context) => {
       if (typeof window !== "undefined") {
         localStorage.setItem("accessToken", data.access_token);
       }
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, onMutateResult, context);
     },
   });
 };
