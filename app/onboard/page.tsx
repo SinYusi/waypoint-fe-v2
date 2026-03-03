@@ -35,6 +35,10 @@ const OnboardPage = () => {
       setStep(2);
     },
     onError: (err) => {
+      if (err.response?.status === 409) {
+        setStep(2);
+        return;
+      }
       toast.error(
         err.response?.data?.detail ?? "약관 동의에 실패했어요. 다시 시도해 주세요.",
       );
