@@ -13,9 +13,11 @@ import CollectionEmptyIllust from "@/public/illust/collection-empty.svg";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
+import { useAuthInit } from "@/lib/hooks/use-auth-init";
 
 const HomePage = () => {
   const router = useRouter();
+  const { isReady } = useAuthInit();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
@@ -80,6 +82,8 @@ const HomePage = () => {
 
     deleteMutate({ collectionId: deleteTargetId });
   };
+
+  if (!isReady) return null;
 
   return (
     <div className="flex min-h-screen flex-col bg-[#fafafa]">

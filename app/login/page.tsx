@@ -15,14 +15,7 @@ const LoginContent = () => {
   const { mutate: login, isPending } = useSocialLogin();
 
   useEffect(() => {
-    const accessToken = searchParams.get("access_token");
     const errorCode = searchParams.get("error_code");
-
-    if (accessToken) {
-      localStorage.setItem("accessToken", accessToken);
-      router.replace("/home");
-      return;
-    }
 
     if (errorCode) {
       toast.error("로그인 중 오류가 발생했습니다. 다시 시도해 주세요.");

@@ -32,25 +32,46 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
+    if (
+      error.response?.status === 403 &&
+      error.response?.data?.code === "TERMS_REQUIRED" &&
+      typeof window !== "undefined"
+    ) {
+      window.location.href = "/onboard";
+      return Promise.reject(error);
+    }
 
-      try {
-        const { data } = await axios.post<{ access_token: string }>(
-          `${baseURL}auth/reissue`,
-          null,
-          { withCredentials: true },
-        );
+    if (error.response?.status === 401) {
+      const code = error.response?.data?.code;
 
-        if (typeof window !== "undefined") {
-          localStorage.setItem("accessToken", data.access_token);
-        }
-        originalRequest.headers.Authorization = `Bearer ${data.access_token}`;
-        return apiClient(originalRequest);
-      } catch {
+      if (code === "MISSING_TOKEN" || code === "INVALID_TOKEN") {
         if (typeof window !== "undefined") {
           localStorage.removeItem("accessToken");
           window.location.href = "/login";
+        }
+        return Promise.reject(error);
+      }
+
+      if (!originalRequest._retry) {
+        originalRequest._retry = true;
+
+        try {
+          const { data } = await axios.post<{ access_token: string }>(
+            `${baseURL}auth/reissue`,
+            null,
+            { withCredentials: true },
+          );
+
+          if (typeof window !== "undefined") {
+            localStorage.setItem("accessToken", data.access_token);
+          }
+          originalRequest.headers.Authorization = `Bearer ${data.access_token}`;
+          return apiClient(originalRequest);
+        } catch {
+          if (typeof window !== "undefined") {
+            localStorage.removeItem("accessToken");
+            window.location.href = "/login";
+          }
         }
       }
     }
