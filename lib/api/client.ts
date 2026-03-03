@@ -32,6 +32,15 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    if (
+      error.response?.status === 403 &&
+      error.response?.data?.code === "TERMS_REQUIRED" &&
+      typeof window !== "undefined"
+    ) {
+      window.location.href = "/onboard";
+      return Promise.reject(error);
+    }
+
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
