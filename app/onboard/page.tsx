@@ -46,7 +46,7 @@ const OnboardPage = () => {
       if (selectedCard === "collection") {
         router.replace("/home/create");
       } else if (selectedCard === "plan") {
-        // TODO: 새 여행 계획 페이지 route 구현 후 연결
+        router.replace("/projects/create");
       } else {
         router.replace("/home");
       }
