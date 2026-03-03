@@ -9,6 +9,8 @@ import CheckBox from "@/components/common/CheckBox";
 import { InputForm } from "@/components/ui/input-form";
 import { ChevronRight } from "lucide-react";
 import { useUpdateMe } from "@/lib/hooks/use-update-me";
+import { useAgreeTerms } from "@/lib/hooks/use-agree-terms";
+import { toast } from "sonner";
 
 const OnboardPage = () => {
   const router = useRouter();
@@ -27,6 +29,17 @@ const OnboardPage = () => {
   const [selectedCard, setSelectedCard] = useState<
     "collection" | "plan" | null
   >(null);
+
+  const { mutate: agreeTerms, isPending: isAgreeTermsPending } = useAgreeTerms({
+    onSuccess: () => {
+      setStep(2);
+    },
+    onError: (err) => {
+      toast.error(
+        err.response?.data?.detail ?? "약관 동의에 실패했어요. 다시 시도해 주세요.",
+      );
+    },
+  });
 
   const { mutate: updateMe, isPending } = useUpdateMe({
     onSuccess: () => {
@@ -68,7 +81,7 @@ const OnboardPage = () => {
 
   const handleNext = () => {
     if (step === 1) {
-      setStep(2);
+      agreeTerms();
     } else if (step === 2) {
       setStep(3);
     } else {
@@ -246,7 +259,7 @@ const OnboardPage = () => {
       <div className="fixed bottom-0 inset-x-0 px-5 pb-9">
         <Button
           className="w-full"
-          disabled={isNextDisabled || isPending}
+          disabled={isNextDisabled || isPending || isAgreeTermsPending}
           onClick={handleNext}
         >
           {step === 3 && selectedCard !== null ? "시작하기" : "다음"}

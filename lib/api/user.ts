@@ -34,3 +34,13 @@ export const deletePicture = async (): Promise<void> => {
 export const deleteMe = async (body: { reason: string }): Promise<void> => {
   await apiClient.delete("/users/me", { data: body });
 };
+
+export type AgreeTermsResponse = {
+  access_token: string;
+  expires_in: number;
+};
+
+export const agreeTerms = async (): Promise<AgreeTermsResponse> => {
+  const { data } = await apiClient.patch<AgreeTermsResponse>("/users/me/terms");
+  return data;
+};
