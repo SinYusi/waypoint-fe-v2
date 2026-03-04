@@ -30,7 +30,7 @@ const HomePage = () => {
     hasNextPage,
     isFetchingNextPage,
     refetch,
-  } = useCollections({ size: 10 });
+  } = useCollections({ size: 10 }, { enabled: isReady });
 
   const collections = useMemo(() => {
     return data?.pages.flatMap((p) => p.contents) ?? [];
