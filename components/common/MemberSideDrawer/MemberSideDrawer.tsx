@@ -125,7 +125,7 @@ const MemberSideDrawer = ({
                 <ChevronRight size={20} strokeWidth={2} />
               </Button>
             ) : (
-              <TravelPlanSection />
+              <TravelPlanSection collectionId={collectionId} />
             )}
           </main>
           <DrawerFooter>
