@@ -4,8 +4,8 @@ import { useEffect, useId, useRef, useState } from "react";
 import Image from "next/image";
 import { Heart, MapPin, SquareX } from "lucide-react";
 import { cn } from "@/lib/utils/utils";
-import { normalizePickPassPreference } from "@/lib/utils/pick-pass-preference";
 import Radio from "@/components/common/Radio";
+import CheckBox from "../common/CheckBox";
 
 const BASE_WIDTH = 335;
 const SCALE_EPSILON = 0.01;
@@ -17,12 +17,10 @@ interface PlanCardSelectionProps {
   imageAlt?: string;
   pickCount?: number;
   passCount?: number;
-  myPreference?: "PICK" | "PASS" | "NOTHING" | null;
-  onPickClick?: () => void;
-  onPassClick?: () => void;
   name?: string;
   isSelected?: boolean;
   onSelected?: (selected: boolean) => void;
+  selectionType?: "radio" | "check";
   className?: string;
 }
 
@@ -33,20 +31,15 @@ const PlanCardSelection = ({
   imageAlt,
   pickCount = 0,
   passCount = 0,
-  myPreference = null,
-  onPickClick,
-  onPassClick,
   name,
   isSelected = false,
   onSelected,
+  selectionType = "radio",
   className,
 }: PlanCardSelectionProps) => {
-  const radioId = useId();
+  const id = useId();
   const containerRef = useRef<HTMLDivElement>(null);
-  const normalizedPreference = normalizePickPassPreference(myPreference);
   const [scale, setScale] = useState(1);
-  const [isLiked, setIsLiked] = useState(normalizedPreference === "PICK");
-  const [isRejected, setIsRejected] = useState(normalizedPreference === "PASS");
 
   useEffect(() => {
     const el = containerRef.current;
@@ -64,11 +57,6 @@ const PlanCardSelection = ({
     return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
-    setIsLiked(normalizedPreference === "PICK");
-    setIsRejected(normalizedPreference === "PASS");
-  }, [normalizedPreference]);
-
   return (
     <div ref={containerRef} className={cn("w-full", className)}>
       <div style={{ zoom: scale }}>
@@ -81,6 +69,8 @@ const PlanCardSelection = ({
             onSelected && "cursor-pointer",
           )}
           onClick={() => onSelected?.(!isSelected)}
+          role={selectionType === "check" ? "checkbox" : "radio"}
+          aria-checked={isSelected}
         >
           {/* 이미지 영역 */}
           <div className="relative h-[152.27px] w-full overflow-hidden bg-white">
@@ -102,61 +92,14 @@ const PlanCardSelection = ({
                 className="flex h-9 w-30.5 items-center justify-between rounded-full px-4 py-2 gap-2.5 backdrop-blur"
                 style={{ background: "rgba(252, 252, 252, 0.6)" }}
               >
-                {/* Pass 버튼 — w:35 h:20 gap:6 */}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsRejected((prev) => {
-                      const next = !prev;
-                      if (next) setIsLiked(false);
-                      return next;
-                    });
-                    onPassClick?.();
-                  }}
-                  className="flex h-5 w-8.75 shrink-0 cursor-pointer items-center gap-1.5"
-                  aria-label="다음에요"
-                >
-                  <SquareX
+                {/* Pick 버튼 — w:35 h:20 gap:6 */}
+                <div className="flex h-5 w-8.75 shrink-0 cursor-pointer items-center gap-1.5">
+                  <Heart
                     className="h-5 w-5 shrink-0 transition-colors"
                     strokeWidth={2}
                     style={{
-                      stroke: isRejected ? "#FFFFFF" : "#757575",
-                      fill: isRejected ? "var(--purple-500, #A855F7)" : "none",
-                    }}
-                  />
-                  <span
-                    className="typography-body-sm-reg leading-5"
-                    style={{ color: "#757575" }}
-                  >
-                    {passCount}
-                  </span>
-                </button>
-
-                {/* 구분선 — h:17 */}
-                <div className="h-4.25 w-px shrink-0 bg-[#A3A3A3]" />
-
-                {/* Pick 버튼 — w:35 h:20 gap:6 */}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsLiked((prev) => {
-                      const next = !prev;
-                      if (next) setIsRejected(false);
-                      return next;
-                    });
-                    onPickClick?.();
-                  }}
-                  className="flex h-5 w-8.75 shrink-0 cursor-pointer items-center gap-1.5"
-                  aria-label="좋아요"
-                >
-                  <Heart
-                    className="h-5 w-5 shrink-0 transition-colors"
-                    strokeWidth={isLiked ? 0 : 2}
-                    style={{
-                      stroke: isLiked ? "none" : "#757575",
-                      fill: isLiked ? "var(--red-500, #EF4444)" : "none",
+                      stroke: "#757575",
+                      fill: "none",
                     }}
                   />
                   <span
@@ -165,22 +108,54 @@ const PlanCardSelection = ({
                   >
                     {pickCount}
                   </span>
-                </button>
+                </div>
+
+                {/* 구분선 — h:17 */}
+                <div className="h-4.25 w-px shrink-0 bg-[#A3A3A3]" />
+
+                {/* Pass 버튼 — w:35 h:20 gap:6 */}
+                <div className="flex h-5 w-8.75 shrink-0 cursor-pointer items-center gap-1.5">
+                  <SquareX
+                    className="h-5 w-5 shrink-0 transition-colors"
+                    strokeWidth={2}
+                    style={{
+                      stroke: "#757575",
+                      fill: "none",
+                    }}
+                  />
+                  <span
+                    className="typography-body-sm-reg leading-5"
+                    style={{ color: "#757575" }}
+                  >
+                    {passCount}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
 
           {/* 선택 영역 */}
-          <div
-            className={cn(
-              "flex items-start gap-2.5",
-              "rounded-br-3xl",
-              "pt-3.5 pr-5 pb-5 pl-5",
-            )}
-          >
+          <div className="flex items-start gap-2.5 rounded-br-3xl pt-3.5 pr-5 pb-5 pl-5">
             {/* Radio */}
-            <div className="shrink-0 pt-0.75" onClick={(e) => e.stopPropagation()}>
-              <Radio id={radioId} name={name} selected={isSelected} onSelected={onSelected} />
+            <div
+              className="shrink-0 pt-0.75"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {selectionType === "radio" ? (
+                <Radio
+                  id={id}
+                  name={name}
+                  selected={isSelected}
+                  onSelected={onSelected}
+                />
+              ) : (
+                <CheckBox
+                  id={id}
+                  name={name}
+                  checked={isSelected}
+                  onCheckedChange={onSelected}
+                />
+              )}
             </div>
 
             {/* 장소 정보 */}
