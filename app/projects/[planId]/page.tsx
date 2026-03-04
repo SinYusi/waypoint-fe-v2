@@ -84,7 +84,8 @@ const PlanPage = () => {
   const expensesByDay = useQueries({
     queries: days.map((day) => ({
       queryKey: ["expenses", { planId, day }] as const,
-      queryFn: () => import("@/lib/api/budget").then((m) => m.getExpenses(planId, day)),
+      queryFn: () =>
+        import("@/lib/api/budget").then((m) => m.getExpenses(planId, day)),
       enabled: !!planId && days.length > 0,
     })),
   });
@@ -93,8 +94,8 @@ const PlanPage = () => {
       (group) =>
         group.type === "BLOCK" &&
         group.block_status === "PENDING" &&
-        group.candidates?.some((c) => c.items.length > 0)
-    )
+        group.candidates?.some((c) => c.items.length > 0),
+    ),
   );
   const hasBudgetData = !!budgetData;
   const isEmpty = budgetData?.type === "INITIAL";
@@ -169,7 +170,8 @@ const PlanPage = () => {
               const day = Number(value);
               const idx = day - 1;
               const q = dayQueries[idx];
-              const isDayEmpty = !!q?.data && (q.data.contents?.length ?? 0) === 0;
+              const isDayEmpty =
+                !!q?.data && (q.data.contents?.length ?? 0) === 0;
 
               // 접혀 있고 비어있지 않으면 펼침
               if (!isDayEmpty) {
@@ -190,7 +192,9 @@ const PlanPage = () => {
                   el.getBoundingClientRect().top + window.scrollY - offset;
                 window.scrollTo({ top, behavior: "smooth" });
                 // smooth scroll 종료 후 억제 해제 (약 600ms)
-                setTimeout(() => { suppressRef.current = false; }, 700);
+                setTimeout(() => {
+                  suppressRef.current = false;
+                }, 700);
               };
 
               // 펼침 애니메이션 후 DOM 확정 시점에 스크롤
@@ -220,30 +224,32 @@ const PlanPage = () => {
           />
         )}
 
-        {(!isEmpty || activeMode !== "budget") && items.map((item, idx) => {
-          const day = Number(item.value);
-          const q = dayQueries[idx];
-          const isDayEmpty = !!q?.data && (q.data.contents?.length ?? 0) === 0;
-          const isOpen = openByDay[day] ?? !isDayEmpty;
+        {(!isEmpty || activeMode !== "budget") &&
+          items.map((item, idx) => {
+            const day = Number(item.value);
+            const q = dayQueries[idx];
+            const isDayEmpty =
+              !!q?.data && (q.data.contents?.length ?? 0) === 0;
+            const isOpen = openByDay[day] ?? !isDayEmpty;
 
-          return (
-            <div key={item.value} id={`day-section-${item.value}`}>
-              <DayHeader
-                day={day}
-                date={formatDayDate(startDate, day - 1)}
-                open={isOpen}
-                onOpenChange={(next) =>
-                  setOpenByDay((prev) => ({ ...prev, [day]: next }))
-                }
-                disabled={q?.data ? isDayEmpty : false}
-              >
-                {activeMode === "budget" && (
-                  <DayExpenses planId={planId} day={day} />
-                )}
-              </DayHeader>
-            </div>
-          );
-        })}
+            return (
+              <div key={item.value} id={`day-section-${item.value}`}>
+                <DayHeader
+                  day={day}
+                  date={formatDayDate(startDate, day - 1)}
+                  open={isOpen}
+                  onOpenChange={(next) =>
+                    setOpenByDay((prev) => ({ ...prev, [day]: next }))
+                  }
+                  disabled={q?.data ? isDayEmpty : false}
+                >
+                  {activeMode === "budget" && (
+                    <DayExpenses planId={planId} day={day} />
+                  )}
+                </DayHeader>
+              </div>
+            );
+          })}
       </main>
 
       <div className="fixed bottom-0 left-0 w-full">
