@@ -29,9 +29,12 @@ interface PlanPlaceCardProps {
   onOpinionClick?: () => void;
   onMenuClick?: () => void;
   isView?: boolean;
+  isFree?: boolean;
   isFixedCandidate?: boolean;
   candidateCount?: number;
   onReselectCandidate?: () => void;
+  onDetailClick?: () => void;
+  onFreeClick?: () => void;
   className?: string;
 }
 
@@ -51,15 +54,20 @@ const PlanPlaceCard = ({
   onOpinionClick,
   onMenuClick,
   isView = true,
+  isFree = false,
   isFixedCandidate = false,
   candidateCount,
   onReselectCandidate,
+  onDetailClick,
+  onFreeClick,
   className,
 }: PlanPlaceCardProps) => {
   return (
     <div
+      onClick={onFreeClick}
       className={cn(
         "w-full flex flex-col rounded-2xl border border-border bg-background shadow-xs",
+        isFree && "cursor-pointer",
         className,
       )}
     >
@@ -91,7 +99,10 @@ const PlanPlaceCard = ({
 
       {/* Image */}
       {isView && (
-        <div className="relative w-full aspect-8/5 bg-[#f0f0f0]">
+        <div
+          onClick={onDetailClick}
+          className="relative w-full aspect-8/5 bg-[#f0f0f0] cursor-pointer"
+        >
           {imageUrl ? (
             <Image
               src={imageUrl}
@@ -115,7 +126,7 @@ const PlanPlaceCard = ({
             : "px-5 pt-3 pb-3 ",
         )}
       >
-        {!isView ? (
+        {!isView && !isFree ? (
           <>
             {/* memo가 없어도 자리 차지 */}
             <p className="typography-body-sm-reg text-muted-foreground flex-1 min-w-0 break-all">
@@ -156,7 +167,12 @@ const PlanPlaceCard = ({
         </div>
       )}
       {isFixedCandidate && (
-        <div className="flex items-center justify-between pt-3 pb-3.5 px-4 border-t border-dashed border-border">
+        <div
+          className={cn(
+            "flex items-center justify-between px-4 pb-3.5",
+            !isView && "pt-3 border-t border-dashed border-border",
+          )}
+        >
           <button
             type="button"
             className="flex w-full items-center gap-1 bg-[#f0f0f0] py-2 px-2.5 rounded-lg typography-nav-xl-reg text-muted-foreground justify-center"
