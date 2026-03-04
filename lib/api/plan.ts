@@ -9,6 +9,7 @@
  * - 삭제 (DELETE | `/plans/{planId}`)
  * - 소유자 변경 (PATCH | `/plans/{planId}/owner`)
  * - 초대 링크 생성 (POST | `/plans/{planId}/invitations`)
+ * - 멤버 목록 조회 (GET | `/plans/{planId}/members`)
  */
 
 import {
@@ -33,6 +34,7 @@ import {
   type PlaceDetailApiResponse,
 } from "@/lib/api/place";
 import { InvitationResponse } from "@/types/invitation";
+import { PlanMembersResponse } from "@/types/member";
 import { apiClient } from "./client";
 
 /**
@@ -168,6 +170,19 @@ export const addPlanBlockCandidates = async (
 export const createPlanInvitation = async (planId: string) => {
   const res = await apiClient.post<InvitationResponse>(
     `/plans/${planId}/invitations`,
+  );
+  return res.data;
+};
+
+/**
+ * 플랜 멤버 목록 조회 API
+ *
+ * @param planId - 조회할 플랜 ID
+ * @returns 멤버 목록 (is_authenticated, me, members)
+ */
+export const getPlanMembers = async (planId: string) => {
+  const res = await apiClient.get<PlanMembersResponse>(
+    `/plans/${planId}/members`,
   );
   return res.data;
 };
