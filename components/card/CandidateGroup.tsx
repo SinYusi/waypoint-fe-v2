@@ -35,6 +35,7 @@ export interface ViewCandidateItem {
   opinionCount: number;
   onReactionClick?: (type: ReactionType) => void;
   onOpinionClick?: () => void;
+  onCardClick?: () => void;
 }
 
 // ─── Group props ─────────────────────────────────────────────────────────────
@@ -122,6 +123,7 @@ const CandidateGroup = (props: CandidateGroupProps) => {
           opinionCount={item.opinionCount}
           onReactionClick={item.onReactionClick}
           onOpinionClick={item.onOpinionClick}
+          onCardClick={item.onCardClick}
         />
       ))}
 
