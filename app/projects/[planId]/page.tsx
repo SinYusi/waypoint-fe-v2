@@ -20,6 +20,8 @@ import { useScrollspyDay } from "@/lib/hooks/use-scrollspy-day";
 import { formatDayInfoText } from "@/lib/utils/date";
 import { useStickyStuck } from "@/lib/hooks/use-sticky-stuck";
 import { cn } from "@/lib/utils/utils";
+import DayTimeBlocks from "@/components/common/projects/DayTimeBlocks";
+import PlanEmptyState from "@/components/common/projects/PlanEmptyState";
 
 // day별 지출 항목 — 훅을 루프 밖에서 호출하기 위해 별도 컴포넌트로 분리
 const DayExpenses = ({ planId, day }: { planId: string; day: number }) => {
@@ -79,7 +81,7 @@ const PlanPage = () => {
     openByDay,
     setOpenByDay,
     isAllDaysSettled,
-    // isAllDaysEmpty,
+    isAllDaysEmpty,
     isInitialLoading,
   } = usePlanBlockData({ planId });
 
@@ -247,26 +249,35 @@ const PlanPage = () => {
         </>
       )}
 
-      <main className="flex flex-col pb-32">
-        {/* 예산 탭: 빈 상태 */}
-        {activeMode === "budget" && isEmpty && <BudgetEmptyState />}
+      <main className="flex flex-col flex-1 pb-32">
+        {/* 예산 탭 */}
+        {activeMode === "budget" && (
+          <>
+            {/* 예산 탭: 빈 상태 */}
+            {isEmpty && <BudgetEmptyState />}
 
-        {/* 예산 탭: BudgetSummaryCard */}
-        {activeMode === "budget" && hasBudgetData && !isEmpty && (
-          <BudgetSummaryCard
-            variant={budgetData.type === "BUDGET" ? "budget" : "expense"}
-            mode={budgetCardMode}
-            totalBudget={budgetData.total_budget ?? 0}
-            usedAmount={budgetData.total_cost}
-            perDayAmount={Math.round(budgetData.total_cost / items.length)}
-            perPersonAmount={budgetData.cost_per_person}
-            showHint={showHint}
-            onEditClick={() => setBudgetCardMode("edit")}
-            className="pt-3"
-          />
+            {/* 예산 탭: BudgetSummaryCard */}
+            {hasBudgetData && !isEmpty && (
+              <BudgetSummaryCard
+                variant={budgetData.type === "BUDGET" ? "budget" : "expense"}
+                mode={budgetCardMode}
+                totalBudget={budgetData.total_budget ?? 0}
+                usedAmount={budgetData.total_cost}
+                perDayAmount={Math.round(budgetData.total_cost / items.length)}
+                perPersonAmount={budgetData.cost_per_person}
+                showHint={showHint}
+                onEditClick={() => setBudgetCardMode("edit")}
+                className="pt-3"
+              />
+            )}
+          </>
         )}
 
-        {(!isEmpty || activeMode !== "budget") &&
+        {/* 여행 일정 탭: 빈 상태 */}
+        {activeMode === "planMode" && isAllDaysEmpty && <PlanEmptyState />}
+
+        {((activeMode === "budget" && !isEmpty) ||
+          (activeMode == "planMode" && !isAllDaysEmpty)) &&
           days.map((day, idx) => {
             const q = dayQueries[idx];
             const isDayEmpty =
@@ -294,7 +305,7 @@ const PlanPage = () => {
                 >
                   {activeMode === "planMode" ? (
                     // Plan
-                    <></>
+                    <DayTimeBlocks planId={planId} day={day} data={q?.data} />
                   ) : (
                     // Budget
                     <DayExpenses planId={planId} day={day} />
