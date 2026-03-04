@@ -20,6 +20,7 @@ import MemberListSection from "./components/MemberListSection";
 import TravelPlanSection from "./components/TravelPlanSection";
 import HeaderBtn, { HeaderBtnBgVariant } from "@/components/layout/HeaderBtn";
 import type { CollectionMember, MemberRole, PlanMember } from "@/types/member";
+import { usePlanMembers } from "@/lib/hooks/plan/use-plan-members";
 import { ChevronRight } from "lucide-react";
 import AppDialog from "@/components/common/AppDialog";
 import AppAlertDialog from "@/components/common/AppAlertDialog";
@@ -51,7 +52,20 @@ const MemberSideDrawer = ({
   const router = useRouter();
   const pathname = usePathname();
 
-  const isOwner = meRole === "OWNER";
+  const { data: planMembersData } = usePlanMembers(planId ?? "", {
+    enabled: variant === "PLAN" && !!planId,
+  });
+
+  const resolvedMembers =
+    variant === "PLAN" && planMembersData
+      ? planMembersData.members
+      : members;
+  const resolvedMeRole =
+    variant === "PLAN" && planMembersData
+      ? planMembersData.me.role
+      : meRole;
+
+  const isOwner = resolvedMeRole === "OWNER";
   const { handleKickMember, handleAssignOwner } = useMemberManagement({
     variant,
   });
@@ -89,7 +103,7 @@ const MemberSideDrawer = ({
           </DrawerHeader>
           <main className="flex flex-col gap-3 mx-5 mt-10">
             <MemberListSection
-              members={members}
+              members={resolvedMembers}
               isOwner={isOwner}
               onKick={handleKickMember}
               onAssignOwner={handleAssignOwner}
