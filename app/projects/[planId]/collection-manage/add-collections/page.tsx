@@ -100,7 +100,7 @@ const AddCollectionsPage = () => {
         title="보관함 불러오기"
         showBackButton
         leftBtnBgVariant="ghost"
-        className="fixed top-0 inset-x-0 bg-background"
+        className="fixed top-0 inset-x-0 bg-background z-50"
       />
 
       <main className="flex flex-1 flex-col px-5 pt-3 pb-3.5 gap-3.5 mb-13">
@@ -113,9 +113,24 @@ const AddCollectionsPage = () => {
             {error?.response?.data.detail ?? "알 수 없는 오류"}
           </div>
         ) : collections.length === 0 ? (
-          <div className="fixed inset-0 flex flex-col gap-5 items-center justify-center">
+          <div className="fixed top-15 inset-0 flex flex-col gap-5 items-center justify-center -mt-15">
             <CollectionEmptyIllust />
-            <h2 className="typography-display-lg-bold">보관함이 없어요.</h2>
+            <div className="flex flex-col gap-2 items-center justify-center">
+              <h2 className="typography-display-lg-bold">
+                아직 보관함이 없어요
+              </h2>
+              <span className="typography-body-sm-md text-center">
+                가고 싶은 여행 장소를 담아 <br />
+                보관함을 만들어보세요
+              </span>
+            </div>
+            <Button
+              size="M"
+              onClick={() => router.push("/home/create")}
+              className="typography-action-sm-bold"
+            >
+              보관함 만들기
+            </Button>
           </div>
         ) : (
           <>
