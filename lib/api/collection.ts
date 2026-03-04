@@ -12,6 +12,7 @@
  * - AI 장소 추출 최신 작업 조회 (GET | `/collections/{collectionId}/extraction-jobs/latest`)
  * - AI 장소 추출 작업 취소 (DELETE | `/collections/{collectionId}/extraction-jobs/{jobId}`)
  * - AI 장소 추출 결과 장소 추가 (POST | `/collections/{collectionId}/extraction-jobs/{jobId}/places`)
+ * - 컬렉션 나가기 (DELETE | `/collections/{collectionId}/members/me`)
  */
 
 import {
@@ -250,4 +251,8 @@ export const addExtractionJobPlaces = async (
     `/collections/${collectionId}/extraction-jobs/${jobId}/places`,
     { place_ids },
   );
+};
+
+export const leaveCollection = async (collectionId: string): Promise<void> => {
+  await apiClient.delete(`/collections/${collectionId}/members/me`);
 };

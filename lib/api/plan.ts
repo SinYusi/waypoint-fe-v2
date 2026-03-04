@@ -10,6 +10,7 @@
  * - 소유자 변경 (PATCH | `/plans/{planId}/owner`)
  * - 초대 링크 생성 (POST | `/plans/{planId}/invitations`)
  * - 멤버 목록 조회 (GET | `/plans/{planId}/members`)
+ * - 플랜 나가기 (DELETE | `/plans/{planId}/members/me`)
  */
 
 import {
@@ -185,4 +186,8 @@ export const getPlanMembers = async (planId: string) => {
     `/plans/${planId}/members`,
   );
   return res.data;
+};
+
+export const leavePlan = async (planId: string): Promise<void> => {
+  await apiClient.delete(`/plans/${planId}/members/me`);
 };
