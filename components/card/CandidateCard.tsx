@@ -50,6 +50,7 @@ interface CandidateCardViewProps {
   opinionCount: number;
   onReactionClick?: (type: ReactionType) => void;
   onOpinionClick?: () => void;
+  onCardClick?: () => void;
 }
 
 type CandidateCardProps =
@@ -102,43 +103,46 @@ const CandidateCard = (props: CandidateCardProps) => {
       opinionCount,
       onReactionClick,
       onOpinionClick,
+      onCardClick,
     } = props;
     return (
       <div className="w-full flex flex-col rounded-2xl border border-border bg-background shadow-xs">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-2 px-4 pt-3.5 pb-4">
-          <div className="flex items-start gap-2 pr-1.5">
-            <div className="shrink-0">
-              <PlaceTypeIcon type={placeType} />
+        <div onClick={onCardClick} className="cursor-pointer">
+          {/* Header */}
+          <div className="flex items-start justify-between gap-2 px-4 pt-3.5 pb-4">
+            <div className="flex items-start gap-2 pr-1.5">
+              <div className="shrink-0">
+                <PlaceTypeIcon type={placeType} />
+              </div>
+              <span
+                className="typography-display-base-bold text-foreground"
+                style={{
+                  display: "-webkit-box",
+                  WebkitBoxOrient: "vertical",
+                  WebkitLineClamp: 2,
+                  overflow: "hidden",
+                }}
+              >
+                {placeName}
+              </span>
             </div>
-            <span
-              className="typography-display-base-bold text-foreground"
-              style={{
-                display: "-webkit-box",
-                WebkitBoxOrient: "vertical",
-                WebkitLineClamp: 2,
-                overflow: "hidden",
-              }}
-            >
-              {placeName}
-            </span>
+            <div className="shrink-0">
+              <Writer
+                nickname={writerNickname}
+                profileImageUrl={writerProfileImageUrl}
+              />
+            </div>
           </div>
-          <div className="shrink-0">
-            <Writer
-              nickname={writerNickname}
-              profileImageUrl={writerProfileImageUrl}
-            />
-          </div>
-        </div>
 
-        {/* Memo */}
-        {memo && (
-          <div className="px-5 pt-3 pb-3">
-            <p className="typography-body-sm-reg text-muted-foreground min-w-0 break-all">
-              {memo}
-            </p>
-          </div>
-        )}
+          {/* Memo */}
+          {memo && (
+            <div className="px-5 pt-0 pb-3">
+              <p className="typography-body-sm-reg text-muted-foreground min-w-0 break-all">
+                {memo}
+              </p>
+            </div>
+          )}
+        </div>
 
         {/* Footer */}
         <div className="flex items-center justify-between pl-3 pr-4 pt-3 pb-3.5 border-t border-dashed border-border">
