@@ -64,6 +64,10 @@ const MemberSideDrawer = ({
     variant === "PLAN" && planMembersData
       ? planMembersData.me.role
       : meRole;
+  const meMemberId =
+    variant === "PLAN" && planMembersData
+      ? planMembersData.me.plan_member_id
+      : undefined;
 
   const isOwner = resolvedMeRole === "OWNER";
   const { handleKickMember, handleAssignOwner } = useMemberManagement({
@@ -105,6 +109,7 @@ const MemberSideDrawer = ({
             <MemberListSection
               members={resolvedMembers}
               isOwner={isOwner}
+              meMemberId={meMemberId}
               onKick={handleKickMember}
               onAssignOwner={handleAssignOwner}
               onInviteClick={() => setInviteDialogOpen(true)}
