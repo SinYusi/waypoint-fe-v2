@@ -19,6 +19,9 @@ export const useDeleteMe = (options?: Options) => {
     mutationFn: deleteMe,
     ...options,
     onSuccess: (data, variables, onMutateResult, context) => {
+      if (typeof window !== "undefined") {
+        window.localStorage.removeItem("accessToken");
+      }
       queryClient.clear();
       options?.onSuccess?.(data, variables, onMutateResult, context);
     },
