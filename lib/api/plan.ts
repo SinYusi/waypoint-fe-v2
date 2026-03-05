@@ -191,3 +191,17 @@ export const getPlanMembers = async (planId: string) => {
 export const leavePlan = async (planId: string): Promise<void> => {
   await apiClient.delete(`/plans/${planId}/members/me`);
 };
+
+export const changePlanOwner = async (
+  planId: string,
+  plan_member_id: string,
+): Promise<void> => {
+  await apiClient.patch(`/plans/${planId}/owner`, { plan_member_id });
+};
+
+export const kickPlanMember = async (
+  planId: string,
+  memberId: string,
+): Promise<void> => {
+  await apiClient.delete(`/plans/${planId}/members/${memberId}`);
+};
