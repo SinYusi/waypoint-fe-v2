@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { UserPlus } from "lucide-react";
 import { CollectionMember, PlanMember } from "@/types/member";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,11 @@ const MemberListSection = ({
   onInviteClick,
 }: MemberListSectionProps) => {
   const [isManaging, setIsManaging] = useState(false);
+
+  useEffect(() => {
+    if (!isOwner) setIsManaging(false);
+  }, [isOwner]);
+
   return (
     <div className="w-full rounded-2xl bg-[#f0f0f0]">
       <div className="flex px-4 py-3 justify-between">
