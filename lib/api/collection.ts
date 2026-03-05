@@ -13,6 +13,7 @@
  * - AI 장소 추출 작업 취소 (DELETE | `/collections/{collectionId}/extraction-jobs/{jobId}`)
  * - AI 장소 추출 결과 장소 추가 (POST | `/collections/{collectionId}/extraction-jobs/{jobId}/places`)
  * - 컬렉션 나가기 (DELETE | `/collections/{collectionId}/members/me`)
+ * - 연결된 플랜 목록 조회 (GET | `/collections/{collectionId}/plans`)
  */
 
 import {
@@ -33,6 +34,7 @@ import {
 } from "@/types/collection";
 import { InvitationResponse } from "@/types/invitation";
 import { CollectionMembersResponse } from "@/types/member";
+import { CollectionPlansResponse } from "@/types/collection";
 import {
   CreateExtractionJobResponse,
   ExtractionJobResponse,
@@ -255,4 +257,11 @@ export const addExtractionJobPlaces = async (
 
 export const leaveCollection = async (collectionId: string): Promise<void> => {
   await apiClient.delete(`/collections/${collectionId}/members/me`);
+};
+
+export const getCollectionPlans = async (collectionId: string): Promise<CollectionPlansResponse> => {
+  const res = await apiClient.get<CollectionPlansResponse>(
+    `/collections/${collectionId}/plans`,
+  );
+  return res.data;
 };
