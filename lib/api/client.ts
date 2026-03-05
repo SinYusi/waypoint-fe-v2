@@ -32,13 +32,19 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (
-      error.response?.status === 403 &&
-      error.response?.data?.code === "TERMS_REQUIRED" &&
-      typeof window !== "undefined"
-    ) {
-      window.location.href = "/onboard";
-      return Promise.reject(error);
+    if (error.response?.status === 403 && typeof window !== "undefined") {
+      const code = error.response?.data?.code;
+
+      if (code === "TERMS_REQUIRED") {
+        window.location.href = "/onboard";
+        return Promise.reject(error);
+      }
+
+      if (code === "GUEST_FORBIDDEN") {
+        localStorage.removeItem("accessToken");
+        window.location.href = "/login";
+        return Promise.reject(error);
+      }
     }
 
     if (error.response?.status === 401) {
