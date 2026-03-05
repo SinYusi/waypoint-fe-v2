@@ -81,6 +81,8 @@ const MemberSideDrawer = ({
   const isOwner = resolvedMeRole === "OWNER";
   const { handleKickMember, handleAssignOwner } = useMemberManagement({
     variant,
+    collectionId,
+    planId,
   });
 
   const { mutate: leaveCollection, isPending: isLeavingCollection } = useLeaveCollection({

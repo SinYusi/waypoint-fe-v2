@@ -14,6 +14,8 @@
  * - AI 장소 추출 결과 장소 추가 (POST | `/collections/{collectionId}/extraction-jobs/{jobId}/places`)
  * - 컬렉션 나가기 (DELETE | `/collections/{collectionId}/members/me`)
  * - 연결된 플랜 목록 조회 (GET | `/collections/{collectionId}/plans`)
+ * - 소유자 변경 (PATCH | `/collections/{collectionId}/owner`)
+ * - 멤버 강퇴 (DELETE | `/collections/{collectionId}/members/{memberId}`)
  */
 
 import {
@@ -264,4 +266,20 @@ export const getCollectionPlans = async (collectionId: string): Promise<Collecti
     `/collections/${collectionId}/plans`,
   );
   return res.data;
+};
+
+export const changeCollectionOwner = async (
+  collectionId: string,
+  collection_member_id: string,
+): Promise<void> => {
+  await apiClient.patch(`/collections/${collectionId}/owner`, {
+    collection_member_id,
+  });
+};
+
+export const kickCollectionMember = async (
+  collectionId: string,
+  memberId: string,
+): Promise<void> => {
+  await apiClient.delete(`/collections/${collectionId}/members/${memberId}`);
 };
