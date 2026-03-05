@@ -21,6 +21,7 @@ import TravelPlanSection from "./components/TravelPlanSection";
 import HeaderBtn, { HeaderBtnBgVariant } from "@/components/layout/HeaderBtn";
 import type { CollectionMember, MemberRole, PlanMember } from "@/types/member";
 import { usePlanMembers } from "@/lib/hooks/plan/use-plan-members";
+import { useCollectionMembers } from "@/lib/hooks/collection/use-collection-members";
 import { useLeaveCollection } from "@/lib/hooks/collection/use-leave-collection";
 import { useLeavePlan } from "@/lib/hooks/plan/use-leave-plan";
 import { ChevronRight } from "lucide-react";
@@ -58,6 +59,10 @@ const MemberSideDrawer = ({
     enabled: variant === "PLAN" && !!planId,
   });
 
+  const { data: collectionMembersData } = useCollectionMembers(collectionId ?? "", {
+    enabled: variant === "COLLECTION" && !!collectionId,
+  });
+
   const resolvedMembers =
     variant === "PLAN" && planMembersData
       ? planMembersData.members
@@ -69,7 +74,9 @@ const MemberSideDrawer = ({
   const meMemberId =
     variant === "PLAN" && planMembersData
       ? planMembersData.me?.plan_member_id
-      : undefined;
+      : variant === "COLLECTION" && collectionMembersData
+        ? collectionMembersData.me?.collection_member_id
+        : undefined;
 
   const isOwner = resolvedMeRole === "OWNER";
   const { handleKickMember, handleAssignOwner } = useMemberManagement({

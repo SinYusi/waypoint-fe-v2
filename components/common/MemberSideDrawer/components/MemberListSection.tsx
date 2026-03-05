@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { UserPlus } from "lucide-react";
 import { CollectionMember, PlanMember } from "@/types/member";
+import { Button } from "@/components/ui/button";
+import Divider from "@/components/common/Divider";
+import MemberItem from "./MemberItem";
 
 const getMemberId = (member: CollectionMember | PlanMember): string =>
   "collection_member_id" in member
     ? member.collection_member_id
     : member.plan_member_id;
-import { Button } from "@/components/ui/button";
-import Divider from "@/components/common/Divider";
-import MemberItem from "./MemberItem";
 
 interface MemberListSectionProps {
   members: (CollectionMember | PlanMember)[];
