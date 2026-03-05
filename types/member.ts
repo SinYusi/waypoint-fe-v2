@@ -16,7 +16,7 @@ export interface PlanMember extends BaseMember {
 
 export interface MembersResponse<T> {
   is_authenticated: boolean;
-  me: T;
+  me: T | null;
   members: T[];
 }
 

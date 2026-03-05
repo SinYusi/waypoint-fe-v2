@@ -64,11 +64,11 @@ const MemberSideDrawer = ({
       : members;
   const resolvedMeRole =
     variant === "PLAN" && planMembersData
-      ? planMembersData.me.role
+      ? planMembersData.me?.role
       : meRole;
   const meMemberId =
     variant === "PLAN" && planMembersData
-      ? planMembersData.me.plan_member_id
+      ? planMembersData.me?.plan_member_id
       : undefined;
 
   const isOwner = resolvedMeRole === "OWNER";
