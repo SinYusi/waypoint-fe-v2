@@ -8,6 +8,7 @@ interface MemberItemProps {
   member: CollectionMember | PlanMember;
   isManaging: boolean;
   isMe?: boolean;
+  variant?: "COLLECTION" | "PLAN";
   onKick: (memberId: string) => void;
   onAssignOwner: (memberId: string) => void;
 }
@@ -22,6 +23,7 @@ const MemberItem = ({
   member,
   isManaging,
   isMe = false,
+  variant = "COLLECTION",
   onKick,
   onAssignOwner,
 }: MemberItemProps) => {
@@ -34,7 +36,7 @@ const MemberItem = ({
     },
     {
       id: "assign-owner",
-      label: "보관함 소유자로 지정",
+      label: variant === "PLAN" ? "여행 계획 소유자로 지정" : "보관함 소유자로 지정",
       onSelect: () => onAssignOwner(memberId),
     },
   ];

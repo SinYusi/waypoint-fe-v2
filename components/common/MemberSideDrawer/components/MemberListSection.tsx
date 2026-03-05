@@ -14,6 +14,7 @@ interface MemberListSectionProps {
   members: (CollectionMember | PlanMember)[];
   isOwner?: boolean;
   meMemberId?: string;
+  variant?: "COLLECTION" | "PLAN";
   onKick: (memberId: string) => void;
   onAssignOwner: (memberId: string) => void;
   onInviteClick?: () => void;
@@ -23,6 +24,7 @@ const MemberListSection = ({
   members,
   isOwner = false,
   meMemberId,
+  variant = "COLLECTION",
   onKick,
   onAssignOwner,
   onInviteClick,
@@ -49,6 +51,7 @@ const MemberListSection = ({
               member={member}
               isManaging={isManaging}
               isMe={!!meMemberId && getMemberId(member) === meMemberId}
+              variant={variant}
               onKick={onKick}
               onAssignOwner={onAssignOwner}
             />

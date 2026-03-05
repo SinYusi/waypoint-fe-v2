@@ -135,6 +135,7 @@ const MemberSideDrawer = ({
               members={resolvedMembers}
               isOwner={isOwner}
               meMemberId={meMemberId}
+              variant={variant}
               onKick={handleKickMember}
               onAssignOwner={handleAssignOwner}
               onInviteClick={() => setInviteDialogOpen(true)}
