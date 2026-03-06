@@ -9,6 +9,7 @@ import { ReactionType } from "@/components/card/PlaceReactionItem";
 
 interface ViewTimeBlockProps {
   planId: string;
+  timeBlockId: string;
   blockType: TimeBlockType;
   blockStatus: BlockStatus;
   startTime: string;
@@ -39,6 +40,7 @@ interface ViewTimeBlockProps {
 
 const ViewTimeBlock = ({
   planId,
+  timeBlockId,
   blockType,
   blockStatus,
   startTime,
@@ -64,6 +66,7 @@ const ViewTimeBlock = ({
       {/* 오른쪽 카드 영역 */}
       <ViewPlace
         planId={planId}
+        timeBlockId={timeBlockId}
         blockStatus={blockStatus}
         blockType={blockType}
         singleCard={singleCard}

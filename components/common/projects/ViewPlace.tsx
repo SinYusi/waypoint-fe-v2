@@ -73,6 +73,7 @@ type SingleCandidateCard = {
 
 interface ViewPlaceProps {
   planId: string;
+  timeBlockId: string;
   blockStatus: BlockStatus;
   /** 이 블록이 PLACE인지 FREE인지 */
   blockType: TimeBlockType;
@@ -86,6 +87,7 @@ interface ViewPlaceProps {
 
 const ViewPlace = ({
   planId,
+  timeBlockId,
   blockStatus,
   blockType,
   singleCard,
@@ -164,9 +166,11 @@ const ViewPlace = ({
               onCardClick: () =>
                 router.push(`/projects/${planId}/block/${c.id}`),
             }))}
-            onSelectCandidate={() => {
-              // TODO: 추후 후보지 선택 페이지로 이동
-            }}
+            onSelectCandidate={() =>
+              router.push(
+                `/projects/${planId}/select-candidate/${timeBlockId}`,
+              )
+            }
           />
         ) : blockType === "FREE" ? (
           // 자유시간

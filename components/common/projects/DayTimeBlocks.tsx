@@ -161,6 +161,7 @@ const DayTimeBlocks = ({
           <ViewTimeBlock
             key={block.timeBlockId}
             planId={planId}
+            timeBlockId={block.timeBlockId}
             blockStatus={block.blockStatus}
             blockType={block.type}
             startTime={block.startTime}

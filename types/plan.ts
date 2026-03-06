@@ -159,3 +159,52 @@ export type BlockResponse = {
   end_time: string;
   candidate_count: number;
 };
+
+/**
+ * 후보지 목록 조회 응답
+ * GET /plans/{planId}/blocks/{timeBlockId}/candidates
+ */
+export type DayInfo = {
+  day: number;
+  date: string;
+  day_of_week: string;
+};
+
+export type CandidateOpinionSummary = {
+  total_count: number;
+  distribution: {
+    positive: number;
+    neutral: number;
+    negative: number;
+  };
+  my: {
+    opinion_id: string;
+    type: "POSITIVE" | "NEUTRAL" | "NEGATIVE";
+  } | null;
+};
+
+export type CandidateExpenseItem = {
+  expense_item_id: string;
+  name: string;
+  cost: number;
+};
+
+export type CandidateItem = {
+  block_id: string;
+  memo: string;
+  place: import("@/types/place").PlaceResponse;
+  selected: boolean;
+  added_by: PlanAddedBy;
+  opinion_summary: CandidateOpinionSummary;
+  expense_items: CandidateExpenseItem[];
+};
+
+export type CandidatesResponse = {
+  time_block_id: string;
+  title: string;
+  day_info: DayInfo;
+  start_time: string;
+  end_time: string;
+  candidate_count: number;
+  candidates: CandidateItem[];
+};

@@ -17,6 +17,7 @@ type GoogleMapInstance = {
   setCenter: (position: LatLngLiteral) => void;
   setZoom: (zoom: number) => void;
   getZoom?: () => number;
+  fitBounds: (bounds: unknown, padding?: number) => void;
 };
 
 type GoogleSizeInstance = {
@@ -42,6 +43,10 @@ type GoogleMarkerInstance = {
   setIcon: (icon: GoogleMarkerIcon | string | null) => void;
 };
 
+type GoogleOverlayInstance = {
+  setMap: (map: GoogleMapInstance | null) => void;
+};
+
 type GoogleMapsApi = {
   maps: {
     Map: new (
@@ -56,8 +61,22 @@ type GoogleMapsApi = {
     }) => GoogleMarkerInstance;
     Size: new (width: number, height: number) => GoogleSizeInstance;
     Point: new (x: number, y: number) => GooglePointInstance;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    OverlayView: new () => any;
+    LatLng: new (lat: number, lng: number) => unknown;
+    LatLngBounds: new () => { extend: (point: unknown) => void };
     importLibrary?: (name: string) => Promise<unknown>;
   };
+};
+
+type MarkerItem = {
+  position: LatLngLiteral;
+  title?: string;
+};
+
+export type OverlayMarkerItem = {
+  position: LatLngLiteral;
+  element: HTMLElement;
 };
 
 type GoogleMapProps = {
@@ -66,6 +85,9 @@ type GoogleMapProps = {
   markerPosition?: LatLngLiteral;
   markerTitle?: string;
   markerIcon?: MarkerIconOption;
+  markers?: MarkerItem[];
+  overlayMarkers?: OverlayMarkerItem[];
+  fitPositions?: LatLngLiteral[];
   className?: string;
   apiKey?: string;
   mapOptions?: Record<string, unknown>;
@@ -244,6 +266,9 @@ export default function GoogleMap({
   markerPosition,
   markerTitle,
   markerIcon = { url: newMarkerIconUrl },
+  markers,
+  overlayMarkers,
+  fitPositions,
   className,
   apiKey,
   mapOptions,
@@ -252,6 +277,8 @@ export default function GoogleMap({
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<GoogleMapInstance | null>(null);
   const markerRef = useRef<GoogleMarkerInstance | null>(null);
+  const markersRef = useRef<GoogleMarkerInstance[]>([]);
+  const overlaysRef = useRef<GoogleOverlayInstance[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isMapReady, setIsMapReady] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -305,14 +332,109 @@ export default function GoogleMap({
 
       markerRef.current?.setMap(null);
       markerRef.current = null;
+      markersRef.current.forEach((m) => m.setMap(null));
+      markersRef.current = [];
+      overlaysRef.current.forEach((o) => o.setMap(null));
+      overlaysRef.current = [];
       mapRef.current = null;
       setIsMapReady(false);
     };
   }, [mapOptions, resolvedApiKey, isMissingApiKey]);
 
   useEffect(() => {
+    if (!isMapReady || !mapRef.current || !window.google?.maps) return;
+
+    overlaysRef.current.forEach((o) => o.setMap(null));
+    overlaysRef.current = [];
+
+    if (!overlayMarkers || overlayMarkers.length === 0) return;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const maps = window.google.maps as any;
+
+    class PinOverlay extends maps.OverlayView {
+      private pos: LatLngLiteral;
+      private el: HTMLElement;
+      private container: HTMLDivElement;
+
+      constructor(pos: LatLngLiteral, el: HTMLElement) {
+        super();
+        this.pos = pos;
+        this.el = el;
+        this.container = document.createElement("div");
+        this.container.style.cssText =
+          "position:absolute;transform:translate(-50%,-100%)";
+      }
+
+      onAdd() {
+        this.container.appendChild(this.el);
+        this.getPanes()?.overlayMouseTarget?.appendChild(this.container);
+      }
+
+      draw() {
+        const point = this.getProjection().fromLatLngToDivPixel(
+          new maps.LatLng(this.pos.lat, this.pos.lng),
+        );
+        if (point) {
+          this.container.style.left = `${point.x}px`;
+          this.container.style.top = `${point.y}px`;
+        }
+      }
+
+      onRemove() {
+        this.container.parentNode?.removeChild(this.container);
+      }
+    }
+
+    overlaysRef.current = overlayMarkers.map(({ position, element }) => {
+      const overlay = new PinOverlay(position, element);
+      overlay.setMap(mapRef.current!);
+      return overlay;
+    });
+
+    return () => {
+      overlaysRef.current.forEach((o) => o.setMap(null));
+      overlaysRef.current = [];
+    };
+  }, [isMapReady, overlayMarkers]);
+
+  useEffect(() => {
+    if (!isMapReady || !mapRef.current || !window.google?.maps) return;
+    if (!markers || markers.length === 0) return;
+
+    const icon = buildMarkerIcon({ url: newMarkerIconUrl });
+
+    markersRef.current.forEach((m) => m.setMap(null));
+    markersRef.current = markers.map(
+      ({ position, title }) =>
+        new window.google!.maps.Marker({
+          map: mapRef.current!,
+          position,
+          title,
+          icon,
+        }),
+    );
+  }, [isMapReady, markers]);
+
+  useEffect(() => {
     setCurrentZoom(zoom);
   }, [zoom]);
+
+  useEffect(() => {
+    if (!isMapReady || !mapRef.current || !window.google?.maps) return;
+    if (!fitPositions || fitPositions.length === 0) return;
+
+    const maps = window.google.maps as typeof window.google.maps & {
+      LatLngBounds: new () => { extend: (point: unknown) => void };
+      LatLng: new (lat: number, lng: number) => unknown;
+    };
+
+    const bounds = new maps.LatLngBounds();
+    fitPositions.forEach(({ lat, lng }) =>
+      bounds.extend(new maps.LatLng(lat, lng)),
+    );
+    mapRef.current.fitBounds(bounds, 40);
+  }, [isMapReady, fitPositions]);
 
   useEffect(() => {
     if (!mapRef.current) return;
