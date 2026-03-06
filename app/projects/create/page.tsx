@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import ProjectForm from "@/components/common/projects/ProjectForm";
 import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,7 @@ import { useProjectForm } from "@/lib/hooks/project/use-project-form";
 import { toApiDateRange } from "@/lib/utils/date";
 import { useRouter, useSearchParams } from "next/navigation";
 
-const ProjectCreatePage = () => {
+const ProjectCreateContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const collectionId = searchParams.get("collectionId");
@@ -127,5 +128,11 @@ const ProjectCreatePage = () => {
     </div>
   );
 };
+
+const ProjectCreatePage = () => (
+  <Suspense>
+    <ProjectCreateContent />
+  </Suspense>
+);
 
 export default ProjectCreatePage;

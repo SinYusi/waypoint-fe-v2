@@ -71,6 +71,7 @@ const PlanPage = () => {
 
   const [budgetCardMode, setBudgetCardMode] = useState<"view" | "edit">("view");
   const {
+    plan,
     planTitle,
     totalDays,
     days,
@@ -161,9 +162,6 @@ const PlanPage = () => {
           <ProjectHeader
             drawerTitle={planTitle}
             dateRange={dateRange}
-            showMapButton
-            isMapVisible={isMapVisible}
-            onMap={() => setIsMapVisible((prev) => !prev)}
             showCalendarButton
             isCalendarVisible={isCalendarVisible}
             onCalendar={() => setIsCalendarVisible((prev) => !prev)}

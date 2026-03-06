@@ -387,7 +387,7 @@ export default function GoogleMap({
     }
 
     overlaysRef.current = overlayMarkers.map(({ position, element }) => {
-      const overlay = new PinOverlay(position, element);
+      const overlay = new PinOverlay(position, element) as unknown as GoogleOverlayInstance;
       overlay.setMap(mapRef.current!);
       return overlay;
     });
