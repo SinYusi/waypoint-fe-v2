@@ -16,6 +16,7 @@
 import {
   AddPlanBlockCandidatesRequest,
   BlockResponse,
+  CandidatesResponse,
   CreatePlanBlockByPlaceRequest,
   CreatePlanBlockRequest,
   CreatePlanRequest,
@@ -204,4 +205,14 @@ export const kickPlanMember = async (
   memberId: string,
 ): Promise<void> => {
   await apiClient.delete(`/plans/${planId}/members/${memberId}`);
+};
+
+export const getCandidates = async (
+  planId: string,
+  timeBlockId: string,
+): Promise<CandidatesResponse> => {
+  const res = await apiClient.get<CandidatesResponse>(
+    `/plans/${planId}/blocks/${timeBlockId}/candidates`,
+  );
+  return res.data;
 };
