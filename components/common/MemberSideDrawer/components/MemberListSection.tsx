@@ -1,13 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { UserPlus } from "lucide-react";
 import { CollectionMember, PlanMember } from "@/types/member";
 import { Button } from "@/components/ui/button";
 import Divider from "@/components/common/Divider";
 import MemberItem from "./MemberItem";
 
+const getMemberId = (member: CollectionMember | PlanMember): string =>
+  "collection_member_id" in member
+    ? member.collection_member_id
+    : member.plan_member_id;
+
 interface MemberListSectionProps {
   members: (CollectionMember | PlanMember)[];
   isOwner?: boolean;
+  meMemberId?: string;
+  variant?: "COLLECTION" | "PLAN";
   onKick: (memberId: string) => void;
   onAssignOwner: (memberId: string) => void;
   onInviteClick?: () => void;
@@ -16,11 +23,18 @@ interface MemberListSectionProps {
 const MemberListSection = ({
   members,
   isOwner = false,
+  meMemberId,
+  variant = "COLLECTION",
   onKick,
   onAssignOwner,
   onInviteClick,
 }: MemberListSectionProps) => {
   const [isManaging, setIsManaging] = useState(false);
+
+  useEffect(() => {
+    if (!isOwner) setIsManaging(false);
+  }, [isOwner]);
+
   return (
     <div className="w-full rounded-2xl bg-[#f0f0f0]">
       <div className="flex px-4 py-3 justify-between">
@@ -41,6 +55,8 @@ const MemberListSection = ({
               key={member.nickname + `${i}`}
               member={member}
               isManaging={isManaging}
+              isMe={!!meMemberId && getMemberId(member) === meMemberId}
+              variant={variant}
               onKick={onKick}
               onAssignOwner={onAssignOwner}
             />

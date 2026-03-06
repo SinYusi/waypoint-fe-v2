@@ -20,6 +20,10 @@ import MemberListSection from "./components/MemberListSection";
 import TravelPlanSection from "./components/TravelPlanSection";
 import HeaderBtn, { HeaderBtnBgVariant } from "@/components/layout/HeaderBtn";
 import type { CollectionMember, MemberRole, PlanMember } from "@/types/member";
+import { usePlanMembers } from "@/lib/hooks/plan/use-plan-members";
+import { useCollectionMembers } from "@/lib/hooks/collection/use-collection-members";
+import { useLeaveCollection } from "@/lib/hooks/collection/use-leave-collection";
+import { useLeavePlan } from "@/lib/hooks/plan/use-leave-plan";
 import { ChevronRight } from "lucide-react";
 import AppDialog from "@/components/common/AppDialog";
 import AppAlertDialog from "@/components/common/AppAlertDialog";
@@ -51,9 +55,41 @@ const MemberSideDrawer = ({
   const router = useRouter();
   const pathname = usePathname();
 
-  const isOwner = meRole === "OWNER";
+  const { data: planMembersData } = usePlanMembers(planId ?? "", {
+    enabled: variant === "PLAN" && !!planId,
+  });
+
+  const { data: collectionMembersData } = useCollectionMembers(collectionId ?? "", {
+    enabled: variant === "COLLECTION" && !!collectionId,
+  });
+
+  const resolvedMembers =
+    variant === "PLAN" && planMembersData
+      ? planMembersData.members
+      : members;
+  const resolvedMeRole =
+    variant === "PLAN" && planMembersData
+      ? planMembersData.me?.role
+      : meRole;
+  const meMemberId =
+    variant === "PLAN" && planMembersData
+      ? planMembersData.me?.plan_member_id
+      : variant === "COLLECTION" && collectionMembersData
+        ? collectionMembersData.me?.collection_member_id
+        : undefined;
+
+  const isOwner = resolvedMeRole === "OWNER";
   const { handleKickMember, handleAssignOwner } = useMemberManagement({
     variant,
+    collectionId,
+    planId,
+  });
+
+  const { mutate: leaveCollection, isPending: isLeavingCollection } = useLeaveCollection({
+    onSuccess: () => router.replace("/home"),
+  });
+  const { mutate: leavePlan, isPending: isLeavingPlan } = useLeavePlan({
+    onSuccess: () => router.replace("/projects"),
   });
 
   const [ownerDialogOpen, setOwnerDialogOpen] = useState(false);
@@ -61,11 +97,20 @@ const MemberSideDrawer = ({
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
 
   const handleLeaveClick = () => {
-    if (meRole === "OWNER") {
+    if (resolvedMeRole === "OWNER") {
       setOwnerDialogOpen(true);
     } else {
       setConfirmDialogOpen(true);
     }
+  };
+
+  const handleLeaveConfirm = () => {
+    if (variant === "PLAN" && planId) {
+      leavePlan(planId);
+    } else if (variant === "COLLECTION" && collectionId) {
+      leaveCollection(collectionId);
+    }
+    setConfirmDialogOpen(false);
   };
 
   return (
@@ -89,8 +134,10 @@ const MemberSideDrawer = ({
           </DrawerHeader>
           <main className="flex flex-col gap-3 mx-5 mt-10">
             <MemberListSection
-              members={members}
+              members={resolvedMembers}
               isOwner={isOwner}
+              meMemberId={meMemberId}
+              variant={variant}
               onKick={handleKickMember}
               onAssignOwner={handleAssignOwner}
               onInviteClick={() => setInviteDialogOpen(true)}
@@ -106,11 +153,11 @@ const MemberSideDrawer = ({
                 <ChevronRight size={20} strokeWidth={2} />
               </Button>
             ) : (
-              <TravelPlanSection />
+              <TravelPlanSection collectionId={collectionId} />
             )}
           </main>
           <DrawerFooter>
-            <Button variant="ghost" onClick={handleLeaveClick}>
+            <Button variant="ghost" onClick={handleLeaveClick} disabled={isLeavingCollection || isLeavingPlan}>
               <DoorClosed size={18} className="opacity-40" />
               <p className="typography-action-sm-reg">
                 {variant === "PLAN"
@@ -138,9 +185,7 @@ const MemberSideDrawer = ({
         description={`지금 나가시면 다시 초대 받기 전까지는 이 보관함에 다시 들어오실 수 없어요.\n그래도 정말 나가시겠어요?`}
         cancelLabel="취소"
         actionLabel="나가기"
-        onAction={() => {
-          setConfirmDialogOpen(false);
-        }}
+        onAction={handleLeaveConfirm}
       />
 
       {(collectionId ?? planId) && (

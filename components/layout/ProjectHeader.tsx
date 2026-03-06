@@ -3,7 +3,8 @@
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import HeaderBtn, { HeaderBtnBgVariant } from "./HeaderBtn";
 import { cn } from "@/lib/utils/utils";
-import { ArrowLeft, Calendar, Map, Menu } from "lucide-react";
+import { ArrowLeft, Calendar, Map } from "lucide-react";
+import MemberSideDrawer from "@/components/common/MemberSideDrawer";
 
 interface ProjectHeaderProps {
   // 헤더 레이아웃 타입
@@ -16,6 +17,8 @@ interface ProjectHeaderProps {
   showMapButton?: boolean;
   showCalendarButton?: boolean;
   showMenuButton?: boolean;
+  drawerTitle?: string;
+  dateRange?: string;
   mapDisabled?: boolean;
   calendarDisabled?: boolean;
   onMap?: () => void;
@@ -34,6 +37,8 @@ const ProjectHeader = ({
   showMapButton = false,
   showCalendarButton = false,
   showMenuButton = false,
+  drawerTitle,
+  dateRange,
   mapDisabled = false,
   calendarDisabled = false,
   onMap,
@@ -120,8 +125,13 @@ const ProjectHeader = ({
         )}
 
         {showMenuButton && (
-          // TODO: SideMenuDrawer로 변경
-          <HeaderBtn bgVariant={rightBtnBgVariant} icon={Menu} label="지도" />
+          <MemberSideDrawer
+            title={drawerTitle ?? ""}
+            variant="PLAN"
+            planId={planId}
+            dateRange={dateRange}
+            rightBtnBgVariant={rightBtnBgVariant}
+          />
         )}
       </div>
     </header>

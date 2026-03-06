@@ -165,3 +165,14 @@ export type CollectionPlacesResponse = {
 };
 
 export type { InvitationResponse } from "@/types/invitation";
+
+/**
+ * 컬렉션에 연결된 플랜 항목
+ * GET /collections/{collectionId}/plans
+ */
+export type CollectionPlanItem = {
+  plan_id: string;
+  title: string;
+};
+
+export type CollectionPlansResponse = CollectionPlanItem[];

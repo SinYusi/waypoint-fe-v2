@@ -84,7 +84,11 @@ const PlanPage = () => {
     isAllDaysEmpty,
     isInitialLoading,
   } = usePlanBlockData({ planId });
-
+  const startDate = plan?.start_date ?? "";
+  const dateRange =
+    plan?.start_date && plan?.end_date
+      ? `${plan.start_date} ~ ${plan.end_date}`
+      : undefined;
   const { data: budgetData } = useBudget(planId);
   const expensesByDay = useQueries({
     queries: days.map((day) => ({
@@ -145,6 +149,8 @@ const PlanPage = () => {
         {activeMode === "budget" ? (
           <ProjectHeader
             variant="view"
+            drawerTitle={planTitle}
+            dateRange={dateRange}
             showCalendarButton
             isCalendarVisible={isCalendarVisible}
             onCalendar={() => setIsCalendarVisible((prev) => !prev)}
@@ -153,9 +159,11 @@ const PlanPage = () => {
           />
         ) : (
           <ProjectHeader
-            // showMapButton
-            // isMapVisible={isMapVisible}
-            // onMap={() => setIsMapVisible((prev) => !prev)}
+            drawerTitle={planTitle}
+            dateRange={dateRange}
+            showMapButton
+            isMapVisible={isMapVisible}
+            onMap={() => setIsMapVisible((prev) => !prev)}
             showCalendarButton
             isCalendarVisible={isCalendarVisible}
             onCalendar={() => setIsCalendarVisible((prev) => !prev)}

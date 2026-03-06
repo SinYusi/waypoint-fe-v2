@@ -7,6 +7,8 @@ import MoreActionMenu, {
 interface MemberItemProps {
   member: CollectionMember | PlanMember;
   isManaging: boolean;
+  isMe?: boolean;
+  variant?: "COLLECTION" | "PLAN";
   onKick: (memberId: string) => void;
   onAssignOwner: (memberId: string) => void;
 }
@@ -20,6 +22,8 @@ const getMemberId = (member: CollectionMember | PlanMember): string => {
 const MemberItem = ({
   member,
   isManaging,
+  isMe = false,
+  variant = "COLLECTION",
   onKick,
   onAssignOwner,
 }: MemberItemProps) => {
@@ -32,7 +36,7 @@ const MemberItem = ({
     },
     {
       id: "assign-owner",
-      label: "보관함 소유자로 지정",
+      label: variant === "PLAN" ? "여행 계획 소유자로 지정" : "보관함 소유자로 지정",
       onSelect: () => onAssignOwner(memberId),
     },
   ];
@@ -51,7 +55,7 @@ const MemberItem = ({
         <div className="w-7 h-7 rounded-full bg-gray-300 shrink-0" />
       )}
       <p className="typography-action-sm-reg flex-1">{member.nickname}</p>
-      {isManaging && (
+      {isManaging && !isMe && (
         <MoreActionMenu
           label="멤버 메뉴"
           sheetTitle="멤버 메뉴"

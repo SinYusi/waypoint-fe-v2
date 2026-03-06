@@ -12,6 +12,10 @@
  * - AI 장소 추출 최신 작업 조회 (GET | `/collections/{collectionId}/extraction-jobs/latest`)
  * - AI 장소 추출 작업 취소 (DELETE | `/collections/{collectionId}/extraction-jobs/{jobId}`)
  * - AI 장소 추출 결과 장소 추가 (POST | `/collections/{collectionId}/extraction-jobs/{jobId}/places`)
+ * - 컬렉션 나가기 (DELETE | `/collections/{collectionId}/members/me`)
+ * - 연결된 플랜 목록 조회 (GET | `/collections/{collectionId}/plans`)
+ * - 소유자 변경 (PATCH | `/collections/{collectionId}/owner`)
+ * - 멤버 강퇴 (DELETE | `/collections/{collectionId}/members/{memberId}`)
  */
 
 import {
@@ -32,6 +36,7 @@ import {
 } from "@/types/collection";
 import { InvitationResponse } from "@/types/invitation";
 import { CollectionMembersResponse } from "@/types/member";
+import { CollectionPlansResponse } from "@/types/collection";
 import {
   CreateExtractionJobResponse,
   ExtractionJobResponse,
@@ -250,4 +255,31 @@ export const addExtractionJobPlaces = async (
     `/collections/${collectionId}/extraction-jobs/${jobId}/places`,
     { place_ids },
   );
+};
+
+export const leaveCollection = async (collectionId: string): Promise<void> => {
+  await apiClient.delete(`/collections/${collectionId}/members/me`);
+};
+
+export const getCollectionPlans = async (collectionId: string): Promise<CollectionPlansResponse> => {
+  const res = await apiClient.get<CollectionPlansResponse>(
+    `/collections/${collectionId}/plans`,
+  );
+  return res.data;
+};
+
+export const changeCollectionOwner = async (
+  collectionId: string,
+  collection_member_id: string,
+): Promise<void> => {
+  await apiClient.patch(`/collections/${collectionId}/owner`, {
+    collection_member_id,
+  });
+};
+
+export const kickCollectionMember = async (
+  collectionId: string,
+  memberId: string,
+): Promise<void> => {
+  await apiClient.delete(`/collections/${collectionId}/members/${memberId}`);
 };

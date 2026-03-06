@@ -56,9 +56,9 @@ const CollectionDetailPage = () => {
   const places = placesData?.pages.flatMap((page) => page.contents) ?? [];
   const allMembers = membersData
     ? [
-        membersData.me,
+        ...(membersData.me ? [membersData.me] : []),
         ...membersData.members.filter(
-          (m) => m.collection_member_id !== membersData.me.collection_member_id,
+          (m) => m.collection_member_id !== membersData.me?.collection_member_id,
         ),
       ]
     : [];
@@ -114,7 +114,7 @@ const CollectionDetailPage = () => {
             title={title}
             placeCount={collection?.place_count}
             collectionMembers={membersData ? allMembers : undefined}
-            meRole={membersData?.me.role}
+            meRole={membersData?.me?.role}
             collectionId={collectionId}
             className={cn(
               "sticky top-[60px] z-9 bg-white transition-transform duration-300 ease-in-out bg-background",

@@ -4,19 +4,33 @@ import ProjectForm from "@/components/common/projects/ProjectForm";
 import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import { useCreatePlan } from "@/lib/hooks/project/plan/use-create-plan";
+import { useAddPlanCollections } from "@/lib/hooks/plan-collection/use-add-plan-collections";
 import { useProjectForm } from "@/lib/hooks/project/use-project-form";
 import { toApiDateRange } from "@/lib/utils/date";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const ProjectCreatePage = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const collectionId = searchParams.get("collectionId");
 
   const form = useProjectForm();
 
+  const { mutate: addCollections } = useAddPlanCollections({
+    onSuccess: () => router.push("/projects"),
+  });
+
   const { mutate, isPending } = useCreatePlan({
-    onSuccess: () => {
+    onSuccess: (data) => {
       form.resetAll();
-      router.push("/projects");
+      if (collectionId) {
+        addCollections({
+          planId: data.plan_id,
+          body: { collection_ids: [collectionId] },
+        });
+      } else {
+        router.push("/projects");
+      }
     },
     onError: (err) => {
       const message =
