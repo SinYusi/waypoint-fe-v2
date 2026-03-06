@@ -229,7 +229,7 @@ const AddPlanPage = () => {
   };
 
   const handleOpenPlaceAddFromSearch = () => {
-    if (!planId || !selectedDay || !selectedSearchPlaceId) return;
+    if (!planId || !selectedSearchPlaceId) return;
     const selectedPlace = searchedPlaces.find(
       (place) => place.place_id === selectedSearchPlaceId,
     );
@@ -638,10 +638,9 @@ const AddPlanPage = () => {
             }
             className="h-11 w-full rounded-2xl bg-primary px-8 py-0 text-primary-foreground"
             disabled={
-              !hasPlanCollections ||
-              (activeTab === "saved" && !selectedPlaceId) ||
-              (activeTab === "search" &&
-                (!selectedSearchPlaceId || !selectedDay)) ||
+              (activeTab === "saved" &&
+                (!hasPlanCollections || !selectedPlaceId)) ||
+              (activeTab === "search" && !selectedSearchPlaceId) ||
               (activeTab === "free" && (!canSubmitFree || isCreatingBlock))
             }
           >
