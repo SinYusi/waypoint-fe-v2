@@ -4,9 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { useParams, useRouter } from "next/navigation";
 import Header from "@/components/layout/Header";
-import GoogleMap, { type OverlayMarkerItem } from "@/components/common/GoogleMap";
+import GoogleMap, {
+  type OverlayMarkerItem,
+} from "@/components/common/GoogleMap";
 import CandidatePin from "@/components/card/CandidatePin";
 import { useCandidates } from "@/lib/hooks/plan/use-candidates";
+import { CalendarIcon } from "lucide-react";
 
 const SelectCandidatePage = () => {
   const params = useParams<{ planId: string; timeBlockId: string }>();
@@ -55,7 +58,10 @@ const SelectCandidatePage = () => {
     };
   }, [data]);
 
-  const mapCenter = overlayMarkers[0]?.position ?? { lat: 37.5665, lng: 126.978 };
+  const mapCenter = overlayMarkers[0]?.position ?? {
+    lat: 37.5665,
+    lng: 126.978,
+  };
   const fitPositions = overlayMarkers.map((m) => m.position);
 
   return (
@@ -69,7 +75,7 @@ const SelectCandidatePage = () => {
       />
 
       {/* 지도 영역 - 헤더 바로 아래 */}
-      <div className="sticky top-16 z-10">
+      <div className="fixed top-16 z-10 left-0 right-0">
         <GoogleMap
           center={mapCenter}
           zoom={14}
@@ -80,7 +86,7 @@ const SelectCandidatePage = () => {
         />
       </div>
 
-      <main className="flex flex-1 flex-col px-5">
+      <main className="flex flex-1 flex-col px-5 pt-72">
         {isLoading && (
           <div className="flex flex-1 items-center justify-center">
             <p className="typography-body-sm-reg text-muted-foreground">
@@ -89,14 +95,34 @@ const SelectCandidatePage = () => {
           </div>
         )}
         {data && (
-          <div className="py-4 flex flex-col gap-4">
-            <p className="typography-display-xl">{data.title}</p>
-            <p className="typography-body-sm-reg text-muted-foreground">
-              Day {data.day_info.day} · {data.day_info.date} · {data.start_time} ~ {data.end_time}
-            </p>
-            <p className="typography-action-sm-bold">
-              후보지 {data.candidate_count}개
-            </p>
+          <div className="flex flex-col gap-5">
+            <div className="flex flex-col py-0.5 border-b-2 gap-3">
+              <div className="flex gap-1.5 items-center">
+                <p className="typography-display-lg-bold">{data.title}</p>
+                <p className="typography-body-sm-sb">·</p>
+                <p className="typography-body-sm-sb">
+                  후보지 {data.candidate_count}개
+                </p>
+              </div>
+              <div className="flex pb-3 items-center justify-between">
+                <div className="flex gap-2 items-center">
+                  <CalendarIcon color="#0ea5e9" className="size-6" />
+                  <p className="typography-body-sm-sb">
+                    {data.day_info.day}일차
+                  </p>
+                  <p className="typography-body-sm-reg">
+                    {data.day_info.date.replace(
+                      /^(\d{4})-(\d{2})-(\d{2})$/,
+                      (_, y, m, d) =>
+                        `${y}년 ${parseInt(m)}월 ${parseInt(d)}일`,
+                    )}
+                  </p>
+                </div>
+                <p className="typography-body-sm-reg text-muted-foreground">
+                  {data.start_time}~{data.end_time}
+                </p>
+              </div>
+            </div>
             {/* TODO: 후보지 선택 UI */}
           </div>
         )}
