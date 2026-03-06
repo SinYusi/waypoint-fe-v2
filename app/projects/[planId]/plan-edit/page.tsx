@@ -3,7 +3,7 @@
 import { useRef, useState, Fragment } from "react";
 import { useQueries } from "@tanstack/react-query";
 import DayNav from "@/components/common/DayNav";
-import GoogleMap from "@/components/common/GoogleMap";
+// import GoogleMap from "@/components/common/GoogleMap";
 import { DayHeader } from "@/components/layout/DayHeader";
 import NavigationBar from "@/components/layout/NavigationBar";
 import PlanHeader from "@/components/layout/PlanHeader";
@@ -19,7 +19,10 @@ import { useScrollspyDay } from "@/lib/hooks/use-scrollspy-day";
 import { useExpenses } from "@/lib/hooks/plan/use-expenses";
 import ExpenseGroupItem from "@/components/card/ExpenseGroupItem";
 import { Plus } from "lucide-react";
-import BudgetBottomSheet, { type EditExpenseItem, type BudgetBottomSheetMode } from "@/components/common/BudgetBottomSheet";
+import BudgetBottomSheet, {
+  type EditExpenseItem,
+  type BudgetBottomSheetMode,
+} from "@/components/common/BudgetBottomSheet";
 import { useUpdateExpense } from "@/lib/hooks/plan/use-update-expense";
 import { useDeleteExpense } from "@/lib/hooks/plan/use-delete-expense";
 import { useAddExpense } from "@/lib/hooks/plan/use-add-expense";
@@ -32,11 +35,18 @@ import BudgetEditDialog from "@/components/common/BudgetEditDialog";
 const DayExpenses = ({ planId, day }: { planId: string; day: number }) => {
   const { data } = useExpenses(planId, day);
   const expenses = data ?? [];
-  const [bottomSheet, setBottomSheet] = useState<{ placeName?: string; expenseId?: string; items: EditExpenseItem[]; mode: BudgetBottomSheetMode } | null>(null);
+  const [bottomSheet, setBottomSheet] = useState<{
+    placeName?: string;
+    expenseId?: string;
+    items: EditExpenseItem[];
+    mode: BudgetBottomSheetMode;
+  } | null>(null);
   const { mutate: updateExpense } = useUpdateExpense(planId);
   const { mutate: deleteExpense } = useDeleteExpense(planId);
   const { mutate: addExpense } = useAddExpense(planId);
-  const [createSheet, setCreateSheet] = useState<{ prevExpenseId?: string } | null>(null);
+  const [createSheet, setCreateSheet] = useState<{
+    prevExpenseId?: string;
+  } | null>(null);
 
   if (expenses.length === 0) return null;
 
@@ -50,7 +60,8 @@ const DayExpenses = ({ planId, day }: { planId: string; day: number }) => {
               onCardClick={(data) =>
                 setBottomSheet({
                   ...data,
-                  mode: data.items.length === 0 ? "add-expense" : "edit-expense",
+                  mode:
+                    data.items.length === 0 ? "add-expense" : "edit-expense",
                 })
               }
             />
@@ -59,7 +70,11 @@ const DayExpenses = ({ planId, day }: { planId: string; day: number }) => {
                 <div className="w-px h-2.5 bg-border" />
                 <button
                   className="w-7 h-7 rounded-4xl bg-secondary flex items-center justify-center"
-                  onClick={() => setCreateSheet({ prevExpenseId: expenses[idx].selected?.expense_id })}
+                  onClick={() =>
+                    setCreateSheet({
+                      prevExpenseId: expenses[idx].selected?.expense_id,
+                    })
+                  }
                 >
                   <Plus className="w-3 h-3 text-slate-50" strokeWidth={2} />
                 </button>
@@ -70,7 +85,11 @@ const DayExpenses = ({ planId, day }: { planId: string; day: number }) => {
                 <div className="w-px h-2.5 bg-border" />
                 <button
                   className="w-7 h-7 rounded-4xl bg-secondary flex items-center justify-center"
-                  onClick={() => setCreateSheet({ prevExpenseId: expenses[idx].selected?.expense_id })}
+                  onClick={() =>
+                    setCreateSheet({
+                      prevExpenseId: expenses[idx].selected?.expense_id,
+                    })
+                  }
                 >
                   <Plus className="w-3 h-3 text-slate-50" strokeWidth={2} />
                 </button>
@@ -82,7 +101,9 @@ const DayExpenses = ({ planId, day }: { planId: string; day: number }) => {
 
       <BudgetBottomSheet
         open={!!bottomSheet}
-        onOpenChange={(open) => { if (!open) setBottomSheet(null); }}
+        onOpenChange={(open) => {
+          if (!open) setBottomSheet(null);
+        }}
         mode={bottomSheet?.mode ?? "edit-expense"}
         placeName={bottomSheet?.placeName}
         editItems={bottomSheet?.items ?? []}
@@ -105,12 +126,17 @@ const DayExpenses = ({ planId, day }: { planId: string; day: number }) => {
 
       <BudgetBottomSheet
         open={!!createSheet}
-        onOpenChange={(open) => { if (!open) setCreateSheet(null); }}
+        onOpenChange={(open) => {
+          if (!open) setCreateSheet(null);
+        }}
         mode="create-expense"
         onSave={(savedItems) => {
           addExpense({
             prev_expense_id: createSheet?.prevExpenseId ?? null,
-            items: savedItems.map((i) => ({ name: i.name, cost: String(i.cost) })),
+            items: savedItems.map((i) => ({
+              name: i.name,
+              cost: String(i.cost),
+            })),
           });
         }}
       />
@@ -131,7 +157,7 @@ const PlanEditPage = () => {
   const activeMode = mode;
 
   const [isCalendarVisible, setIsCalendarVisible] = useState(true);
-  const [isMapVisible, setIsMapVisible] = useState(true);
+  // const [isMapVisible, setIsMapVisible] = useState(true);
 
   const dayNavSentinelRef = useRef<HTMLDivElement | null>(null);
   const [budgetDialogOpen, setBudgetDialogOpen] = useState(false);
@@ -147,20 +173,21 @@ const PlanEditPage = () => {
     openByDay,
     setOpenByDay,
     isAllDaysSettled,
-    isAllDaysEmpty,
+    // isAllDaysEmpty,
     isInitialLoading,
   } = usePlanBlockData({
     planId,
   });
 
   // 지도 실제 표시 여부 (settled 전에는 무조건 false)
-  const shouldShowMap =
-    isAllDaysSettled &&
-    activeMode === "planMode" &&
-    isMapVisible &&
-    !isAllDaysEmpty;
+  // const shouldShowMap =
+  //   isAllDaysSettled &&
+  //   activeMode === "planMode" &&
+  //   isMapVisible &&
+  //   !isAllDaysEmpty;
 
-  const dayNavTop = 64 + (shouldShowMap ? 180 : 0);
+  // const dayNavTop = 64 + (shouldShowMap ? 180 : 0);
+  const dayNavTop = 64;
 
   const isDayNavStuck = useStickyStuck(dayNavSentinelRef, {
     top: dayNavTop,
@@ -183,7 +210,8 @@ const PlanEditPage = () => {
   const expensesByDay = useQueries({
     queries: days.map((day) => ({
       queryKey: ["expenses", { planId, day }] as const,
-      queryFn: () => import("@/lib/api/budget").then((m) => m.getExpenses(planId, day)),
+      queryFn: () =>
+        import("@/lib/api/budget").then((m) => m.getExpenses(planId, day)),
       enabled: !!planId && days.length > 0,
     })),
   });
@@ -192,8 +220,8 @@ const PlanEditPage = () => {
       (group) =>
         group.type === "BLOCK" &&
         group.block_status === "PENDING" &&
-        group.candidates?.some((c) => c.items.length > 0)
-    )
+        group.candidates?.some((c) => c.items.length > 0),
+    ),
   );
 
   // 초기 데이터 로딩 상태
@@ -224,10 +252,10 @@ const PlanEditPage = () => {
           <ProjectHeader
             variant="edit"
             title="편집모드"
-            showMapButton
-            isMapVisible={isMapVisible}
-            onMap={() => setIsMapVisible((prev) => !prev)}
-            mapDisabled={isAllDaysSettled && isAllDaysEmpty}
+            // showMapButton
+            // isMapVisible={isMapVisible}
+            // onMap={() => setIsMapVisible((prev) => !prev)}
+            // mapDisabled={isAllDaysSettled && isAllDaysEmpty}
             showCalendarButton
             isCalendarVisible={isCalendarVisible}
             onCalendar={() => setIsCalendarVisible((prev) => !prev)}
@@ -237,7 +265,7 @@ const PlanEditPage = () => {
       </div>
 
       {/* 지도 - sticky */}
-      {shouldShowMap && (
+      {/* {shouldShowMap && (
         <div className="sticky top-16 z-10">
           <GoogleMap
             showZoomControls
@@ -247,7 +275,7 @@ const PlanEditPage = () => {
             className="w-full h-45 rounded-none"
           />
         </div>
-      )}
+      )} */}
 
       {/* PlanHeader - 스크롤 */}
       <div className="px-5 py-4">
@@ -288,7 +316,8 @@ const PlanEditPage = () => {
                   const day = Number(value);
                   const idx = day - 1;
                   const q = dayQueries[idx];
-                  const isDayEmpty = !!q?.data && (q.data.contents?.length ?? 0) === 0;
+                  const isDayEmpty =
+                    !!q?.data && (q.data.contents?.length ?? 0) === 0;
 
                   // 접혀 있고 비어있지 않으면 펼침
                   if (!isDayEmpty) {
@@ -301,17 +330,22 @@ const PlanEditPage = () => {
                   const scrollToDay = () => {
                     const el = document.getElementById(`day-section-${value}`);
                     if (!el) return;
-                    const mapHeight = shouldShowMap ? 180 : 0;
+                    // const mapHeight = shouldShowMap ? 180 : 0;
+                    const mapHeight = 0;
                     const offset = 64 + mapHeight + 56; // header + map + DayNav(h-14)
                     const top =
                       el.getBoundingClientRect().top + window.scrollY - offset;
                     window.scrollTo({ top, behavior: "smooth" });
                     // smooth scroll 종료 후 억제 해제 (약 600ms)
-                    setTimeout(() => { suppressRef.current = false; }, 700);
+                    setTimeout(() => {
+                      suppressRef.current = false;
+                    }, 700);
                   };
 
                   // 펼침 애니메이션 후 DOM 확정 시점에 스크롤
-                  requestAnimationFrame(() => requestAnimationFrame(scrollToDay));
+                  requestAnimationFrame(() =>
+                    requestAnimationFrame(scrollToDay),
+                  );
                 }}
                 className="gap-2.25 py-3 h-14"
                 itemClassName="h-8 py-1.5"
@@ -339,7 +373,9 @@ const PlanEditPage = () => {
             mode="edit"
             totalBudget={budgetData.total_budget ?? 0}
             usedAmount={budgetData.total_cost}
-            perDayAmount={totalDays > 0 ? Math.round(budgetData.total_cost / totalDays) : 0}
+            perDayAmount={
+              totalDays > 0 ? Math.round(budgetData.total_cost / totalDays) : 0
+            }
             perPersonAmount={budgetData.cost_per_person}
             showHint={hasPendingBlocks}
             className="pt-3"

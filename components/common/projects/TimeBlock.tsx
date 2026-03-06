@@ -9,7 +9,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { useUpdateBlock } from "@/lib/hooks/use-block-detail";
-import { UpdateBlockRequest } from "@/lib/api/block";
+import {
+  BlockStatus,
+  TimeBlockType,
+  UpdateBlockRequest,
+} from "@/lib/api/block";
 import PlanEditBottomSheet from "../PlanEditBottomSheet";
 import { toast } from "sonner";
 import { ProblemDetail } from "@/types/problem-detail";
@@ -20,8 +24,8 @@ interface TimeBlockProps {
   planId: string;
   day: number;
   timeBlockId: string;
-  blockType: "PLACE" | "FREE";
-  blockStatus: "FIXED" | "PENDING" | "DIRECT";
+  blockType: TimeBlockType;
+  blockStatus: BlockStatus;
   startTime: string;
   endTime: string;
   address: string;

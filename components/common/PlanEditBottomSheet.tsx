@@ -209,8 +209,6 @@ const PlanEditBottomSheet = ({
     <BottomSheet
       open={open}
       onOpenChange={handleOpenChange}
-      title="날짜 혹은 시간을 수정하시겠습니까?"
-      showTitle
       cancelLabel="취소"
       cancelVariant="outline"
       confirmLabel="수정하기"

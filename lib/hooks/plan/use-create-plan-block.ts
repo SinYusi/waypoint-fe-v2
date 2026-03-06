@@ -12,7 +12,11 @@ import type {
   CreatePlanBlockRequest,
 } from "@/types/plan";
 import type { ProblemDetail } from "@/types/problem-detail";
-import { useMutation, type UseMutationOptions } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+  type UseMutationOptions,
+} from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 
 type Variables = {
@@ -26,9 +30,18 @@ type Options = Omit<
 >;
 
 export const useCreatePlanBlock = (options?: Options) => {
+  const queryClient = useQueryClient();
+
   return useMutation<BlockResponse, AxiosError<ProblemDetail>, Variables>({
     mutationFn: ({ planId, body }) => createPlanBlock(planId, body),
     ...options,
+    onSuccess: (data, variables, onMutateResult, context) => {
+      queryClient.invalidateQueries({
+        queryKey: ["block-list-infinite", variables.planId],
+      });
+
+      options?.onSuccess?.(data, variables, onMutateResult, context);
+    },
   });
 };
 
@@ -38,14 +51,31 @@ type ByPlaceVariables = {
 };
 
 type ByPlaceOptions = Omit<
-  UseMutationOptions<BlockResponse, AxiosError<ProblemDetail>, ByPlaceVariables>,
+  UseMutationOptions<
+    BlockResponse,
+    AxiosError<ProblemDetail>,
+    ByPlaceVariables
+  >,
   "mutationFn"
 >;
 
 export const useCreatePlanBlockByPlace = (options?: ByPlaceOptions) => {
-  return useMutation<BlockResponse, AxiosError<ProblemDetail>, ByPlaceVariables>({
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    BlockResponse,
+    AxiosError<ProblemDetail>,
+    ByPlaceVariables
+  >({
     mutationFn: ({ planId, body }) => createPlanBlockByPlace(planId, body),
     ...options,
+    onSuccess: (data, variables, onMutateResult, context) => {
+      queryClient.invalidateQueries({
+        queryKey: ["block-list-infinite", variables.planId],
+      });
+
+      options?.onSuccess?.(data, variables, onMutateResult, context);
+    },
   });
 };
 
@@ -56,14 +86,30 @@ type AddCandidatesVariables = {
 };
 
 type AddCandidatesOptions = Omit<
-  UseMutationOptions<BlockResponse, AxiosError<ProblemDetail>, AddCandidatesVariables>,
+  UseMutationOptions<
+    BlockResponse,
+    AxiosError<ProblemDetail>,
+    AddCandidatesVariables
+  >,
   "mutationFn"
 >;
 
 export const useAddPlanBlockCandidates = (options?: AddCandidatesOptions) => {
-  return useMutation<BlockResponse, AxiosError<ProblemDetail>, AddCandidatesVariables>({
+  const queryClient = useQueryClient();
+  return useMutation<
+    BlockResponse,
+    AxiosError<ProblemDetail>,
+    AddCandidatesVariables
+  >({
     mutationFn: ({ planId, timeBlockId, body }) =>
       addPlanBlockCandidates(planId, timeBlockId, body),
     ...options,
+    onSuccess: (data, variables, onMutateResult, context) => {
+      queryClient.invalidateQueries({
+        queryKey: ["block-list-infinite", variables.planId],
+      });
+
+      options?.onSuccess?.(data, variables, onMutateResult, context);
+    },
   });
 };

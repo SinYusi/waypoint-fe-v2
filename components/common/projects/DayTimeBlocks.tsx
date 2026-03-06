@@ -2,10 +2,15 @@
 
 import { PlaceType } from "@/components/card/PlaceTypeIcon";
 import TimeBlock from "./TimeBlock";
-import { EditCandidateItem } from "@/components/card/CandidateGroup";
-import { BlockListResponse } from "@/lib/api/block";
+import {
+  EditCandidateItem,
+  ViewCandidateItem,
+} from "@/components/card/CandidateGroup";
+import { BlockListResponse, BlockOpinionType } from "@/lib/api/block";
 import { useBlockListInfinite } from "@/lib/hooks/use-block-list-infinite";
 import { useIntersectionObserver } from "@/lib/hooks/use-intersection-observer";
+import { ReactionType } from "@/components/card/PlaceReactionItem";
+import ViewTimeBlock from "./ViewTimeBlock";
 
 const toPlaceType = (
   blockType: "PLACE" | "FREE",
@@ -13,6 +18,15 @@ const toPlaceType = (
 ): PlaceType => {
   if (blockType === "FREE") return "자유시간";
   return (categoryName ?? "기타") as PlaceType;
+};
+
+const toReactionType = (
+  t: BlockOpinionType | null,
+): ReactionType | undefined => {
+  if (!t) return undefined;
+  if (t === "POSITIVE") return "good";
+  if (t === "NEUTRAL") return "normal";
+  return "bad";
 };
 
 interface DayTimeBlocksProps {
@@ -77,26 +91,47 @@ const DayTimeBlocks = ({
         const isFirst = index === 0;
         const isLast = index === blocks.length - 1;
 
-        const isMultiCandidate = block.candidateCount >= 2;
-
         const selected = block.selectedBlock;
         const single = selected ?? block.candidates[0] ?? null;
 
-        const address = isMultiCandidate
-          ? `${block.candidateCount}개의 후보지`
-          : (single?.address ?? "");
+        const address =
+          block.blockStatus === "PENDING"
+            ? `${block.candidateCount}개의 후보지`
+            : (single?.address ?? "");
 
         const placeName =
           block.type === "FREE" ? "자유시간" : (single?.placeName ?? "");
 
-        const candidates: EditCandidateItem[] = block.candidates.map((c) => ({
-          id: c.blockId,
-          placeType: toPlaceType(block.type, c.category),
-          placeName: c.placeName,
-          blockId: c.blockId,
-        }));
+        const candidatesEdit: EditCandidateItem[] = block.candidates.map(
+          (c) => ({
+            id: c.blockId,
+            blockId: c.blockId,
+            placeType: toPlaceType(block.type, c.category),
+            placeName: c.placeName,
+          }),
+        );
 
-        return (
+        const candidatesView: ViewCandidateItem[] = block.candidates.map(
+          (c) => ({
+            id: c.blockId,
+            placeType: toPlaceType(block.type, c.category),
+            placeName: c.placeName,
+            writerNickname: c.addedBy?.nickname ?? "",
+            writerProfileImageUrl: c.addedBy?.picture ?? "",
+            memo: c.memo || "메모가 없습니다.",
+            reactions: {
+              good: c.opinionSummary?.positive ?? 0,
+              normal: c.opinionSummary?.neutral ?? 0,
+              bad: c.opinionSummary?.negative ?? 0,
+            },
+            activeReaction: toReactionType(
+              c.opinionSummary?.myOpinionType ?? null,
+            ),
+            opinionCount: c.opinionSummary?.totalCount ?? 0,
+          }),
+        );
+
+        return isEdit ? (
           <TimeBlock
             key={block.timeBlockId}
             planId={planId}
@@ -109,7 +144,6 @@ const DayTimeBlocks = ({
             address={address}
             isFirst={isFirst}
             isLast={isLast}
-            isEdit={isEdit}
             isFree={block.type === "FREE"}
             singleCard={{
               blockId: single?.blockId ?? "",
@@ -120,7 +154,40 @@ const DayTimeBlocks = ({
               writerProfileImageUrl: single?.addedBy?.picture ?? "",
               memo: single?.memo || "메모가 없습니다.",
             }}
-            candidates={candidates}
+            isEdit={isEdit}
+            candidates={candidatesEdit}
+          />
+        ) : (
+          <ViewTimeBlock
+            key={block.timeBlockId}
+            planId={planId}
+            blockStatus={block.blockStatus}
+            blockType={block.type}
+            startTime={block.startTime}
+            address={address}
+            isFirst={isFirst}
+            isLast={isLast}
+            isFree={block.type === "FREE"}
+            singleCard={{
+              blockId: single?.blockId ?? "",
+              placeType: toPlaceType(block.type, single?.category),
+              placeName: placeName,
+              writerNickname: single?.addedBy?.nickname ?? "",
+              candidateCount: block.candidateCount,
+              writerProfileImageUrl: single?.addedBy?.picture ?? "",
+              memo: single?.memo || "메모가 없습니다.",
+              imageUrl: single?.photoUrls?.[0] ?? "",
+              opinionCount: single?.opinionSummary?.totalCount ?? 0,
+              reactions: {
+                good: single?.opinionSummary?.positive ?? 0,
+                normal: single?.opinionSummary?.neutral ?? 0,
+                bad: single?.opinionSummary?.negative ?? 0,
+              },
+              activeReaction: toReactionType(
+                single?.opinionSummary?.myOpinionType ?? null,
+              ),
+            }}
+            candidates={candidatesView}
           />
         );
       })}

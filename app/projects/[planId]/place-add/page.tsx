@@ -32,7 +32,11 @@ const toCursorPosition = (digitIndex: number) => {
   return digitIndex + 1;
 };
 
-const replaceTimeDigit = (value: string, digitIndex: number, nextDigit: string) => {
+const replaceTimeDigit = (
+  value: string,
+  digitIndex: number,
+  nextDigit: string,
+) => {
   const chars = value.split("");
   const valueIndex = digitIndex >= 2 ? digitIndex + 1 : digitIndex;
   chars[valueIndex] = nextDigit;
@@ -59,12 +63,17 @@ const MEMO_POLICY_REGEX =
   /^[\p{Script=Hangul}\p{L}\p{N}\p{Extended_Pictographic}\p{Emoji_Modifier}\u200D\uFE0F !@#$%^&*()\-_+=\[\]{}.,?\/\n]*$/u;
 
 const normalizeMemo = (value: string) =>
-  value.normalize("NFC").replace(/\u00A0/g, " ").replace(/\r\n?/g, "\n");
+  value
+    .normalize("NFC")
+    .replace(/\u00A0/g, " ")
+    .replace(/\r\n?/g, "\n");
 
 const ProjectPlaceAddPage = () => {
   const router = useRouter();
   const params = useParams<{ planId: string | string[] }>();
-  const planId = Array.isArray(params.planId) ? params.planId[0] : params.planId;
+  const planId = Array.isArray(params.planId)
+    ? params.planId[0]
+    : params.planId;
   const searchParams = useSearchParams();
   const collectionId = searchParams.get("collectionId") ?? "";
   const collectionPlaceId = searchParams.get("placeId") ?? "";
@@ -112,22 +121,35 @@ const ProjectPlaceAddPage = () => {
     }
   }, [isManualSource]);
 
-  const { data: placeDetail, isLoading, isError } = usePlanCollectionPlaceDetail({
+  const {
+    data: placeDetail,
+    isLoading,
+    isError,
+  } = usePlanCollectionPlaceDetail({
     planId,
     collectionId,
     collectionPlaceId,
-    enabled: Boolean(!isSearchSource && planId && collectionId && collectionPlaceId),
+    enabled: Boolean(
+      !isSearchSource && planId && collectionId && collectionPlaceId,
+    ),
   });
 
-  const placeName = placeDetail?.name ?? searchPlace?.name ?? manualPlace?.name ?? "";
+  const placeName =
+    placeDetail?.name ?? searchPlace?.name ?? manualPlace?.name ?? "";
   const category =
-    placeDetail?.category ?? searchPlace?.category?.level2?.name ?? manualPlace?.tag ?? "";
-  const address = placeDetail?.address ?? searchPlace?.address ?? manualPlace?.address ?? "";
+    placeDetail?.category ??
+    searchPlace?.category?.level2?.name ??
+    manualPlace?.tag ??
+    "";
+  const address =
+    placeDetail?.address ?? searchPlace?.address ?? manualPlace?.address ?? "";
   const aiSummary = placeDetail?.aiSummary ?? "";
   const sourceTitle = placeDetail?.sourceTitle ?? "";
   const sourceUrl = placeDetail?.sourceUrl;
   const externalUrl =
-    placeDetail?.externalUrl ?? searchPlace?.google_maps_uri ?? manualPlace?.google_maps_uri;
+    placeDetail?.externalUrl ??
+    searchPlace?.google_maps_uri ??
+    manualPlace?.google_maps_uri;
   const coverImageUrl = placeDetail?.photoUrls?.[0] ?? searchPlace?.photos?.[0];
   const dayNumber = useMemo(() => Number(day.replace(/[^\d]/g, "")), [day]);
   const normalizedMemo = useMemo(() => normalizeMemo(memo), [memo]);
@@ -148,25 +170,26 @@ const ProjectPlaceAddPage = () => {
     isStartNotAfterEnd &&
     isMemoPolicyValid;
 
-  const { mutate: createBlock, isPending: isCreatingBlock } = useCreatePlanBlock({
-    onSuccess: () => {
-      setSubmitError("");
-      router.back();
-    },
-    onError: (err) => {
-      const message =
-        err.response?.data?.errors?.[0]?.reason ??
-        err.response?.data?.detail ??
-        "블록 추가에 실패했어요. 잠시 후 다시 시도해 주세요.";
+  const { mutate: createBlock, isPending: isCreatingBlock } =
+    useCreatePlanBlock({
+      onSuccess: () => {
+        setSubmitError("");
+        router.push(`/projects/${planId}/plan-edit`);
+      },
+      onError: (err) => {
+        const message =
+          err.response?.data?.errors?.[0]?.reason ??
+          err.response?.data?.detail ??
+          "블록 추가에 실패했어요. 잠시 후 다시 시도해 주세요.";
 
-      setSubmitError(message);
-    },
-  });
+        setSubmitError(message);
+      },
+    });
   const { mutate: createBlockByPlace, isPending: isCreatingBlockByPlace } =
     useCreatePlanBlockByPlace({
       onSuccess: () => {
         setSubmitError("");
-        router.back();
+        router.push(`/projects/${planId}/plan-edit`);
       },
       onError: (err) => {
         const message =
@@ -191,7 +214,13 @@ const ProjectPlaceAddPage = () => {
     const input = e.currentTarget;
     const key = e.key;
 
-    if (key === "Tab" || key === "ArrowLeft" || key === "ArrowRight" || key === "Home" || key === "End") {
+    if (
+      key === "Tab" ||
+      key === "ArrowLeft" ||
+      key === "ArrowRight" ||
+      key === "Home" ||
+      key === "End"
+    ) {
       return;
     }
 
@@ -289,8 +318,12 @@ const ProjectPlaceAddPage = () => {
         <div className="flex flex-col gap-8 pt-7 px-5 pb-30 rounded-t-2xl bg-background min-w-0">
           <div className="flex flex-col w-full min-w-0">
             <h2 className="flex justify-between items-center w-full h-8 py-0.5 px-1">
-              <span className="typography-title-lg-sb text-foreground">{placeName}</span>
-              <span className="typography-body-sm-bold text-muted-foreground">{category}</span>
+              <span className="typography-title-lg-sb text-foreground">
+                {placeName}
+              </span>
+              <span className="typography-body-sm-bold text-muted-foreground">
+                {category}
+              </span>
             </h2>
 
             <div className="flex flex-col gap-5 pt-4">
@@ -299,13 +332,17 @@ const ProjectPlaceAddPage = () => {
                 <div className="flex justify-between items-center w-full h-11">
                   <div className="flex items-center gap-2.25">
                     <MapPin className="size-6 text-muted-foreground" />
-                    <span className="typography-body-sm-md text-foreground">{address}</span>
+                    <span className="typography-body-sm-md text-foreground">
+                      {address}
+                    </span>
                   </div>
                   <HeaderBtn
                     bgVariant="ghost"
                     icon={SquareArrowOutUpRight}
                     label="외부 링크"
-                    onClick={externalUrl ? () => openInNewTab(externalUrl) : undefined}
+                    onClick={
+                      externalUrl ? () => openInNewTab(externalUrl) : undefined
+                    }
                   />
                 </div>
                 <hr className="border-border" />
@@ -314,7 +351,9 @@ const ProjectPlaceAddPage = () => {
               <div className="flex flex-col gap-8">
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="day" required>
-                    <span className="typography-label-sm-sb text-foreground">날짜</span>
+                    <span className="typography-label-sm-sb text-foreground">
+                      날짜
+                    </span>
                   </Label>
                   <InputForm
                     id="day"
@@ -327,7 +366,9 @@ const ProjectPlaceAddPage = () => {
 
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="start-time" required>
-                    <span className="typography-label-sm-sb text-foreground">시작 시간</span>
+                    <span className="typography-label-sm-sb text-foreground">
+                      시작 시간
+                    </span>
                   </Label>
                   <InputForm
                     id="start-time"
@@ -336,7 +377,9 @@ const ProjectPlaceAddPage = () => {
                     inputMode="numeric"
                     maxLength={5}
                     value={startTime}
-                    onKeyDown={(e) => handleTimeKeyDown(e, startTime, setStartTime)}
+                    onKeyDown={(e) =>
+                      handleTimeKeyDown(e, startTime, setStartTime)
+                    }
                     onFocus={(e) => setCaret(e.currentTarget, 0)}
                     onChange={() => {}}
                     error={!isStartTimeValid || !isStartNotAfterEnd}
@@ -345,7 +388,9 @@ const ProjectPlaceAddPage = () => {
 
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="end-time" required>
-                    <span className="typography-label-sm-sb text-foreground">종료 시간</span>
+                    <span className="typography-label-sm-sb text-foreground">
+                      종료 시간
+                    </span>
                   </Label>
                   <InputForm
                     id="end-time"
@@ -363,7 +408,9 @@ const ProjectPlaceAddPage = () => {
 
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="memo">
-                    <span className="typography-label-sm-sb text-foreground">메모</span>
+                    <span className="typography-label-sm-sb text-foreground">
+                      메모
+                    </span>
                   </Label>
                   <Textarea
                     id="memo"
@@ -378,7 +425,8 @@ const ProjectPlaceAddPage = () => {
                   />
                   {memo.length > 0 && !isMemoPolicyValid && (
                     <FieldDescription error>
-                      한글, 영문, 숫자, 이모지, 특수문자(!@#$%^&*()-_+=[]{} ,.?/) 및 줄바꿈만 사용할 수 있습니다.
+                      한글, 영문, 숫자, 이모지, 특수문자(!@#$%^&*()-_+=[]{}{" "}
+                      ,.?/) 및 줄바꿈만 사용할 수 있습니다.
                     </FieldDescription>
                   )}
                 </div>
@@ -388,7 +436,10 @@ const ProjectPlaceAddPage = () => {
                 isLoading={isLoading}
                 headerIcon={<Sparkles className="size-6 text-foreground" />}
                 title="AI 요약"
-                summary={aiSummary || (isSearchSource ? "AI 요약 정보가 아직 없습니다." : "")}
+                summary={
+                  aiSummary ||
+                  (isSearchSource ? "AI 요약 정보가 아직 없습니다." : "")
+                }
                 sourceTitle={sourceTitle}
                 sourceUrl={sourceUrl}
                 onOpenLink={openInNewTab}
@@ -400,7 +451,9 @@ const ProjectPlaceAddPage = () => {
                 </p>
               )}
               {submitError && (
-                <p className="px-1 typography-caption-xs-reg text-destructive">{submitError}</p>
+                <p className="px-1 typography-caption-xs-reg text-destructive">
+                  {submitError}
+                </p>
               )}
             </div>
           </div>
