@@ -8,8 +8,70 @@ import GoogleMap, {
   type OverlayMarkerItem,
 } from "@/components/common/GoogleMap";
 import CandidatePin from "@/components/card/CandidatePin";
+import CandidateSelectCard from "@/components/card/CandidateSelectCard";
 import { useCandidates } from "@/lib/hooks/plan/use-candidates";
 import { CalendarIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import AppAlertDialog from "@/components/common/AppAlertDialog";
+import type {
+  OpinionCategoryKey,
+  BlockOpinion,
+} from "@/lib/opinion-bottom-sheet";
+
+const toCategoryKey = (level2Name?: string): OpinionCategoryKey => {
+  switch (level2Name) {
+    case "식당":
+    case "주점":
+    case "유흥":
+      return "FNB";
+    case "카페":
+    case "디저트":
+      return "DESSERT";
+    case "숙소":
+      return "STAY";
+    case "쇼핑":
+      return "SHOPPING";
+    case "관광명소":
+    case "문화예술":
+    case "관람":
+    case "공원":
+    case "자연":
+    case "테마파크":
+    case "액티비티":
+      return "TOUR";
+    default:
+      return "GENERAL";
+  }
+};
+
+// opinion_summary distribution → BlockOpinion[] 로 변환 (카운트 기반)
+const toOpinions = (distribution: {
+  positive: number;
+  neutral: number;
+  negative: number;
+}): BlockOpinion[] => [
+  ...Array(distribution.positive).fill({
+    opinion_Id: "",
+    type: "POSITIVE",
+    comment: "",
+    tag_ids: [],
+    added_by: { plan_member_id: "", nickname: "", picture: "" },
+  }),
+  ...Array(distribution.neutral).fill({
+    opinion_Id: "",
+    type: "NEUTRAL",
+    comment: "",
+    tag_ids: [],
+    added_by: { plan_member_id: "", nickname: "", picture: "" },
+  }),
+  ...Array(distribution.negative).fill({
+    opinion_Id: "",
+    type: "NEGATIVE",
+    comment: "",
+    tag_ids: [],
+    added_by: { plan_member_id: "", nickname: "", picture: "" },
+  }),
+];
 
 const SelectCandidatePage = () => {
   const params = useParams<{ planId: string; timeBlockId: string }>();
@@ -23,6 +85,8 @@ const SelectCandidatePage = () => {
     : params.timeBlockId;
 
   const { data, isLoading } = useCandidates(planId, timeBlockId);
+  const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const rootsRef = useRef<Root[]>([]);
   const [overlayMarkers, setOverlayMarkers] = useState<OverlayMarkerItem[]>([]);
@@ -75,7 +139,7 @@ const SelectCandidatePage = () => {
       />
 
       {/* 지도 영역 - 헤더 바로 아래 */}
-      <div className="fixed top-16 z-10 left-0 right-0">
+      <div className="fixed top-15 z-10 left-0 right-0">
         <GoogleMap
           center={mapCenter}
           zoom={14}
@@ -123,10 +187,58 @@ const SelectCandidatePage = () => {
                 </p>
               </div>
             </div>
-            {/* TODO: 후보지 선택 UI */}
+            <div className="flex flex-col gap-4 pb-16">
+              {data.candidates.map((c, i) => (
+                <CandidateSelectCard
+                  key={c.block_id}
+                  index={i + 1}
+                  placeName={c.place.name}
+                  writerNickname={c.added_by.nickname}
+                  writerProfileImageUrl={c.added_by.picture}
+                  categoryKey={toCategoryKey(c.place.category.level2?.name)}
+                  imageUrl={c.place.photos?.[0]}
+                  memo={c.memo}
+                  amount={
+                    c.expense_items.reduce((sum, item) => sum + item.cost, 0) ||
+                    undefined
+                  }
+                  opinions={toOpinions(c.opinion_summary.distribution)}
+                  isSelected={selectedBlockId === c.block_id}
+                  onSelect={() =>
+                    setSelectedBlockId((prev) =>
+                      prev === c.block_id ? null : c.block_id,
+                    )
+                  }
+                />
+              ))}
+            </div>
           </div>
         )}
       </main>
+
+      <div className="fixed bottom-0 inset-x-0 px-5 bg-background py-3">
+        <Button
+          className="w-full h-11 rounded-2xl typography-action-sm-bold"
+          disabled={!selectedBlockId}
+          onClick={() => setConfirmOpen(true)}
+        >
+          후보지 선택하기
+        </Button>
+      </div>
+
+      <AppAlertDialog
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        title="후보지를 선택하시겠습니까?"
+        description="후보지를 선택한 이후에도 언제든지 다시 변경할 수 있어요."
+        cancelLabel="취소하기"
+        actionLabel="선택하기"
+        actionClassName="bg-primary hover:bg-primary/90"
+        onAction={() => {
+          // TODO: 후보지 선택 API 호출
+          setConfirmOpen(false);
+        }}
+      />
     </div>
   );
 };
