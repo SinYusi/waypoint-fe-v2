@@ -10,6 +10,7 @@ import GoogleMap, {
 import CandidatePin from "@/components/card/CandidatePin";
 import CandidateSelectCard from "@/components/card/CandidateSelectCard";
 import { useCandidates } from "@/lib/hooks/plan/use-candidates";
+import { useSelectCandidate } from "@/lib/hooks/plan/use-select-candidate";
 import { CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AppAlertDialog from "@/components/common/AppAlertDialog";
@@ -88,12 +89,17 @@ const SelectCandidatePage = () => {
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
+  const { mutate: selectCandidateMutate, isPending } = useSelectCandidate({
+    onSuccess: () => router.replace(`/projects/${planId}`),
+  });
+
   const rootsRef = useRef<Root[]>([]);
   const [overlayMarkers, setOverlayMarkers] = useState<OverlayMarkerItem[]>([]);
 
   useEffect(() => {
-    rootsRef.current.forEach((r) => r.unmount());
+    const prevRoots = rootsRef.current;
     rootsRef.current = [];
+    setTimeout(() => prevRoots.forEach((r) => r.unmount()), 0);
 
     if (!data) {
       setOverlayMarkers([]);
@@ -117,8 +123,9 @@ const SelectCandidatePage = () => {
     setOverlayMarkers(items);
 
     return () => {
-      rootsRef.current.forEach((r) => r.unmount());
+      const roots = rootsRef.current;
       rootsRef.current = [];
+      setTimeout(() => roots.forEach((r) => r.unmount()), 0);
     };
   }, [data]);
 
@@ -234,9 +241,10 @@ const SelectCandidatePage = () => {
         cancelLabel="취소하기"
         actionLabel="선택하기"
         actionClassName="bg-primary hover:bg-primary/90"
+        actionDisabled={isPending}
         onAction={() => {
-          // TODO: 후보지 선택 API 호출
-          setConfirmOpen(false);
+          if (!selectedBlockId) return;
+          selectCandidateMutate({ planId, timeBlockId, blockId: selectedBlockId });
         }}
       />
     </div>

@@ -207,6 +207,17 @@ export const kickPlanMember = async (
   await apiClient.delete(`/plans/${planId}/members/${memberId}`);
 };
 
+export const selectCandidate = async (
+  planId: string,
+  timeBlockId: string,
+  block_id: string,
+): Promise<void> => {
+  await apiClient.patch(
+    `/plans/${planId}/blocks/${timeBlockId}/selection`,
+    { block_id },
+  );
+};
+
 export const getCandidates = async (
   planId: string,
   timeBlockId: string,
